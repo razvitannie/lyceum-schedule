@@ -120,18 +120,61 @@
       font-size: 0.85rem;
     }
 
-    .weeks-scroll, .days-container {
+    /* Переключатель недель со стрелочками */
+    .week-switcher {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 8px 16px;
+      margin-bottom: 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+    }
+
+    .week-arrow-btn {
+      background: var(--bntu-green-light);
+      color: var(--bntu-green);
+      border: none;
+      border-radius: 8px;
+      width: 32px;
+      height: 32px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+    }
+
+    .week-arrow-btn:active {
+      background: rgba(0, 133, 89, 0.2);
+    }
+
+    .week-title-block {
+      text-align: center;
+    }
+
+    .week-title-text {
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: var(--text-color);
+    }
+
+    .week-range-text {
+      font-size: 0.75rem;
+      color: var(--hint-color);
+      margin-top: 2px;
+    }
+
+    /* Дни недели */
+    .days-container {
       display: flex; gap: 6px; overflow-x: auto;
       padding-bottom: 8px; margin-bottom: 12px; scrollbar-width: none;
     }
-    .weeks-scroll::-webkit-scrollbar, .days-container::-webkit-scrollbar { display: none; }
-
-    .week-tab {
-      flex: 0 0 auto; padding: 7px 12px; border-radius: 10px;
-      border: 1px solid var(--border-color); background: var(--card-bg);
-      color: var(--hint-color); font-size: 0.8rem; font-weight: 600; cursor: pointer; text-align: center;
-    }
-    .week-tab.active { background: var(--bntu-green); color: #ffffff; border-color: var(--bntu-green); }
+    .days-container::-webkit-scrollbar { display: none; }
 
     .day-btn {
       flex: 0 0 auto; padding: 8px 14px; border-radius: 20px;
@@ -163,6 +206,7 @@
 
     .empty-state { text-align: center; padding: 30px 20px; color: var(--hint-color); font-size: 0.9rem; }
 
+    /* Окно настроек */
     #settingsModal {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: var(--bg-color); z-index: 2000; display: none;
@@ -225,8 +269,20 @@
     <div id="classBadge" class="user-class-badge" style="display: none;"></div>
   </div>
 
-  <div class="weeks-scroll" id="weeksContainer"></div>
+  <!-- Переключатель недель со стрелочками -->
+  <div class="week-switcher">
+    <button class="week-arrow-btn" onclick="changeWeek(-1)">❮</button>
+    <div class="week-title-block">
+      <div class="week-title-text" id="weekTitle">Неделя 1</div>
+      <div class="week-range-text" id="weekRange">01.09 – 06.09</div>
+    </div>
+    <button class="week-arrow-btn" onclick="changeWeek(1)">❯</button>
+  </div>
+
+  <!-- Дни недели -->
   <div class="days-container" id="daysTabs"></div>
+
+  <!-- Контейнер уроков -->
   <div id="schedule-container"></div>
 
   <!-- Меню настроек -->
@@ -303,7 +359,6 @@
     const tg = window.Telegram.WebApp;
     tg.expand();
 
-    // База данных с привязкой ID к классу И ГРУППЕ (group: 1 или 2)
     const usersDatabase = {
       "1001": { classId: "10A", group: 1, name: "10 «А» класс (Группа 1)", fullName: "Иван Иванов" },
       "1002": { classId: "10A", group: 2, name: "10 «А» класс (Группа 2)", fullName: "Анна Петрова" },
@@ -321,7 +376,6 @@
       { week: 8, range: "20.10 – 25.10", dates: { monday: "20 окт", tuesday: "21 окт", wednesday: "22 окт", thursday: "23 окт", friday: "24 окт", saturday: "25 окт" } }
     ];
 
-    // Расписание с учетом групп (group: 1, group: 2 или отсутствие поля, если урок общий для всего класса)
     const scheduleData = {
       "10A": {
         monday: [
@@ -337,7 +391,6 @@
           { id: "tue_2", num: 2, time: "09:25 – 10:10", subject: "Белорусский язык", room: "205" },
           { id: "tue_3", num: 3, time: "10:30 – 11:15", subject: "Белорусская литература", room: "205" },
           { id: "tue_4", num: 4, time: "11:35 – 12:20", subject: "Белорусская литература", room: "205" },
-          // Пример разделения на группы по английскому языку из фотографии
           { id: "tue_5_g1", num: 5, time: "12:40 – 13:25", subject: "Английский язык", room: "106", group: 1 },
           { id: "tue_5_g2", num: 5, time: "12:40 – 13:25", subject: "Английский язык", room: "103", group: 2 },
           { id: "tue_6_g1", num: 6, time: "13:35 – 14:20", subject: "Английский язык", room: "106", group: 1 },
@@ -400,7 +453,7 @@
       const savedClassName = localStorage.getItem('lyceum_user_class_name');
       const savedGroup = localStorage.getItem('lyceum_user_group');
 
-      renderWeeksTabs();
+      updateWeekUI();
       renderDaysTabs();
 
       if (savedClassId && savedClassName) {
@@ -438,18 +491,21 @@
       if (!isExpanded) card.classList.add('expanded');
     }
 
-    function renderWeeksTabs() {
-      const container = document.getElementById('weeksContainer');
-      container.innerHTML = '';
-      quarterWeeks.forEach(w => {
-        const activeClass = w.week === currentWeek ? 'active' : '';
-        container.innerHTML += `
-          <button class="week-tab ${activeClass}" onclick="setWeek(${w.week})">
-            <div>Неделя ${w.week}</div>
-            <div style="font-size: 0.7em; opacity: 0.8; margin-top: 2px;">${w.range}</div>
-          </button>
-        `;
-      });
+    // Переключение недель стрелочками
+    function changeWeek(direction) {
+      currentWeek += direction;
+      if (currentWeek < 1) currentWeek = 8;
+      if (currentWeek > 8) currentWeek = 1;
+
+      updateWeekUI();
+      renderDaysTabs();
+      renderSchedule();
+    }
+
+    function updateWeekUI() {
+      const weekInfo = quarterWeeks.find(w => w.week === currentWeek) || quarterWeeks[0];
+      document.getElementById('weekTitle').textContent = `Неделя ${weekInfo.week}`;
+      document.getElementById('weekRange').textContent = weekInfo.range;
     }
 
     function renderDaysTabs() {
@@ -519,13 +575,6 @@
     function openSettings() { document.getElementById('settingsModal').style.display = 'flex'; }
     function closeSettings() { document.getElementById('settingsModal').style.display = 'none'; }
 
-    function setWeek(weekNum) {
-      currentWeek = weekNum;
-      renderWeeksTabs();
-      renderDaysTabs();
-      renderSchedule();
-    }
-
     function setDay(day) {
       currentDay = day;
       renderDaysTabs();
@@ -557,9 +606,7 @@
       const classSchedule = scheduleData[userClassId] || {};
       const allLessons = classSchedule[currentDay] || [];
       
-      // Фильтруем уроки: если у урока указана группа, показываем только ту, к которой принадлежит ученик
       const lessons = allLessons.filter(l => !l.group || l.group === userGroup);
-
       const weekInfo = quarterWeeks.find(w => w.week === currentWeek) || quarterWeeks[0];
       const dateStr = weekInfo.dates[currentDay] || '';
 
