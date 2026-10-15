@@ -11,7 +11,8 @@
       --text-color: var(--tg-theme-text-color, #212529);
       --card-bg: var(--tg-theme-secondary-bg-color, #ffffff);
       --hint-color: var(--tg-theme-hint-color, #6c757d);
-      --bntu-primary: #a6192e;
+      --bntu-green: #008559; /* Фирменный изумрудно-зеленый цвет БНТУ */
+      --bntu-green-light: rgba(0, 133, 89, 0.08);
       --border-color: rgba(0, 0, 0, 0.08);
       --input-bg: rgba(0, 0, 0, 0.03);
     }
@@ -53,7 +54,7 @@
     .auth-card h2 {
       font-size: 1.2em;
       margin: 0 0 8px 0;
-      color: var(--bntu-primary);
+      color: var(--bntu-green);
     }
 
     .auth-card p {
@@ -78,7 +79,7 @@
     }
 
     .auth-input:focus {
-      border-color: var(--bntu-primary);
+      border-color: var(--bntu-green);
     }
 
     .auth-btn {
@@ -86,7 +87,7 @@
       padding: 12px;
       border-radius: 10px;
       border: none;
-      background: var(--bntu-primary);
+      background: var(--bntu-green);
       color: #ffffff;
       font-size: 0.95em;
       font-weight: 600;
@@ -110,7 +111,7 @@
       font-size: 1.3em;
       margin: 0 0 4px 0;
       font-weight: 700;
-      color: var(--bntu-primary);
+      color: var(--bntu-green);
     }
 
     .header p {
@@ -122,8 +123,8 @@
     .user-class-badge {
       display: inline-block;
       margin-top: 6px;
-      background: rgba(166, 25, 46, 0.1);
-      color: var(--bntu-primary);
+      background: var(--bntu-green-light);
+      color: var(--bntu-green);
       font-weight: 600;
       padding: 4px 12px;
       border-radius: 20px;
@@ -155,10 +156,10 @@
     }
 
     .week-tab.active {
-      background: var(--bntu-primary);
+      background: var(--bntu-green);
       color: #ffffff;
-      border-color: var(--bntu-primary);
-      box-shadow: 0 2px 6px rgba(166, 25, 46, 0.3);
+      border-color: var(--bntu-green);
+      box-shadow: 0 2px 6px rgba(0, 133, 89, 0.3);
     }
 
     /* Дни недели */
@@ -186,10 +187,10 @@
     }
 
     .day-btn.active {
-      background: var(--bntu-primary);
+      background: var(--bntu-green);
       color: #ffffff;
-      border-color: var(--bntu-primary);
-      box-shadow: 0 2px 8px rgba(166, 25, 46, 0.3);
+      border-color: var(--bntu-green);
+      box-shadow: 0 2px 8px rgba(0, 133, 89, 0.3);
     }
 
     /* Карточки уроков */
@@ -221,8 +222,8 @@
     }
 
     .lesson-room {
-      background: rgba(166, 25, 46, 0.08);
-      color: var(--bntu-primary);
+      background: var(--bntu-green-light);
+      color: var(--bntu-green);
       padding: 5px 9px;
       border-radius: 8px;
       font-size: 0.8em;
@@ -249,13 +250,13 @@
     }
 
     .hw-input:focus {
-      border-color: var(--bntu-primary);
+      border-color: var(--bntu-green);
       background: var(--card-bg);
     }
 
     .hw-input.has-value {
-      background: rgba(166, 25, 46, 0.04);
-      border-color: rgba(166, 25, 46, 0.2);
+      background: rgba(0, 133, 89, 0.05);
+      border-color: rgba(0, 133, 89, 0.2);
     }
 
     .empty-state {
@@ -323,7 +324,7 @@
       "1102": { classId: "11B", name: "11 «Б» класс" }
     };
 
-    // Базовая структура расписания уроков на каждый день (одинаковая для каждого дня недели)
+    // Базовая структура расписания уроков
     const scheduleData = {
       "10A": {
         monday: [
@@ -411,7 +412,6 @@
       renderSchedule();
     }
 
-    // Сохранение ДЗ с привязкой к конкретной неделе и дню
     function saveHomework(lessonId, text) {
       const key = `hw_w${currentWeek}_${currentDay}_${lessonId}`;
       if (text.trim() === '') {
@@ -445,7 +445,6 @@
       }
 
       lessons.forEach(l => {
-        // Уникальный ключ для каждой недели, дня и урока
         const savedHw = localStorage.getItem(`hw_w${currentWeek}_${currentDay}_${l.id}`) || '';
         const hasValueClass = savedHw ? 'has-value' : '';
 
