@@ -3,115 +3,282 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Расписание Лицея</title>
+  <title>Расписание Лицея БНТУ</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     :root {
-      --bg-color: var(--tg-theme-bg-color, #ffffff);
-      --text-color: var(--tg-theme-text-color, #000000);
-      --card-bg: var(--tg-theme-secondary-bg-color, #f1f1f1);
-      --hint-color: var(--tg-theme-hint-color, #999999);
+      --bg-color: var(--tg-theme-bg-color, #f8f9fa);
+      --text-color: var(--tg-theme-text-color, #212529);
+      --card-bg: var(--tg-theme-secondary-bg-color, #ffffff);
+      --hint-color: var(--tg-theme-hint-color, #6c757d);
+      --bntu-primary: #a6192e; /* Фирменный бордовый цвет БНТУ */
+      --bntu-primary-hover: #801323;
+      --border-color: rgba(0, 0, 0, 0.08);
     }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
       background-color: var(--bg-color);
       color: var(--text-color);
       margin: 0;
       padding: 16px;
+      -webkit-font-smoothing: antialiased;
     }
 
-    h1 {
-      font-size: 1.4em;
-      margin-bottom: 12px;
+    .header {
+      text-align: center;
+      margin-bottom: 20px;
     }
 
-    .class-selector {
+    .header h1 {
+      font-size: 1.3em;
+      margin: 0 0 4px 0;
+      font-weight: 700;
+      color: var(--bntu-primary);
+    }
+
+    .header p {
+      font-size: 0.85em;
+      color: var(--hint-color);
+      margin: 0;
+    }
+
+    /* Блок выбора класса */
+    .setup-card {
+      background: var(--card-bg);
+      padding: 16px;
+      border-radius: 14px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.03);
       margin-bottom: 16px;
+      border: 1px solid var(--border-color);
+    }
+
+    label {
+      font-size: 0.85em;
+      font-weight: 600;
+      color: var(--hint-color);
+      display: block;
+      margin-bottom: 6px;
     }
 
     select {
       width: 100%;
-      padding: 10px;
-      border-radius: 8px;
-      border: 1px solid var(--hint-color);
-      background: var(--card-bg);
-      color: var(--text-color);
-      font-size: 1em;
-    }
-
-    .lesson-card {
-      background: var(--card-bg);
       padding: 12px;
       border-radius: 10px;
+      border: 1px solid var(--border-color);
+      background: var(--bg-color);
+      color: var(--text-color);
+      font-size: 1em;
+      font-weight: 500;
+      outline: none;
+    }
+
+    /* Вкладки дней недели */
+    .days-container {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+      margin-bottom: 16px;
+      scrollbar-width: none; /* Скрыть скроллбар для Firefox */
+    }
+    .days-container::-webkit-scrollbar {
+      display: none; /* Скрыть скроллбар для Chrome/Safari */
+    }
+
+    .day-btn {
+      flex: 0 0 auto;
+      padding: 8px 14px;
+      border-radius: 20px;
+      border: 1px solid var(--border-color);
+      background: var(--card-bg);
+      color: var(--text-color);
+      font-size: 0.9em;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .day-btn.active {
+      background: var(--bntu-primary);
+      color: #ffffff;
+      border-color: var(--bntu-primary);
+      box-shadow: 0 2px 8px rgba(166, 25, 46, 0.3);
+    }
+
+    /* Карточки уроков */
+    .lesson-card {
+      background: var(--card-bg);
+      padding: 14px 16px;
+      border-radius: 12px;
       margin-bottom: 10px;
+      border: 1px solid var(--border-color);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .lesson-info {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .lesson-subject {
+      font-size: 1em;
+      font-weight: 600;
     }
 
     .lesson-time {
-      font-size: 0.85em;
+      font-size: 0.8em;
       color: var(--hint-color);
-      margin-top: 4px;
+    }
+
+    .lesson-room {
+      background: rgba(166, 25, 46, 0.08);
+      color: var(--bntu-primary);
+      padding: 6px 10px;
+      border-radius: 8px;
+      font-size: 0.85em;
+      font-weight: 600;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 30px 20px;
+      color: var(--hint-color);
+      font-size: 0.95em;
     }
   </style>
 </head>
 <body>
 
-  <h1>🗓️ Расписание лицея</h1>
+  <div class="header">
+    <h1>Лицей БНТУ</h1>
+    <p>Электронное расписание уроков</p>
+  </div>
 
-  <div class="class-selector">
-    <select id="classSelect" onchange="updateSchedule()">
-      <option value="10A">10 «А» класс</option>
-      <option value="10B">10 «Б» класс</option>
-      <option value="11A">11 «А» класс</option>
+  <!-- Выбор класса -->
+  <div class="setup-card">
+    <label for="classSelect">Ваш класс:</label>
+    <select id="classSelect" onchange="saveClassAndRender()">
+      <option value="10A">10 «А»</option>
+      <option value="10B">10 «Б»</option>
+      <option value="11A">11 «А»</option>
+      <option value="11B">11 «Б»</option>
     </select>
   </div>
 
+  <!-- Дни недели -->
+  <div class="days-container" id="daysTabs">
+    <button class="day-btn active" onclick="setDay('monday')">Понедельник</button>
+    <button class="day-btn" onclick="setDay('tuesday')">Вторник</button>
+    <button class="day-btn" onclick="setDay('wednesday')">Среда</button>
+    <button class="day-btn" onclick="setDay('thursday')">Четверг</button>
+    <button class="day-btn" onclick="setDay('friday')">Пятница</button>
+    <button class="day-btn" onclick="setDay('saturday')">Суббота</button>
+  </div>
+
+  <!-- Контейнер для расписания -->
   <div id="schedule-container"></div>
 
   <script>
     const tg = window.Telegram.WebApp;
     tg.expand();
 
+    // База данных расписания по классам и дням недели
     const scheduleData = {
-      "10A": [
-        { num: 1, time: "08:30 - 09:15", subject: "Физика", room: "302" },
-        { num: 2, time: "09:25 - 10:10", subject: "Математика", room: "205" },
-        { num: 3, time: "10:30 - 11:15", subject: "Белорусская литература", room: "410" }
-      ],
-      "10B": [
-        { num: 1, time: "08:30 - 09:15", subject: "Химия", room: "104" },
-        { num: 2, time: "09:25 - 10:10", subject: "Физика", room: "302" }
-      ],
-      "11A": [
-        { num: 1, time: "08:30 - 09:15", subject: "История", room: "212" },
-        { num: 2, time: "09:25 - 10:10", subject: "Математика", room: "205" }
-      ]
+      "10A": {
+        monday: [
+          { num: 1, time: "08:30 – 09:15", subject: "Физика", room: "302" },
+          { num: 2, time: "09:25 – 10:10", subject: "Математика", room: "205" },
+          { num: 3, time: "10:30 – 11:15", subject: "Белорусская литература", room: "410" },
+          { num: 4, time: "11:25 – 12:10", subject: "Химия", room: "104" }
+        ],
+        tuesday: [
+          { num: 1, time: "08:30 – 09:15", subject: "Английский язык", room: "215" },
+          { num: 2, time: "09:25 – 10:10", subject: "История Беларуси", room: "308" },
+          { num: 3, time: "10:30 – 11:15", subject: "Математика", room: "205" }
+        ],
+        wednesday: [
+          { num: 1, time: "08:30 – 09:15", subject: "Физика", room: "302" },
+          { num: 2, time: "09:25 – 10:10", subject: "География", room: "219" }
+        ],
+        thursday: [],
+        friday: [],
+        saturday: []
+      },
+      "10B": {
+        monday: [
+          { num: 1, time: "08:30 – 09:15", subject: "Химия", room: "104" },
+          { num: 2, time: "09:25 – 10:10", subject: "Физика", room: "302" }
+        ],
+        tuesday: [], wednesday: [], thursday: [], friday: [], saturday: []
+      },
+      "11A": {
+        monday: [
+          { num: 1, time: "08:30 – 09:15", subject: "История", room: "212" },
+          { num: 2, time: "09:25 – 10:10", subject: "Математика", room: "205" }
+        ],
+        tuesday: [], wednesday: [], thursday: [], friday: [], saturday: []
+      },
+      "11B": {
+        monday: [], tuesday: [], wednesday: [], thursday: [], friday: [], saturday: []
+      }
     };
 
-    function updateSchedule() {
+    let currentDay = 'monday';
+
+    // При загрузке проверяем, выбирал ли пользователь класс ранее
+    window.onload = function() {
+      const savedClass = localStorage.getItem('selected_lyceum_class');
+      if (savedClass) {
+        document.getElementById('classSelect').value = savedClass;
+      }
+      renderSchedule();
+    };
+
+    function saveClassAndRender() {
+      const selectedClass = document.getElementById('classSelect').value;
+      localStorage.setItem('selected_lyceum_class', selectedClass);
+      renderSchedule();
+    }
+
+    function setDay(day) {
+      currentDay = day;
+      // Меняем активную кнопку в дизайне
+      document.querySelectorAll('.day-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+      renderSchedule();
+    }
+
+    function renderSchedule() {
       const selectedClass = document.getElementById('classSelect').value;
       const container = document.getElementById('schedule-container');
-      const lessons = scheduleData[selectedClass] || [];
+      
+      const classSchedule = scheduleData[selectedClass] || {};
+      const lessons = classSchedule[currentDay] || [];
 
       container.innerHTML = '';
-      
+
       if (lessons.length === 0) {
-        container.innerHTML = '<p>На этот класс расписание пока не добавлено.</p>';
+        container.innerHTML = `<div class="empty-state">🎉 На этот день пар/уроков нет или расписание не заполнено.</div>`;
         return;
       }
 
       lessons.forEach(l => {
         container.innerHTML += `
           <div class="lesson-card">
-            <strong>${l.num}. ${l.subject}</strong> 
-            <div style="float: right;">Каб. ${l.room}</div>
-            <div class="lesson-time">⏰ ${l.time}</div>
+            <div class="lesson-info">
+              <span class="lesson-subject">${l.num}. ${l.subject}</span>
+              <span class="lesson-time">⏰ ${l.time}</span>
+            </div>
+            <div class="lesson-room">каб. ${l.room}</div>
           </div>
         `;
       });
     }
-
-    updateSchedule();
   </script>
 </body>
 </html>
