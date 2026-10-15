@@ -11,14 +11,17 @@
       --text-color: var(--tg-theme-text-color, #212529);
       --card-bg: var(--tg-theme-secondary-bg-color, #ffffff);
       --hint-color: var(--tg-theme-hint-color, #6c757d);
-      --bntu-green: #008559; /* Фирменный изумрудно-зеленый цвет БНТУ */
+      --bntu-green: #008559;
       --bntu-green-light: rgba(0, 133, 89, 0.08);
       --border-color: rgba(0, 0, 0, 0.08);
       --input-bg: rgba(0, 0, 0, 0.03);
+      --font-scale: 1em;
+      --font-family-custom: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      font-family: var(--font-family-custom);
+      font-size: var(--font-scale);
       background-color: var(--bg-color);
       color: var(--text-color);
       margin: 0;
@@ -26,7 +29,7 @@
       -webkit-font-smoothing: antialiased;
     }
 
-    /* Модальное окно авторизации */
+    /* Авторизация */
     #authModal {
       position: fixed;
       top: 0; left: 0; width: 100%; height: 100%;
@@ -73,7 +76,6 @@
       color: var(--text-color);
       font-size: 1em;
       text-align: center;
-      letter-spacing: 1px;
       outline: none;
       margin-bottom: 12px;
     }
@@ -103,6 +105,7 @@
 
     /* Шапка приложения */
     .header {
+      position: relative;
       text-align: center;
       margin-bottom: 14px;
     }
@@ -120,6 +123,23 @@
       margin: 0;
     }
 
+    .settings-icon-btn {
+      position: absolute;
+      top: 0;
+      right: 0;
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1em;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+
     .user-class-badge {
       display: inline-block;
       margin-top: 6px;
@@ -131,8 +151,8 @@
       font-size: 0.85em;
     }
 
-    /* Листалка недель четверти */
-    .weeks-scroll {
+    /* Недели и дни */
+    .weeks-scroll, .days-container {
       display: flex;
       gap: 6px;
       overflow-x: auto;
@@ -140,7 +160,7 @@
       margin-bottom: 12px;
       scrollbar-width: none;
     }
-    .weeks-scroll::-webkit-scrollbar { display: none; }
+    .weeks-scroll::-webkit-scrollbar, .days-container::-webkit-scrollbar { display: none; }
 
     .week-tab {
       flex: 0 0 auto;
@@ -152,26 +172,13 @@
       font-size: 0.8em;
       font-weight: 600;
       cursor: pointer;
-      transition: all 0.2s ease;
     }
 
     .week-tab.active {
       background: var(--bntu-green);
       color: #ffffff;
       border-color: var(--bntu-green);
-      box-shadow: 0 2px 6px rgba(0, 133, 89, 0.3);
     }
-
-    /* Дни недели */
-    .days-container {
-      display: flex;
-      gap: 6px;
-      overflow-x: auto;
-      padding-bottom: 8px;
-      margin-bottom: 14px;
-      scrollbar-width: none;
-    }
-    .days-container::-webkit-scrollbar { display: none; }
 
     .day-btn {
       flex: 0 0 auto;
@@ -183,24 +190,21 @@
       font-size: 0.85em;
       font-weight: 500;
       cursor: pointer;
-      transition: all 0.2s ease;
     }
 
     .day-btn.active {
       background: var(--bntu-green);
       color: #ffffff;
       border-color: var(--bntu-green);
-      box-shadow: 0 2px 8px rgba(0, 133, 89, 0.3);
     }
 
-    /* Карточки уроков */
+    /* Карточки */
     .lesson-card {
       background: var(--card-bg);
       padding: 14px;
       border-radius: 12px;
       margin-bottom: 12px;
       border: 1px solid var(--border-color);
-      box-shadow: 0 2px 6px rgba(0,0,0,0.02);
     }
 
     .lesson-header {
@@ -210,17 +214,8 @@
       margin-bottom: 10px;
     }
 
-    .lesson-subject {
-      font-size: 1em;
-      font-weight: 600;
-    }
-
-    .lesson-time {
-      font-size: 0.8em;
-      color: var(--hint-color);
-      margin-top: 2px;
-    }
-
+    .lesson-subject { font-size: 1em; font-weight: 600; }
+    .lesson-time { font-size: 0.8em; color: var(--hint-color); margin-top: 2px; }
     .lesson-room {
       background: var(--bntu-green-light);
       color: var(--bntu-green);
@@ -246,24 +241,96 @@
       font-size: 0.85em;
       color: var(--text-color);
       outline: none;
-      transition: all 0.2s ease;
     }
 
-    .hw-input:focus {
-      border-color: var(--bntu-green);
+    .hw-input:focus { border-color: var(--bntu-green); background: var(--card-bg); }
+    .hw-input.has-value { background: rgba(0, 133, 89, 0.05); border-color: rgba(0, 133, 89, 0.2); }
+
+    .empty-state { text-align: center; padding: 30px 20px; color: var(--hint-color); font-size: 0.9em; }
+
+    /* Окно настроек */
+    #settingsModal {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: var(--bg-color);
+      z-index: 2000;
+      display: none;
+      flex-direction: column;
+      box-sizing: border-box;
+      padding: 16px;
+      overflow-y: auto;
+    }
+
+    .settings-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 12px;
+    }
+
+    .settings-header h2 { margin: 0; font-size: 1.2em; color: var(--bntu-green); }
+    .close-btn {
       background: var(--card-bg);
-    }
-
-    .hw-input.has-value {
-      background: rgba(0, 133, 89, 0.05);
-      border-color: rgba(0, 133, 89, 0.2);
-    }
-
-    .empty-state {
-      text-align: center;
-      padding: 30px 20px;
-      color: var(--hint-color);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 6px 12px;
       font-size: 0.9em;
+      cursor: pointer;
+      color: var(--text-color);
+    }
+
+    /* Навигация в настройках */
+    .settings-nav {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 16px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 8px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .settings-nav-btn {
+      flex: 0 0 auto;
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: none;
+      background: transparent;
+      color: var(--hint-color);
+      font-size: 0.85em;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .settings-nav-btn.active {
+      background: var(--bntu-green-light);
+      color: var(--bntu-green);
+    }
+
+    .settings-section { display: none; }
+    .settings-section.active { display: block; }
+
+    .setting-card {
+      background: var(--card-bg);
+      padding: 16px;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      margin-bottom: 12px;
+    }
+
+    .setting-card h3 { margin: 0 0 10px 0; font-size: 1em; color: var(--text-color); }
+    .setting-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-size: 0.9em; }
+    .setting-row label { color: var(--hint-color); }
+    
+    select.settings-select {
+      padding: 8px;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      background: var(--bg-color);
+      color: var(--text-color);
+      outline: none;
     }
   </style>
 </head>
@@ -280,8 +347,9 @@
     </div>
   </div>
 
-  <!-- Шапка приложения -->
+  <!-- Главная шапка -->
   <div class="header">
+    <button class="settings-icon-btn" onclick="openSettings()">⚙️</button>
     <h1>Лицей БНТУ</h1>
     <p>Электронный дневник</p>
     <div id="classBadge" class="user-class-badge" style="display: none;"></div>
@@ -309,22 +377,103 @@
     <button class="day-btn" onclick="setDay('saturday', event)">Суббота</button>
   </div>
 
-  <!-- Список уроков -->
+  <!-- Контейнер уроков -->
   <div id="schedule-container"></div>
+
+  <!-- Полноэкранное окно Настроек -->
+  <div id="settingsModal">
+    <div class="settings-header">
+      <h2>⚙️ Настройки</h2>
+      <button class="close-btn" onclick="closeSettings()">Закрыть ✖</button>
+    </div>
+
+    <!-- Переключатель вкладок внутри настроек -->
+    <div class="settings-nav">
+      <button class="settings-nav-btn active" onclick="showSection('profile', event)">👤 Профиль</button>
+      <button class="settings-nav-btn" onclick="showSection('appearance', event)">🎨 Внешний вид</button>
+      <button class="settings-nav-btn" onclick="showSection('about', event)">ℹ️ О нас</button>
+      <button class="settings-nav-btn" onclick="showSection('support', event)">💬 Поддержка</button>
+    </div>
+
+    <!-- Раздел: Профиль -->
+    <div id="sec-profile" class="settings-section active">
+      <div class="setting-card">
+        <h3>Персональная информация</h3>
+        <div class="setting-row">
+          <label>Имя и Фамилия:</label>
+          <strong id="profName">-</strong>
+        </div>
+        <div class="setting-row">
+          <label>Класс:</label>
+          <strong id="profClass">-</strong>
+        </div>
+        <div class="setting-row">
+          <label>Ваш ID:</label>
+          <strong id="profId">-</strong>
+        </div>
+      </div>
+    </div>
+
+    <!-- Раздел: Внешний вид -->
+    <div id="sec-appearance" class="settings-section">
+      <div class="setting-card">
+        <h3>Оформление текста</h3>
+        <div class="setting-row">
+          <label for="fontSizeSelect">Размер шрифта:</label>
+          <select id="fontSizeSelect" class="settings-select" onchange="changeFontSize(this.value)">
+            <option value="0.9em">Мелкий</option>
+            <option value="1em" selected>Обычный</option>
+            <option value="1.1em">Крупный</option>
+          </select>
+        </div>
+        <div class="setting-row">
+          <label for="fontFamilySelect">Шрифт:</label>
+          <select id="fontFamilySelect" class="settings-select" onchange="changeFontFamily(this.value)">
+            <option value="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif">Системный</option>
+            <option value="Georgia, serif">Классический (Serif)</option>
+            <option value="'Courier New', monospace">Моноширинный</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Раздел: О нас -->
+    <div id="sec-about" class="settings-section">
+      <div class="setting-card">
+        <h3>О приложении</h3>
+        <p style="font-size: 0.85em; color: var(--hint-color); line-height: 1.4;">
+          Официальный электронный дневник и расписание для лицеистов БНТУ.<br><br>
+          Разработано специально для оперативного доступа к учебным материалам, расписанию уроков и ведения персональных заметок по домашним заданиям.
+        </p>
+      </div>
+    </div>
+
+    <!-- Раздел: Поддержка -->
+    <div id="sec-support" class="settings-section">
+      <div class="setting-card">
+        <h3>Нужна помощь?</h3>
+        <p style="font-size: 0.85em; color: var(--hint-color); line-height: 1.4;">
+          Если вы нашли ошибку в расписании или у вас не работает доступ по ID, напишите нам в поддержку:
+        </p>
+        <div style="margin-top: 12px; text-align: center;">
+          <a href="https://t.me/telegram" target="_blank" style="color: var(--bntu-green); font-weight: 600; text-decoration: none;">💬 Написать в Telegram-поддержку</a>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <script>
     const tg = window.Telegram.WebApp;
     tg.expand();
 
-    // База данных ID и классов
+    // Расширенная база данных участников (ID, Имя Фамилия, Класс)
     const usersDatabase = {
-      "1001": { classId: "10A", name: "10 «А» класс" },
-      "1002": { classId: "10B", name: "10 «Б» класс" },
-      "1101": { classId: "11A", name: "11 «А» класс" },
-      "1102": { classId: "11B", name: "11 «Б» класс" }
+      "1001": { classId: "10A", name: "10 «А» класс", fullName: "Иван Иванов" },
+      "1002": { classId: "10B", name: "10 «Б» класс", fullName: "Анна Петрова" },
+      "1101": { classId: "11A", name: "11 «А» класс", fullName: "Максим Сидоров" },
+      "1102": { classId: "11B", name: "11 «Б» класс", fullName: "Елена Смирнова" }
     };
 
-    // Базовая структура расписания уроков
     const scheduleData = {
       "10A": {
         monday: [
@@ -340,12 +489,8 @@
           { id: "wed_1", num: 1, time: "08:30 – 09:15", subject: "Физика", room: "302" },
           { id: "wed_2", num: 2, time: "09:25 – 10:10", subject: "География", room: "219" }
         ],
-        thursday: [
-          { id: "thu_1", num: 1, time: "08:30 – 09:15", subject: "Химия", room: "104" }
-        ],
-        friday: [
-          { id: "fri_1", num: 1, time: "08:30 – 09:15", subject: "Математика", room: "205" }
-        ],
+        thursday: [{ id: "thu_1", num: 1, time: "08:30 – 09:15", subject: "Химия", room: "104" }],
+        friday: [{ id: "fri_1", num: 1, time: "08:30 – 09:15", subject: "Математика", room: "205" }],
         saturday: []
       },
       "10B": { monday: [], tuesday: [], wednesday: [], thursday: [], friday: [], saturday: [] },
@@ -358,6 +503,13 @@
     let currentDay = 'monday';
 
     window.onload = function() {
+      // Загрузка настроек внешнего вида
+      const savedFontSize = localStorage.getItem('pref_font_size');
+      if (savedFontSize) changeFontSize(savedFontSize, false);
+
+      const savedFontFamily = localStorage.getItem('pref_font_family');
+      if (savedFontFamily) changeFontFamily(savedFontFamily, false);
+
       const savedClassId = localStorage.getItem('lyceum_user_class');
       const savedClassName = localStorage.getItem('lyceum_user_class_name');
 
@@ -365,6 +517,7 @@
         userClassId = savedClassId;
         showClassBadge(savedClassName);
         document.getElementById('authModal').style.display = 'none';
+        updateProfileData();
         renderSchedule();
       }
     };
@@ -377,15 +530,28 @@
         const userData = usersDatabase[enteredId];
         userClassId = userData.classId;
 
+        localStorage.setItem('lyceum_user_id', enteredId);
         localStorage.setItem('lyceum_user_class', userData.classId);
         localStorage.setItem('lyceum_user_class_name', userData.name);
+        localStorage.setItem('lyceum_user_fullname', userData.fullName);
 
         showClassBadge(userData.name);
         document.getElementById('authModal').style.display = 'none';
+        updateProfileData();
         renderSchedule();
       } else {
         errorMsg.style.display = 'block';
       }
+    }
+
+    function updateProfileData() {
+      const userId = localStorage.getItem('lyceum_user_id') || '-';
+      const userName = localStorage.getItem('lyceum_user_fullname') || '-';
+      const className = localStorage.getItem('lyceum_user_class_name') || '-';
+
+      document.getElementById('profName').textContent = userName;
+      document.getElementById('profClass').textContent = className;
+      document.getElementById('profId').textContent = userId;
     }
 
     function showClassBadge(className) {
@@ -394,21 +560,48 @@
       badge.style.display = 'inline-block';
     }
 
+    /* Настройки окно */
+    function openSettings() {
+      document.getElementById('settingsModal').style.display = 'flex';
+    }
+
+    function closeSettings() {
+      document.getElementById('settingsModal').style.display = 'none';
+    }
+
+    function showSection(secName, event) {
+      document.querySelectorAll('.settings-section').forEach(sec => sec.classList.remove('active'));
+      document.querySelectorAll('.settings-nav-btn').forEach(btn => btn.classList.remove('active'));
+
+      document.getElementById(`sec-${secName}`).classList.add('active');
+      if (event && event.target) event.target.classList.add('active');
+    }
+
+    function changeFontSize(size, save = true) {
+      document.documentElement.style.setProperty('--font-scale', size);
+      if (save) localStorage.setItem('pref_font_size', size);
+      const sel = document.getElementById('fontSizeSelect');
+      if (sel) sel.value = size;
+    }
+
+    function changeFontFamily(family, save = true) {
+      document.documentElement.style.setProperty('--font-family-custom', family);
+      if (save) localStorage.setItem('pref_font_family', family);
+      const sel = document.getElementById('fontFamilySelect');
+      if (sel) sel.value = family;
+    }
+
     function setWeek(weekNum, event) {
       currentWeek = weekNum;
       document.querySelectorAll('.week-tab').forEach(tab => tab.classList.remove('active'));
-      if (event && event.target) {
-        event.target.classList.add('active');
-      }
+      if (event && event.target) event.target.classList.add('active');
       renderSchedule();
     }
 
     function setDay(day, event) {
       currentDay = day;
       document.querySelectorAll('.day-btn').forEach(btn => btn.classList.remove('active'));
-      if (event && event.target) {
-        event.target.classList.add('active');
-      }
+      if (event && event.target) event.target.classList.add('active');
       renderSchedule();
     }
 
