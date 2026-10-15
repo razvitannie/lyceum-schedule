@@ -163,7 +163,7 @@
 
     .empty-state { text-align: center; padding: 30px 20px; color: var(--hint-color); font-size: 0.9rem; }
 
-    /* Окно настроек (вертикальный список) */
+    /* Окно настроек (вертикальный список сверху вниз) */
     #settingsModal {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: var(--bg-color); z-index: 2000; display: none;
@@ -180,14 +180,13 @@
       border-radius: 8px; padding: 6px 12px; font-size: 0.9rem; cursor: pointer; color: var(--text-color);
     }
 
-    /* Вертикальные элементы меню */
     .menu-list {
       display: flex; flex-direction: column; gap: 10px;
     }
 
     .menu-item-card {
       background: var(--card-bg); border: 1px solid var(--border-color);
-      border-radius: 12px; overflow: hidden; transition: all 0.2s ease;
+      border-radius: 12px; overflow: hidden;
     }
 
     .menu-item-header {
@@ -407,15 +406,12 @@
       if (sel) sel.value = family;
     }
 
-    // Раскрытие пунктов меню в вертикальном списке
     function toggleMenu(menuId) {
       const card = document.getElementById(`card-${menuId}`);
       const isExpanded = card.classList.contains('expanded');
       
-      // Закрываем все остальные карточки
       document.querySelectorAll('.menu-item-card').forEach(c => c.classList.remove('expanded'));
       
-      // Если текущая не была открыта — открываем
       if (!isExpanded) {
         card.classList.add('expanded');
       }
@@ -575,7 +571,7 @@
           </div>
         `;
       });
-    } ак
+    }
   </script>
 </body>
 </html>
