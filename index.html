@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Расписание Лицея БНТУ</title>
+  <title>Электронный дневник • Лицей БНТУ</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     :root {
@@ -130,33 +130,35 @@
       font-size: 0.85em;
     }
 
-    /* Блок выбора даты для ДЗ */
-    .date-picker-card {
-      background: var(--card-bg);
-      padding: 12px 16px;
-      border-radius: 12px;
-      margin-bottom: 14px;
-      border: 1px solid var(--border-color);
+    /* Листалка недель четверти */
+    .weeks-scroll {
       display: flex;
-      justify-content: space-between;
-      align-items: center;
+      gap: 6px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+      margin-bottom: 12px;
+      scrollbar-width: none;
     }
+    .weeks-scroll::-webkit-scrollbar { display: none; }
 
-    .date-picker-card label {
-      font-size: 0.85em;
-      font-weight: 600;
-      color: var(--hint-color);
-    }
-
-    .date-input {
-      background: var(--bg-color);
+    .week-tab {
+      flex: 0 0 auto;
+      padding: 7px 12px;
+      border-radius: 10px;
       border: 1px solid var(--border-color);
-      color: var(--text-color);
-      padding: 6px 10px;
-      border-radius: 8px;
-      font-size: 0.9em;
-      outline: none;
-      font-family: inherit;
+      background: var(--card-bg);
+      color: var(--hint-color);
+      font-size: 0.8em;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .week-tab.active {
+      background: var(--bntu-primary);
+      color: #ffffff;
+      border-color: var(--bntu-primary);
+      box-shadow: 0 2px 6px rgba(166, 25, 46, 0.3);
     }
 
     /* Дни недели */
@@ -277,20 +279,26 @@
     </div>
   </div>
 
-  <!-- Шапку оставляем чистой -->
+  <!-- Шапка приложения -->
   <div class="header">
     <h1>Лицей БНТУ</h1>
-    <p>Электронное расписание & ДЗ</p>
+    <p>Электронный дневник</p>
     <div id="classBadge" class="user-class-badge" style="display: none;"></div>
   </div>
 
-  <!-- Выбор конкретной даты для ДЗ -->
-  <div class="date-picker-card">
-    <label for="dateSelect">📅 Дата для ДЗ:</label>
-    <input type="date" id="dateSelect" class="date-input" onchange="renderSchedule()" />
+  <!-- Листалка недель четверти -->
+  <div class="weeks-scroll" id="weeksContainer">
+    <button class="week-tab active" onclick="setWeek(1, event)">Неделя 1</button>
+    <button class="week-tab" onclick="setWeek(2, event)">Неделя 2</button>
+    <button class="week-tab" onclick="setWeek(3, event)">Неделя 3</button>
+    <button class="week-tab" onclick="setWeek(4, event)">Неделя 4</button>
+    <button class="week-tab" onclick="setWeek(5, event)">Неделя 5</button>
+    <button class="week-tab" onclick="setWeek(6, event)">Неделя 6</button>
+    <button class="week-tab" onclick="setWeek(7, event)">Неделя 7</button>
+    <button class="week-tab" onclick="setWeek(8, event)">Неделя 8</button>
   </div>
 
-  <!-- Дни недели для просмотра расписания -->
+  <!-- Дни недели -->
   <div class="days-container" id="daysTabs">
     <button class="day-btn active" onclick="setDay('monday', event)">Понедельник</button>
     <button class="day-btn" onclick="setDay('tuesday', event)">Вторник</button>
@@ -300,12 +308,14 @@
     <button class="day-btn" onclick="setDay('saturday', event)">Суббота</button>
   </div>
 
+  <!-- Список уроков -->
   <div id="schedule-container"></div>
 
   <script>
     const tg = window.Telegram.WebApp;
     tg.expand();
 
+    // База данных ID и классов
     const usersDatabase = {
       "1001": { classId: "10A", name: "10 «А» класс" },
       "1002": { classId: "10B", name: "10 «Б» класс" },
@@ -313,16 +323,29 @@
       "1102": { classId: "11B", name: "11 «Б» класс" }
     };
 
+    // Базовая структура расписания уроков на каждый день (одинаковая для каждого дня недели)
     const scheduleData = {
       "10A": {
         monday: [
           { id: "mon_1", num: 1, time: "08:30 – 09:15", subject: "Физика", room: "302" },
-          { id: "mon_2", num: 2, time: "09:25 – 10:10", subject: "Математика", room: "205" }
+          { id: "mon_2", num: 2, time: "09:25 – 10:10", subject: "Математика", room: "205" },
+          { id: "mon_3", num: 3, time: "10:30 – 11:15", subject: "Белорусская литература", room: "410" }
         ],
         tuesday: [
-          { id: "tue_1", num: 1, time: "08:30 – 09:15", subject: "Английский язык", room: "215" }
+          { id: "tue_1", num: 1, time: "08:30 – 09:15", subject: "Английский язык", room: "215" },
+          { id: "tue_2", num: 2, time: "09:25 – 10:10", subject: "История Беларуси", room: "308" }
         ],
-        wednesday: [], thursday: [], friday: [], saturday: []
+        wednesday: [
+          { id: "wed_1", num: 1, time: "08:30 – 09:15", subject: "Физика", room: "302" },
+          { id: "wed_2", num: 2, time: "09:25 – 10:10", subject: "География", room: "219" }
+        ],
+        thursday: [
+          { id: "thu_1", num: 1, time: "08:30 – 09:15", subject: "Химия", room: "104" }
+        ],
+        friday: [
+          { id: "fri_1", num: 1, time: "08:30 – 09:15", subject: "Математика", room: "205" }
+        ],
+        saturday: []
       },
       "10B": { monday: [], tuesday: [], wednesday: [], thursday: [], friday: [], saturday: [] },
       "11A": { monday: [], tuesday: [], wednesday: [], thursday: [], friday: [], saturday: [] },
@@ -330,122 +353,9 @@
     };
 
     let userClassId = null;
+    let currentWeek = 1;
     let currentDay = 'monday';
 
     window.onload = function() {
-      // Устанавливаем сегодняшнюю дату по умолчанию в поле выбора даты
-      const todayStr = new Date().toISOString().split('T')[0];
-      document.getElementById('dateSelect').value = todayStr;
-
       const savedClassId = localStorage.getItem('lyceum_user_class');
-      const savedClassName = localStorage.getItem('lyceum_user_class_name');
-
-      if (savedClassId && savedClassName) {
-        userClassId = savedClassId;
-        showClassBadge(savedClassName);
-        document.getElementById('authModal').style.display = 'none';
-        renderSchedule();
-      }
-    };
-
-    function verifyId() {
-      const enteredId = document.getElementById('idInput').value.trim();
-      const errorMsg = document.getElementById('errorMsg');
-
-      if (usersDatabase[enteredId]) {
-        const userData = usersDatabase[enteredId];
-        userClassId = userData.classId;
-
-        localStorage.setItem('lyceum_user_class', userData.classId);
-        localStorage.setItem('lyceum_user_class_name', userData.name);
-
-        showClassBadge(userData.name);
-        document.getElementById('authModal').style.display = 'none';
-        renderSchedule();
-      } else {
-        errorMsg.style.display = 'block';
-      }
-    }
-
-    function showClassBadge(className) {
-      const badge = document.getElementById('classBadge');
-      badge.textContent = `Класс: ${className}`;
-      badge.style.display = 'inline-block';
-    }
-
-    function setDay(day, event) {
-      currentDay = day;
-      document.querySelectorAll('.day-btn').forEach(btn => btn.classList.remove('active'));
-      if (event && event.target) {
-        event.target.classList.add('active');
-      }
-      renderSchedule();
-    }
-
-    // Сохранение ДЗ привязывается к выбранной дате и ID урока
-    function saveHomework(lessonId, text) {
-      const selectedDate = document.getElementById('dateSelect').value;
-      const key = `hw_${selectedDate}_${lessonId}`;
-
-      if (text.trim() === '') {
-        localStorage.removeItem(key);
-      } else {
-        localStorage.setItem(key, text);
-      }
-      
-      const inputEl = document.getElementById(`input_${lessonId}`);
-      if (inputEl) {
-        if (text.trim() !== '') {
-          inputEl.classList.add('has-value');
-        } else {
-          inputEl.classList.remove('has-value');
-        }
-      }
-    }
-
-    function renderSchedule() {
-      if (!userClassId) return;
-
-      const container = document.getElementById('schedule-container');
-      const classSchedule = scheduleData[userClassId] || {};
-      const lessons = classSchedule[currentDay] || [];
-      const selectedDate = document.getElementById('dateSelect').value;
-
-      container.innerHTML = '';
-
-      if (lessons.length === 0) {
-        container.innerHTML = `<div class="empty-state">🎉 На этот день уроков нет или расписание не заполнено.</div>`;
-        return;
-      }
-
-      lessons.forEach(l => {
-        // Загружаем ДЗ строго под выбранную дату и урок
-        const savedHw = localStorage.getItem(`hw_${selectedDate}_${l.id}`) || '';
-        const hasValueClass = savedHw ? 'has-value' : '';
-
-        container.innerHTML += `
-          <div class="lesson-card">
-            <div class="lesson-header">
-              <div>
-                <div class="lesson-subject">${l.num}. ${l.subject}</div>
-                <div class="lesson-time">⏰ ${l.time}</div>
-              </div>
-              <div class="lesson-room">каб. ${l.room}</div>
-            </div>
-            <div class="hw-container">
-              <input 
-                type="text" 
-                id="input_${l.id}"
-                class="hw-input ${hasValueClass}" 
-                placeholder="✍️ ДЗ на ${selectedDate}..." 
-                value="${savedHw}"
-                oninput="saveHomework('${l.id}', this.value)"
-              />
-            </div>
-          </div>
-        `;
-      });
-    }
-  </script>
-</body>
-</html>
+      const savedClassName = localStorage.getItem('ly
