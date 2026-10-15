@@ -163,7 +163,6 @@
 
     .empty-state { text-align: center; padding: 30px 20px; color: var(--hint-color); font-size: 0.9rem; }
 
-    /* Окно настроек (вертикальный список сверху вниз) */
     #settingsModal {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: var(--bg-color); z-index: 2000; display: none;
@@ -180,25 +179,16 @@
       border-radius: 8px; padding: 6px 12px; font-size: 0.9rem; cursor: pointer; color: var(--text-color);
     }
 
-    .menu-list {
-      display: flex; flex-direction: column; gap: 10px;
-    }
-
-    .menu-item-card {
-      background: var(--card-bg); border: 1px solid var(--border-color);
-      border-radius: 12px; overflow: hidden;
-    }
-
+    .menu-list { display: flex; flex-direction: column; gap: 10px; }
+    .menu-item-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden; }
     .menu-item-header {
       padding: 14px 16px; font-size: 1rem; font-weight: 600;
       display: flex; justify-content: space-between; align-items: center; cursor: pointer;
     }
-
     .menu-item-content {
       padding: 0 16px 14px 16px; border-top: 1px solid var(--border-color);
       display: none; margin-top: 10px; padding-top: 10px;
     }
-
     .menu-item-card.expanded .menu-item-content { display: block; }
 
     .setting-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 0.9rem; }
@@ -211,7 +201,7 @@
 
     .slider-box { margin-top: 6px; }
     .font-slider { width: 100%; accent-color: var(--bntu-green); cursor: pointer; }
-    .slider-labels { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--hint-color); margin-top: 2px; }
+    .slider-labels { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--hint-color); margin-top: 4px; }
   </style>
 </head>
 <body>
@@ -239,7 +229,7 @@
   <div class="days-container" id="daysTabs"></div>
   <div id="schedule-container"></div>
 
-  <!-- Меню настроек (вертикальный список) -->
+  <!-- Меню настроек -->
   <div id="settingsModal">
     <div class="settings-header">
       <h2>Меню</h2>
@@ -247,20 +237,17 @@
     </div>
 
     <div class="menu-list">
-      
-      <!-- Пункт 1: Профиль -->
       <div class="menu-item-card" id="card-profile">
         <div class="menu-item-header" onclick="toggleMenu('profile')">
           <span>👤 Профиль</span> <span>▼</span>
         </div>
         <div class="menu-item-content">
           <div class="setting-row"><label>Имя и Фамилия:</label><strong id="profName">-</strong></div>
-          <div class="setting-row"><label>Класс:</label><strong id="profClass">-</strong></div>
+          <div class="setting-row"><label>Класс и Группа:</label><strong id="profClass">-</strong></div>
           <div class="setting-row"><label>Ваш ID:</label><strong id="profId">-</strong></div>
         </div>
       </div>
 
-      <!-- Пункт 2: Внешний вид -->
       <div class="menu-item-card" id="card-appearance">
         <div class="menu-item-header" onclick="toggleMenu('appearance')">
           <span>🎨 Внешний вид</span> <span>▼</span>
@@ -285,34 +272,30 @@
         </div>
       </div>
 
-      <!-- Пункт 3: О нас -->
       <div class="menu-item-card" id="card-about">
         <div class="menu-item-header" onclick="toggleMenu('about')">
           <span>ℹ️ О нас</span> <span>▼</span>
         </div>
         <div class="menu-item-content">
           <p style="font-size: 0.85rem; color: var(--hint-color); margin: 0; line-height: 1.4;">
-            Официальный электронный дневник и расписание для лицеистов БНТУ.<br><br>
-            Разработано специально для оперативного доступа к учебным материалам, расписанию уроков и ведения персональных заметок по домашним заданиям.
+            Официальный электронный дневник и расписание для лицеистов БНТУ.
           </p>
         </div>
       </div>
 
-      <!-- Пункт 4: Поддержка -->
       <div class="menu-item-card" id="card-support">
         <div class="menu-item-header" onclick="toggleMenu('support')">
           <span>💬 Поддержка</span> <span>▼</span>
         </div>
         <div class="menu-item-content">
           <p style="font-size: 0.85rem; color: var(--hint-color); margin: 0 0 10px 0; line-height: 1.4;">
-            Если вы нашли ошибку в расписании или у вас не работает доступ по ID, напишите нам:
+            Если у вас возникли вопросы или ошибки, напишите нам:
           </p>
           <div style="text-align: center;">
             <a href="https://t.me/telegram" target="_blank" style="color: var(--bntu-green); font-weight: 600; text-decoration: none;">Написать в поддержку</a>
           </div>
         </div>
       </div>
-
     </div>
   </div>
 
@@ -320,11 +303,11 @@
     const tg = window.Telegram.WebApp;
     tg.expand();
 
+    // База данных с привязкой ID к классу И ГРУППЕ (group: 1 или 2)
     const usersDatabase = {
-      "1001": { classId: "10A", name: "10 «А» класс", fullName: "Иван Иванов" },
-      "1002": { classId: "10B", name: "10 «Б» класс", fullName: "Анна Петрова" },
-      "1101": { classId: "11A", name: "11 «А» класс", fullName: "Максим Сидоров" },
-      "1102": { classId: "11B", name: "11 «Б» класс", fullName: "Елена Смирнова" }
+      "1001": { classId: "10A", group: 1, name: "10 «А» класс (Группа 1)", fullName: "Иван Иванов" },
+      "1002": { classId: "10A", group: 2, name: "10 «А» класс (Группа 2)", fullName: "Анна Петрова" },
+      "1101": { classId: "11A", group: 1, name: "11 «А» класс (Группа 1)", fullName: "Максим Сидоров" }
     };
 
     const quarterWeeks = [
@@ -338,7 +321,7 @@
       { week: 8, range: "20.10 – 25.10", dates: { monday: "20 окт", tuesday: "21 окт", wednesday: "22 окт", thursday: "23 окт", friday: "24 окт", saturday: "25 окт" } }
     ];
 
-    // Реальное расписание для 10 «А» класса на основе предоставленной фотографии
+    // Расписание с учетом групп (group: 1, group: 2 или отсутствие поля, если урок общий для всего класса)
     const scheduleData = {
       "10A": {
         monday: [
@@ -354,15 +337,22 @@
           { id: "tue_2", num: 2, time: "09:25 – 10:10", subject: "Белорусский язык", room: "205" },
           { id: "tue_3", num: 3, time: "10:30 – 11:15", subject: "Белорусская литература", room: "205" },
           { id: "tue_4", num: 4, time: "11:35 – 12:20", subject: "Белорусская литература", room: "205" },
-          { id: "tue_5", num: 5, time: "12:40 – 13:25", subject: "Английский язык", room: "106 / 103" },
-          { id: "tue_6", num: 6, time: "13:35 – 14:20", subject: "Английский язык", room: "106 / 103" }
+          // Пример разделения на группы по английскому языку из фотографии
+          { id: "tue_5_g1", num: 5, time: "12:40 – 13:25", subject: "Английский язык", room: "106", group: 1 },
+          { id: "tue_5_g2", num: 5, time: "12:40 – 13:25", subject: "Английский язык", room: "103", group: 2 },
+          { id: "tue_6_g1", num: 6, time: "13:35 – 14:20", subject: "Английский язык", room: "106", group: 1 },
+          { id: "tue_6_g2", num: 6, time: "13:35 – 14:20", subject: "Английский язык", room: "103", group: 2 }
         ],
         wednesday: [
           { id: "wed_2", num: 2, time: "09:25 – 10:10", subject: "Черчение", room: "205" },
-          { id: "wed_3", num: 3, time: "10:30 – 11:15", subject: "Физика (205) / Математика (107)", room: "205 / 107" },
-          { id: "wed_4", num: 4, time: "11:35 – 12:20", subject: "Физика (205) / Математика (107)", room: "205 / 107" },
-          { id: "wed_5", num: 5, time: "12:40 – 13:25", subject: "Математика (205) / Физика (303)", room: "205 / 303" },
-          { id: "wed_6", num: 6, time: "13:35 – 14:20", subject: "Математика (205) / Физика (303)", room: "205 / 303" },
+          { id: "wed_3_g1", num: 3, time: "10:30 – 11:15", subject: "Физика", room: "205", group: 1 },
+          { id: "wed_3_g2", num: 3, time: "10:30 – 11:15", subject: "Математика", room: "107", group: 2 },
+          { id: "wed_4_g1", num: 4, time: "11:35 – 12:20", subject: "Физика", room: "205", group: 1 },
+          { id: "wed_4_g2", num: 4, time: "11:35 – 12:20", subject: "Математика", room: "107", group: 2 },
+          { id: "wed_5_g1", num: 5, time: "12:40 – 13:25", subject: "Математика", room: "205", group: 1 },
+          { id: "wed_5_g2", num: 5, time: "12:40 – 13:25", subject: "Физика", room: "303", group: 2 },
+          { id: "wed_6_g1", num: 6, time: "13:35 – 14:20", subject: "Математика", room: "205", group: 1 },
+          { id: "wed_6_g2", num: 6, time: "13:35 – 14:20", subject: "Физика", room: "303", group: 2 },
           { id: "wed_7", num: 7, time: "14:30 – 15:15", subject: "Русская литература", room: "205" },
           { id: "wed_8", num: 8, time: "15:25 – 16:10", subject: "Физ.культура и зд.", room: "спортзал" }
         ],
@@ -373,14 +363,17 @@
           { id: "thu_4", num: 4, time: "11:35 – 12:20", subject: "Русский язык", room: "205" },
           { id: "thu_5_1", num: 5, time: "12:40 – 13:10", subject: "Информационный час", room: "205" },
           { id: "thu_5_2", num: "5*", time: "13:20 – 14:05", subject: "Русский язык", room: "205" },
-          { id: "thu_6", num: 6, time: "14:15 – 15:00", subject: "ДП (205) / МП (106)", room: "205 / 106" },
+          { id: "thu_6_g1", num: 6, time: "14:15 – 15:00", subject: "ДП", room: "205", group: 1 },
+          { id: "thu_6_g2", num: 6, time: "14:15 – 15:00", subject: "МП", room: "106", group: 2 },
           { id: "thu_7", num: 7, time: "15:10 – 15:55", subject: "География", room: "205" }
         ],
         friday: [
           { id: "fri_1", num: 1, time: "08:30 – 09:15", subject: "Физика", room: "205" },
           { id: "fri_2", num: 2, time: "09:25 – 10:10", subject: "Физика", room: "205" },
-          { id: "fri_3", num: 3, time: "10:30 – 11:15", subject: "Информатика (202) / Математика (205)", room: "202 / 205" },
-          { id: "fri_4", num: 4, time: "11:35 – 12:20", subject: "Математика (205) / Информатика (202)", room: "205 / 202" },
+          { id: "fri_3_g1", num: 3, time: "10:30 – 11:15", subject: "Информатика", room: "202", group: 1 },
+          { id: "fri_3_g2", num: 3, time: "10:30 – 11:15", subject: "Математика", room: "205", group: 2 },
+          { id: "fri_4_g1", num: 4, time: "11:35 – 12:20", subject: "Математика", room: "205", group: 1 },
+          { id: "fri_4_g2", num: 4, time: "11:35 – 12:20", subject: "Информатика", room: "202", group: 2 },
           { id: "fri_5", num: 5, time: "12:40 – 13:25", subject: "Химия", room: "208" },
           { id: "fri_6", num: 6, time: "13:35 – 14:20", subject: "Химия", room: "208" }
         ],
@@ -392,6 +385,7 @@
     };
 
     let userClassId = null;
+    let userGroup = 1;
     let currentWeek = 1;
     let currentDay = 'monday';
 
@@ -404,12 +398,14 @@
 
       const savedClassId = localStorage.getItem('lyceum_user_class');
       const savedClassName = localStorage.getItem('lyceum_user_class_name');
+      const savedGroup = localStorage.getItem('lyceum_user_group');
 
       renderWeeksTabs();
       renderDaysTabs();
 
       if (savedClassId && savedClassName) {
         userClassId = savedClassId;
+        userGroup = savedGroup ? parseInt(savedGroup) : 1;
         showClassBadge(savedClassName);
         document.getElementById('authModal').style.display = 'none';
         updateProfileData();
@@ -438,18 +434,13 @@
     function toggleMenu(menuId) {
       const card = document.getElementById(`card-${menuId}`);
       const isExpanded = card.classList.contains('expanded');
-      
       document.querySelectorAll('.menu-item-card').forEach(c => c.classList.remove('expanded'));
-      
-      if (!isExpanded) {
-        card.classList.add('expanded');
-      }
+      if (!isExpanded) card.classList.add('expanded');
     }
 
     function renderWeeksTabs() {
       const container = document.getElementById('weeksContainer');
       container.innerHTML = '';
-
       quarterWeeks.forEach(w => {
         const activeClass = w.week === currentWeek ? 'active' : '';
         container.innerHTML += `
@@ -464,7 +455,6 @@
     function renderDaysTabs() {
       const container = document.getElementById('daysTabs');
       container.innerHTML = '';
-
       const weekInfo = quarterWeeks.find(w => w.week === currentWeek) || quarterWeeks[0];
       const days = [
         { key: 'monday', name: 'Пн' },
@@ -493,9 +483,11 @@
       if (usersDatabase[enteredId]) {
         const userData = usersDatabase[enteredId];
         userClassId = userData.classId;
+        userGroup = userData.group;
 
         localStorage.setItem('lyceum_user_id', enteredId);
         localStorage.setItem('lyceum_user_class', userData.classId);
+        localStorage.setItem('lyceum_user_group', userData.group);
         localStorage.setItem('lyceum_user_class_name', userData.name);
         localStorage.setItem('lyceum_user_fullname', userData.fullName);
 
@@ -563,7 +555,11 @@
 
       const container = document.getElementById('schedule-container');
       const classSchedule = scheduleData[userClassId] || {};
-      const lessons = classSchedule[currentDay] || [];
+      const allLessons = classSchedule[currentDay] || [];
+      
+      // Фильтруем уроки: если у урока указана группа, показываем только ту, к которой принадлежит ученик
+      const lessons = allLessons.filter(l => !l.group || l.group === userGroup);
+
       const weekInfo = quarterWeeks.find(w => w.week === currentWeek) || quarterWeeks[0];
       const dateStr = weekInfo.dates[currentDay] || '';
 
