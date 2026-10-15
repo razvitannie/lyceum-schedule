@@ -358,4 +358,120 @@
 
     window.onload = function() {
       const savedClassId = localStorage.getItem('lyceum_user_class');
-      const savedClassName = localStorage.getItem('ly
+      const savedClassName = localStorage.getItem('lyceum_user_class_name');
+
+      if (savedClassId && savedClassName) {
+        userClassId = savedClassId;
+        showClassBadge(savedClassName);
+        document.getElementById('authModal').style.display = 'none';
+        renderSchedule();
+      }
+    };
+
+    function verifyId() {
+      const enteredId = document.getElementById('idInput').value.trim();
+      const errorMsg = document.getElementById('errorMsg');
+
+      if (usersDatabase[enteredId]) {
+        const userData = usersDatabase[enteredId];
+        userClassId = userData.classId;
+
+        localStorage.setItem('lyceum_user_class', userData.classId);
+        localStorage.setItem('lyceum_user_class_name', userData.name);
+
+        showClassBadge(userData.name);
+        document.getElementById('authModal').style.display = 'none';
+        renderSchedule();
+      } else {
+        errorMsg.style.display = 'block';
+      }
+    }
+
+    function showClassBadge(className) {
+      const badge = document.getElementById('classBadge');
+      badge.textContent = `Класс: ${className}`;
+      badge.style.display = 'inline-block';
+    }
+
+    function setWeek(weekNum, event) {
+      currentWeek = weekNum;
+      document.querySelectorAll('.week-tab').forEach(tab => tab.classList.remove('active'));
+      if (event && event.target) {
+        event.target.classList.add('active');
+      }
+      renderSchedule();
+    }
+
+    function setDay(day, event) {
+      currentDay = day;
+      document.querySelectorAll('.day-btn').forEach(btn => btn.classList.remove('active'));
+      if (event && event.target) {
+        event.target.classList.add('active');
+      }
+      renderSchedule();
+    }
+
+    // Сохранение ДЗ с привязкой к конкретной неделе и дню
+    function saveHomework(lessonId, text) {
+      const key = `hw_w${currentWeek}_${currentDay}_${lessonId}`;
+      if (text.trim() === '') {
+        localStorage.removeItem(key);
+      } else {
+        localStorage.setItem(key, text);
+      }
+      
+      const inputEl = document.getElementById(`input_${lessonId}`);
+      if (inputEl) {
+        if (text.trim() !== '') {
+          inputEl.classList.add('has-value');
+        } else {
+          inputEl.classList.remove('has-value');
+        }
+      }
+    }
+
+    function renderSchedule() {
+      if (!userClassId) return;
+
+      const container = document.getElementById('schedule-container');
+      const classSchedule = scheduleData[userClassId] || {};
+      const lessons = classSchedule[currentDay] || [];
+
+      container.innerHTML = '';
+
+      if (lessons.length === 0) {
+        container.innerHTML = `<div class="empty-state">🎉 На этот день уроков нет или расписание не заполнено.</div>`;
+        return;
+      }
+
+      lessons.forEach(l => {
+        // Уникальный ключ для каждой недели, дня и урока
+        const savedHw = localStorage.getItem(`hw_w${currentWeek}_${currentDay}_${l.id}`) || '';
+        const hasValueClass = savedHw ? 'has-value' : '';
+
+        container.innerHTML += `
+          <div class="lesson-card">
+            <div class="lesson-header">
+              <div>
+                <div class="lesson-subject">${l.num}. ${l.subject}</div>
+                <div class="lesson-time">⏰ ${l.time}</div>
+              </div>
+              <div class="lesson-room">каб. ${l.room}</div>
+            </div>
+            <div class="hw-container">
+              <input 
+                type="text" 
+                id="input_${l.id}"
+                class="hw-input ${hasValueClass}" 
+                placeholder="✍️ ДЗ на ${currentWeek} неделю..." 
+                value="${savedHw}"
+                oninput="saveHomework('${l.id}', this.value)"
+              />
+            </div>
+          </div>
+        `;
+      });
+    }
+  </script>
+</body>
+</html>
