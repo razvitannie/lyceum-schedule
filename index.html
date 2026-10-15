@@ -103,7 +103,7 @@
     /* Шапка приложения */
     .header {
       text-align: center;
-      margin-bottom: 18px;
+      margin-bottom: 14px;
     }
 
     .header h1 {
@@ -121,7 +121,7 @@
 
     .user-class-badge {
       display: inline-block;
-      margin-top: 8px;
+      margin-top: 6px;
       background: rgba(166, 25, 46, 0.1);
       color: var(--bntu-primary);
       font-weight: 600;
@@ -130,13 +130,42 @@
       font-size: 0.85em;
     }
 
+    /* Блок выбора даты для ДЗ */
+    .date-picker-card {
+      background: var(--card-bg);
+      padding: 12px 16px;
+      border-radius: 12px;
+      margin-bottom: 14px;
+      border: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .date-picker-card label {
+      font-size: 0.85em;
+      font-weight: 600;
+      color: var(--hint-color);
+    }
+
+    .date-input {
+      background: var(--bg-color);
+      border: 1px solid var(--border-color);
+      color: var(--text-color);
+      padding: 6px 10px;
+      border-radius: 8px;
+      font-size: 0.9em;
+      outline: none;
+      font-family: inherit;
+    }
+
     /* Дни недели */
     .days-container {
       display: flex;
       gap: 6px;
       overflow-x: auto;
       padding-bottom: 8px;
-      margin-bottom: 16px;
+      margin-bottom: 14px;
       scrollbar-width: none;
     }
     .days-container::-webkit-scrollbar { display: none; }
@@ -248,14 +277,20 @@
     </div>
   </div>
 
-  <!-- Главный интерфейс -->
+  <!-- Шапку оставляем чистой -->
   <div class="header">
     <h1>Лицей БНТУ</h1>
     <p>Электронное расписание & ДЗ</p>
     <div id="classBadge" class="user-class-badge" style="display: none;"></div>
   </div>
 
-  <!-- Дни недели -->
+  <!-- Выбор конкретной даты для ДЗ -->
+  <div class="date-picker-card">
+    <label for="dateSelect">📅 Дата для ДЗ:</label>
+    <input type="date" id="dateSelect" class="date-input" onchange="renderSchedule()" />
+  </div>
+
+  <!-- Дни недели для просмотра расписания -->
   <div class="days-container" id="daysTabs">
     <button class="day-btn active" onclick="setDay('monday', event)">Понедельник</button>
     <button class="day-btn" onclick="setDay('tuesday', event)">Вторник</button>
@@ -271,7 +306,6 @@
     const tg = window.Telegram.WebApp;
     tg.expand();
 
-    // БАЗА ДАННЫХ ИДЕНТИФИКАТОРОВ И ПРИВЯЗАННЫХ К НИМ КЛАССОВ
     const usersDatabase = {
       "1001": { classId: "10A", name: "10 «А» класс" },
       "1002": { classId: "10B", name: "10 «Б» класс" },
@@ -279,33 +313,18 @@
       "1102": { classId: "11B", name: "11 «Б» класс" }
     };
 
-    // РАСПИСАНИЕ ПО КЛАССАМ
     const scheduleData = {
       "10A": {
         monday: [
-          { id: "10A_mon_1", num: 1, time: "08:30 – 09:15", subject: "Физика", room: "302" },
-          { id: "10A_mon_2", num: 2, time: "09:25 – 10:10", subject: "Математика", room: "205" },
-          { id: "10A_mon_3", num: 3, time: "10:30 – 11:15", subject: "Белорусская литература", room: "410" },
-          { id: "10A_mon_4", num: 4, time: "11:25 – 12:10", subject: "Химия", room: "104" }
+          { id: "mon_1", num: 1, time: "08:30 – 09:15", subject: "Физика", room: "302" },
+          { id: "mon_2", num: 2, time: "09:25 – 10:10", subject: "Математика", room: "205" }
         ],
         tuesday: [
-          { id: "10A_tue_1", num: 1, time: "08:30 – 09:15", subject: "Английский язык", room: "215" },
-          { id: "10A_tue_2", num: 2, time: "09:25 – 10:10", subject: "История Беларуси", room: "308" },
-          { id: "10A_tue_3", num: 3, time: "10:30 – 11:15", subject: "Математика", room: "205" }
+          { id: "tue_1", num: 1, time: "08:30 – 09:15", subject: "Английский язык", room: "215" }
         ],
-        wednesday: [
-          { id: "10A_wed_1", num: 1, time: "08:30 – 09:15", subject: "Физика", room: "302" },
-          { id: "10A_wed_2", num: 2, time: "09:25 – 10:10", subject: "География", room: "219" }
-        ],
-        thursday: [], friday: [], saturday: []
+        wednesday: [], thursday: [], friday: [], saturday: []
       },
-      "10B": {
-        monday: [
-          { id: "10B_mon_1", num: 1, time: "08:30 – 09:15", subject: "Химия", room: "104" },
-          { id: "10B_mon_2", num: 2, time: "09:25 – 10:10", subject: "Физика", room: "302" }
-        ],
-        tuesday: [], wednesday: [], thursday: [], friday: [], saturday: []
-      },
+      "10B": { monday: [], tuesday: [], wednesday: [], thursday: [], friday: [], saturday: [] },
       "11A": { monday: [], tuesday: [], wednesday: [], thursday: [], friday: [], saturday: [] },
       "11B": { monday: [], tuesday: [], wednesday: [], thursday: [], friday: [], saturday: [] }
     };
@@ -314,6 +333,10 @@
     let currentDay = 'monday';
 
     window.onload = function() {
+      // Устанавливаем сегодняшнюю дату по умолчанию в поле выбора даты
+      const todayStr = new Date().toISOString().split('T')[0];
+      document.getElementById('dateSelect').value = todayStr;
+
       const savedClassId = localStorage.getItem('lyceum_user_class');
       const savedClassName = localStorage.getItem('lyceum_user_class_name');
 
@@ -333,7 +356,6 @@
         const userData = usersDatabase[enteredId];
         userClassId = userData.classId;
 
-        // Сохраняем класс пользователя
         localStorage.setItem('lyceum_user_class', userData.classId);
         localStorage.setItem('lyceum_user_class_name', userData.name);
 
@@ -360,8 +382,11 @@
       renderSchedule();
     }
 
+    // Сохранение ДЗ привязывается к выбранной дате и ID урока
     function saveHomework(lessonId, text) {
-      const key = `hw_${lessonId}`;
+      const selectedDate = document.getElementById('dateSelect').value;
+      const key = `hw_${selectedDate}_${lessonId}`;
+
       if (text.trim() === '') {
         localStorage.removeItem(key);
       } else {
@@ -384,6 +409,7 @@
       const container = document.getElementById('schedule-container');
       const classSchedule = scheduleData[userClassId] || {};
       const lessons = classSchedule[currentDay] || [];
+      const selectedDate = document.getElementById('dateSelect').value;
 
       container.innerHTML = '';
 
@@ -393,7 +419,8 @@
       }
 
       lessons.forEach(l => {
-        const savedHw = localStorage.getItem(`hw_${l.id}`) || '';
+        // Загружаем ДЗ строго под выбранную дату и урок
+        const savedHw = localStorage.getItem(`hw_${selectedDate}_${l.id}`) || '';
         const hasValueClass = savedHw ? 'has-value' : '';
 
         container.innerHTML += `
@@ -410,7 +437,7 @@
                 type="text" 
                 id="input_${l.id}"
                 class="hw-input ${hasValueClass}" 
-                placeholder="✍️ Добавить домашнее задание / заметку..." 
+                placeholder="✍️ ДЗ на ${selectedDate}..." 
                 value="${savedHw}"
                 oninput="saveHomework('${l.id}', this.value)"
               />
