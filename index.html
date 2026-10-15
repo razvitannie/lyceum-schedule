@@ -11,9 +11,9 @@
       --text-color: var(--tg-theme-text-color, #212529);
       --card-bg: var(--tg-theme-secondary-bg-color, #ffffff);
       --hint-color: var(--tg-theme-hint-color, #6c757d);
-      --bntu-primary: #a6192e; /* Фирменный бордовый цвет БНТУ */
-      --bntu-primary-hover: #801323;
+      --bntu-primary: #a6192e;
       --border-color: rgba(0, 0, 0, 0.08);
+      --input-bg: rgba(0, 0, 0, 0.03);
     }
 
     body {
@@ -27,7 +27,7 @@
 
     .header {
       text-align: center;
-      margin-bottom: 20px;
+      margin-bottom: 18px;
     }
 
     .header h1 {
@@ -43,48 +43,46 @@
       margin: 0;
     }
 
-    /* Блок выбора класса */
     .setup-card {
       background: var(--card-bg);
-      padding: 16px;
+      padding: 14px 16px;
       border-radius: 14px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.03);
       margin-bottom: 16px;
       border: 1px solid var(--border-color);
     }
 
     label {
-      font-size: 0.85em;
+      font-size: 0.8em;
       font-weight: 600;
       color: var(--hint-color);
       display: block;
       margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
 
     select {
       width: 100%;
-      padding: 12px;
-      border-radius: 10px;
+      padding: 10px;
+      border-radius: 8px;
       border: 1px solid var(--border-color);
       background: var(--bg-color);
       color: var(--text-color);
-      font-size: 1em;
+      font-size: 0.95em;
       font-weight: 500;
       outline: none;
     }
 
-    /* Вкладки дней недели */
+    /* Дни недели */
     .days-container {
       display: flex;
       gap: 6px;
       overflow-x: auto;
       padding-bottom: 8px;
       margin-bottom: 16px;
-      scrollbar-width: none; /* Скрыть скроллбар для Firefox */
+      scrollbar-width: none;
     }
-    .days-container::-webkit-scrollbar {
-      display: none; /* Скрыть скроллбар для Chrome/Safari */
-    }
+    .days-container::-webkit-scrollbar { display: none; }
 
     .day-btn {
       flex: 0 0 auto;
@@ -93,7 +91,7 @@
       border: 1px solid var(--border-color);
       background: var(--card-bg);
       color: var(--text-color);
-      font-size: 0.9em;
+      font-size: 0.85em;
       font-weight: 500;
       cursor: pointer;
       transition: all 0.2s ease;
@@ -109,20 +107,18 @@
     /* Карточки уроков */
     .lesson-card {
       background: var(--card-bg);
-      padding: 14px 16px;
+      padding: 14px;
       border-radius: 12px;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
       border: 1px solid var(--border-color);
       box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+    }
+
+    .lesson-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-    }
-
-    .lesson-info {
-      display: flex;
-      flex-direction: column;
-      gap: 3px;
+      margin-bottom: 10px;
     }
 
     .lesson-subject {
@@ -133,22 +129,53 @@
     .lesson-time {
       font-size: 0.8em;
       color: var(--hint-color);
+      margin-top: 2px;
     }
 
     .lesson-room {
       background: rgba(166, 25, 46, 0.08);
       color: var(--bntu-primary);
-      padding: 6px 10px;
+      padding: 5px 9px;
       border-radius: 8px;
-      font-size: 0.85em;
+      font-size: 0.8em;
       font-weight: 600;
+    }
+
+    /* Блок домашнего задания */
+    .hw-container {
+      margin-top: 8px;
+      border-top: 1px dashed var(--border-color);
+      padding-top: 8px;
+    }
+
+    .hw-input {
+      width: 100%;
+      box-sizing: border-box;
+      border: 1px solid transparent;
+      background: var(--input-bg);
+      border-radius: 8px;
+      padding: 8px 10px;
+      font-size: 0.85em;
+      color: var(--text-color);
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    .hw-input:focus {
+      border-color: var(--bntu-primary);
+      background: var(--card-bg);
+    }
+
+    .hw-input.has-value {
+      background: rgba(166, 25, 46, 0.04);
+      border-color: rgba(166, 25, 46, 0.2);
     }
 
     .empty-state {
       text-align: center;
       padding: 30px 20px;
       color: var(--hint-color);
-      font-size: 0.95em;
+      font-size: 0.9em;
     }
   </style>
 </head>
@@ -156,10 +183,9 @@
 
   <div class="header">
     <h1>Лицей БНТУ</h1>
-    <p>Электронное расписание уроков</p>
+    <p>Электронное расписание & ДЗ</p>
   </div>
 
-  <!-- Выбор класса -->
   <div class="setup-card">
     <label for="classSelect">Ваш класс:</label>
     <select id="classSelect" onchange="saveClassAndRender()">
@@ -170,67 +196,47 @@
     </select>
   </div>
 
-  <!-- Дни недели -->
   <div class="days-container" id="daysTabs">
-    <button class="day-btn active" onclick="setDay('monday')">Понедельник</button>
-    <button class="day-btn" onclick="setDay('tuesday')">Вторник</button>
-    <button class="day-btn" onclick="setDay('wednesday')">Среда</button>
-    <button class="day-btn" onclick="setDay('thursday')">Четверг</button>
-    <button class="day-btn" onclick="setDay('friday')">Пятница</button>
-    <button class="day-btn" onclick="setDay('saturday')">Суббота</button>
+    <button class="day-btn active" onclick="setDay('monday', event)">Понедельник</button>
+    <button class="day-btn" onclick="setDay('tuesday', event)">Вторник</button>
+    <button class="day-btn" onclick="setDay('wednesday', event)">Среда</button>
+    <button class="day-btn" onclick="setDay('thursday', event)">Четверг</button>
+    <button class="day-btn" onclick="setDay('friday', event)">Пятница</button>
+    <button class="day-btn" onclick="setDay('saturday', event)">Суббота</button>
   </div>
 
-  <!-- Контейнер для расписания -->
   <div id="schedule-container"></div>
 
   <script>
     const tg = window.Telegram.WebApp;
     tg.expand();
 
-    // База данных расписания по классам и дням недели
     const scheduleData = {
       "10A": {
         monday: [
-          { num: 1, time: "08:30 – 09:15", subject: "Физика", room: "302" },
-          { num: 2, time: "09:25 – 10:10", subject: "Математика", room: "205" },
-          { num: 3, time: "10:30 – 11:15", subject: "Белорусская литература", room: "410" },
-          { num: 4, time: "11:25 – 12:10", subject: "Химия", room: "104" }
+          { id: "10A_mon_1", num: 1, time: "08:30 – 09:15", subject: "Физика", room: "302" },
+          { id: "10A_mon_2", num: 2, time: "09:25 – 10:10", subject: "Математика", room: "205" },
+          { id: "10A_mon_3", num: 3, time: "10:30 – 11:15", subject: "Белорусская литература", room: "410" },
+          { id: "10A_mon_4", num: 4, time: "11:25 – 12:10", subject: "Химия", room: "104" }
         ],
         tuesday: [
-          { num: 1, time: "08:30 – 09:15", subject: "Английский язык", room: "215" },
-          { num: 2, time: "09:25 – 10:10", subject: "История Беларуси", room: "308" },
-          { num: 3, time: "10:30 – 11:15", subject: "Математика", room: "205" }
+          { id: "10A_tue_1", num: 1, time: "08:30 – 09:15", subject: "Английский язык", room: "215" },
+          { id: "10A_tue_2", num: 2, time: "09:25 – 10:10", subject: "История Беларуси", room: "308" },
+          { id: "10A_tue_3", num: 3, time: "10:30 – 11:15", subject: "Математика", room: "205" }
         ],
         wednesday: [
-          { num: 1, time: "08:30 – 09:15", subject: "Физика", room: "302" },
-          { num: 2, time: "09:25 – 10:10", subject: "География", room: "219" }
+          { id: "10A_wed_1", num: 1, time: "08:30 – 09:15", subject: "Физика", room: "302" },
+          { id: "10A_wed_2", num: 2, time: "09:25 – 10:10", subject: "География", room: "219" }
         ],
-        thursday: [],
-        friday: [],
-        saturday: []
+        thursday: [], friday: [], saturday: []
       },
-      "10B": {
-        monday: [
-          { num: 1, time: "08:30 – 09:15", subject: "Химия", room: "104" },
-          { num: 2, time: "09:25 – 10:10", subject: "Физика", room: "302" }
-        ],
-        tuesday: [], wednesday: [], thursday: [], friday: [], saturday: []
-      },
-      "11A": {
-        monday: [
-          { num: 1, time: "08:30 – 09:15", subject: "История", room: "212" },
-          { num: 2, time: "09:25 – 10:10", subject: "Математика", room: "205" }
-        ],
-        tuesday: [], wednesday: [], thursday: [], friday: [], saturday: []
-      },
-      "11B": {
-        monday: [], tuesday: [], wednesday: [], thursday: [], friday: [], saturday: []
-      }
+      "10B": { monday: [], tuesday: [], wednesday: [], thursday: [], friday: [], saturday: [] },
+      "11A": { monday: [], tuesday: [], wednesday: [], thursday: [], friday: [], saturday: [] },
+      "11B": { monday: [], tuesday: [], wednesday: [], thursday: [], friday: [], saturday: [] }
     };
 
     let currentDay = 'monday';
 
-    // При загрузке проверяем, выбирал ли пользователь класс ранее
     window.onload = function() {
       const savedClass = localStorage.getItem('selected_lyceum_class');
       if (savedClass) {
@@ -245,12 +251,32 @@
       renderSchedule();
     }
 
-    function setDay(day) {
+    function setDay(day, event) {
       currentDay = day;
-      // Меняем активную кнопку в дизайне
       document.querySelectorAll('.day-btn').forEach(btn => btn.classList.remove('active'));
-      event.target.classList.add('active');
+      if (event && event.target) {
+        event.target.classList.add('active');
+      }
       renderSchedule();
+    }
+
+    // Сохранение ДЗ в localStorage
+    function saveHomework(lessonId, text) {
+      const key = `hw_${lessonId}`;
+      if (text.trim() === '') {
+        localStorage.removeItem(key);
+      } else {
+        localStorage.setItem(key, text);
+      }
+      
+      const inputEl = document.getElementById(`input_${lessonId}`);
+      if (inputEl) {
+        if (text.trim() !== '') {
+          inputEl.classList.add('has-value');
+        } else {
+          inputEl.classList.remove('has-value');
+        }
+      }
     }
 
     function renderSchedule() {
@@ -263,18 +289,33 @@
       container.innerHTML = '';
 
       if (lessons.length === 0) {
-        container.innerHTML = `<div class="empty-state">🎉 На этот день пар/уроков нет или расписание не заполнено.</div>`;
+        container.innerHTML = `<div class="empty-state">🎉 На этот день уроков нет или расписание не заполнено.</div>`;
         return;
       }
 
       lessons.forEach(l => {
+        const savedHw = localStorage.getItem(`hw_${l.id}`) || '';
+        const hasValueClass = savedHw ? 'has-value' : '';
+
         container.innerHTML += `
           <div class="lesson-card">
-            <div class="lesson-info">
-              <span class="lesson-subject">${l.num}. ${l.subject}</span>
-              <span class="lesson-time">⏰ ${l.time}</span>
+            <div class="lesson-header">
+              <div>
+                <div class="lesson-subject">${l.num}. ${l.subject}</div>
+                <div class="lesson-time">⏰ ${l.time}</div>
+              </div>
+              <div class="lesson-room">каб. ${l.room}</div>
             </div>
-            <div class="lesson-room">каб. ${l.room}</div>
+            <div class="hw-container">
+              <input 
+                type="text" 
+                id="input_${l.id}"
+                class="hw-input ${hasValueClass}" 
+                placeholder="✍️ Добавить домашнее задание / заметку..." 
+                value="${savedHw}"
+                oninput="saveHomework('${l.id}', this.value)"
+              />
+            </div>
           </div>
         `;
       });
