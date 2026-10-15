@@ -25,12 +25,12 @@
       -webkit-font-smoothing: antialiased;
     }
 
-    /* Модальное окно верификации */
+    /* Модальное окно авторизации */
     #authModal {
       position: fixed;
       top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0, 0, 0, 0.6);
-      backdrop-filter: blur(5px);
+      background: rgba(0, 0, 0, 0.65);
+      backdrop-filter: blur(6px);
       display: flex;
       justify-content: center;
       align-items: center;
@@ -100,7 +100,7 @@
       display: none;
     }
 
-    /* Основной интерфейс */
+    /* Шапка приложения */
     .header {
       text-align: center;
       margin-bottom: 18px;
@@ -119,36 +119,18 @@
       margin: 0;
     }
 
-    .setup-card {
-      background: var(--card-bg);
-      padding: 14px 16px;
-      border-radius: 14px;
-      margin-bottom: 16px;
-      border: 1px solid var(--border-color);
-    }
-
-    label {
-      font-size: 0.8em;
+    .user-class-badge {
+      display: inline-block;
+      margin-top: 8px;
+      background: rgba(166, 25, 46, 0.1);
+      color: var(--bntu-primary);
       font-weight: 600;
-      color: var(--hint-color);
-      display: block;
-      margin-bottom: 6px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.85em;
     }
 
-    select {
-      width: 100%;
-      padding: 10px;
-      border-radius: 8px;
-      border: 1px solid var(--border-color);
-      background: var(--bg-color);
-      color: var(--text-color);
-      font-size: 0.95em;
-      font-weight: 500;
-      outline: none;
-    }
-
+    /* Дни недели */
     .days-container {
       display: flex;
       gap: 6px;
@@ -179,6 +161,7 @@
       box-shadow: 0 2px 8px rgba(166, 25, 46, 0.3);
     }
 
+    /* Карточки уроков */
     .lesson-card {
       background: var(--card-bg);
       padding: 14px;
@@ -254,32 +237,25 @@
 </head>
 <body>
 
-  <!-- Модальное окно проверки ID -->
+  <!-- Модальное окно авторизации -->
   <div id="authModal">
     <div class="auth-card">
       <h2>Лицей БНТУ</h2>
-      <p>Введите ваш идентификационный номер для доступа к расписанию:</p>
-      <input type="text" id="idInput" class="auth-input" placeholder="Например: 12345" />
+      <p>Введите ваш персональный идентификационный номер:</p>
+      <input type="text" id="idInput" class="auth-input" placeholder="Например: 1001" />
       <button class="auth-btn" onclick="verifyId()">Войти</button>
-      <div id="errorMsg" class="error-msg">Неверный идентификационный номер!</div>
+      <div id="errorMsg" class="error-msg">Неверный код доступа!</div>
     </div>
   </div>
 
+  <!-- Главный интерфейс -->
   <div class="header">
     <h1>Лицей БНТУ</h1>
     <p>Электронное расписание & ДЗ</p>
+    <div id="classBadge" class="user-class-badge" style="display: none;"></div>
   </div>
 
-  <div class="setup-card">
-    <label for="classSelect">Ваш класс:</label>
-    <select id="classSelect" onchange="saveClassAndRender()">
-      <option value="10A">10 «А»</option>
-      <option value="10B">10 «Б»</option>
-      <option value="11A">11 «А»</option>
-      <option value="11B">11 «Б»</option>
-    </select>
-  </div>
-
+  <!-- Дни недели -->
   <div class="days-container" id="daysTabs">
     <button class="day-btn active" onclick="setDay('monday', event)">Понедельник</button>
     <button class="day-btn" onclick="setDay('tuesday', event)">Вторник</button>
@@ -295,9 +271,15 @@
     const tg = window.Telegram.WebApp;
     tg.expand();
 
-    // Список разрешенных идентификационных номеров (твоя база данных)
-    const validIds = ["12345", "11111", "99999", "bntu2026"];
+    // БАЗА ДАННЫХ ИДЕНТИФИКАТОРОВ И ПРИВЯЗАННЫХ К НИМ КЛАССОВ
+    const usersDatabase = {
+      "1001": { classId: "10A", name: "10 «А» класс" },
+      "1002": { classId: "10B", name: "10 «Б» класс" },
+      "1101": { classId: "11A", name: "11 «А» класс" },
+      "1102": { classId: "11B", name: "11 «Б» класс" }
+    };
 
+    // РАСПИСАНИЕ ПО КЛАССАМ
     const scheduleData = {
       "10A": {
         monday: [
@@ -317,43 +299,56 @@
         ],
         thursday: [], friday: [], saturday: []
       },
-      "10B": { monday: [], tuesday: [], wednesday: [], thursday: [], friday: [], saturday: [] },
+      "10B": {
+        monday: [
+          { id: "10B_mon_1", num: 1, time: "08:30 – 09:15", subject: "Химия", room: "104" },
+          { id: "10B_mon_2", num: 2, time: "09:25 – 10:10", subject: "Физика", room: "302" }
+        ],
+        tuesday: [], wednesday: [], thursday: [], friday: [], saturday: []
+      },
       "11A": { monday: [], tuesday: [], wednesday: [], thursday: [], friday: [], saturday: [] },
       "11B": { monday: [], tuesday: [], wednesday: [], thursday: [], friday: [], saturday: [] }
     };
 
+    let userClassId = null;
     let currentDay = 'monday';
 
     window.onload = function() {
-      // Проверяем, прошел ли пользователь верификацию ранее
-      const isVerified = localStorage.getItem('lyceum_verified');
-      if (isVerified === 'true') {
-        document.getElementById('authModal').style.display = 'none';
-      }
+      const savedClassId = localStorage.getItem('lyceum_user_class');
+      const savedClassName = localStorage.getItem('lyceum_user_class_name');
 
-      const savedClass = localStorage.getItem('selected_lyceum_class');
-      if (savedClass) {
-        document.getElementById('classSelect').value = savedClass;
+      if (savedClassId && savedClassName) {
+        userClassId = savedClassId;
+        showClassBadge(savedClassName);
+        document.getElementById('authModal').style.display = 'none';
+        renderSchedule();
       }
-      renderSchedule();
     };
 
     function verifyId() {
       const enteredId = document.getElementById('idInput').value.trim();
       const errorMsg = document.getElementById('errorMsg');
 
-      if (validIds.includes(enteredId)) {
-        localStorage.setItem('lyceum_verified', 'true');
+      if (usersDatabase[enteredId]) {
+        const userData = usersDatabase[enteredId];
+        userClassId = userData.classId;
+
+        // Сохраняем класс пользователя
+        localStorage.setItem('lyceum_user_class', userData.classId);
+        localStorage.setItem('lyceum_user_class_name', userData.name);
+
+        showClassBadge(userData.name);
         document.getElementById('authModal').style.display = 'none';
+        renderSchedule();
       } else {
         errorMsg.style.display = 'block';
       }
     }
 
-    function saveClassAndRender() {
-      const selectedClass = document.getElementById('classSelect').value;
-      localStorage.setItem('selected_lyceum_class', selectedClass);
-      renderSchedule();
+    function showClassBadge(className) {
+      const badge = document.getElementById('classBadge');
+      badge.textContent = `Класс: ${className}`;
+      badge.style.display = 'inline-block';
     }
 
     function setDay(day, event) {
@@ -384,10 +379,10 @@
     }
 
     function renderSchedule() {
-      const selectedClass = document.getElementById('classSelect').value;
+      if (!userClassId) return;
+
       const container = document.getElementById('schedule-container');
-      
-      const classSchedule = scheduleData[selectedClass] || {};
+      const classSchedule = scheduleData[userClassId] || {};
       const lessons = classSchedule[currentDay] || [];
 
       container.innerHTML = '';
