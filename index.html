@@ -25,6 +25,82 @@
       -webkit-font-smoothing: antialiased;
     }
 
+    /* Модальное окно верификации */
+    #authModal {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(5px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    .auth-card {
+      background: var(--card-bg);
+      width: 100%;
+      max-width: 340px;
+      padding: 24px;
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+      text-align: center;
+      border: 1px solid var(--border-color);
+    }
+
+    .auth-card h2 {
+      font-size: 1.2em;
+      margin: 0 0 8px 0;
+      color: var(--bntu-primary);
+    }
+
+    .auth-card p {
+      font-size: 0.85em;
+      color: var(--hint-color);
+      margin-bottom: 16px;
+    }
+
+    .auth-input {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border-color);
+      background: var(--input-bg);
+      color: var(--text-color);
+      font-size: 1em;
+      text-align: center;
+      letter-spacing: 1px;
+      outline: none;
+      margin-bottom: 12px;
+    }
+
+    .auth-input:focus {
+      border-color: var(--bntu-primary);
+    }
+
+    .auth-btn {
+      width: 100%;
+      padding: 12px;
+      border-radius: 10px;
+      border: none;
+      background: var(--bntu-primary);
+      color: #ffffff;
+      font-size: 0.95em;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .error-msg {
+      color: #dc3545;
+      font-size: 0.8em;
+      margin-top: 8px;
+      display: none;
+    }
+
+    /* Основной интерфейс */
     .header {
       text-align: center;
       margin-bottom: 18px;
@@ -73,7 +149,6 @@
       outline: none;
     }
 
-    /* Дни недели */
     .days-container {
       display: flex;
       gap: 6px;
@@ -104,7 +179,6 @@
       box-shadow: 0 2px 8px rgba(166, 25, 46, 0.3);
     }
 
-    /* Карточки уроков */
     .lesson-card {
       background: var(--card-bg);
       padding: 14px;
@@ -141,7 +215,6 @@
       font-weight: 600;
     }
 
-    /* Блок домашнего задания */
     .hw-container {
       margin-top: 8px;
       border-top: 1px dashed var(--border-color);
@@ -181,6 +254,17 @@
 </head>
 <body>
 
+  <!-- Модальное окно проверки ID -->
+  <div id="authModal">
+    <div class="auth-card">
+      <h2>Лицей БНТУ</h2>
+      <p>Введите ваш идентификационный номер для доступа к расписанию:</p>
+      <input type="text" id="idInput" class="auth-input" placeholder="Например: 12345" />
+      <button class="auth-btn" onclick="verifyId()">Войти</button>
+      <div id="errorMsg" class="error-msg">Неверный идентификационный номер!</div>
+    </div>
+  </div>
+
   <div class="header">
     <h1>Лицей БНТУ</h1>
     <p>Электронное расписание & ДЗ</p>
@@ -211,6 +295,9 @@
     const tg = window.Telegram.WebApp;
     tg.expand();
 
+    // Список разрешенных идентификационных номеров (твоя база данных)
+    const validIds = ["12345", "11111", "99999", "bntu2026"];
+
     const scheduleData = {
       "10A": {
         monday: [
@@ -238,12 +325,30 @@
     let currentDay = 'monday';
 
     window.onload = function() {
+      // Проверяем, прошел ли пользователь верификацию ранее
+      const isVerified = localStorage.getItem('lyceum_verified');
+      if (isVerified === 'true') {
+        document.getElementById('authModal').style.display = 'none';
+      }
+
       const savedClass = localStorage.getItem('selected_lyceum_class');
       if (savedClass) {
         document.getElementById('classSelect').value = savedClass;
       }
       renderSchedule();
     };
+
+    function verifyId() {
+      const enteredId = document.getElementById('idInput').value.trim();
+      const errorMsg = document.getElementById('errorMsg');
+
+      if (validIds.includes(enteredId)) {
+        localStorage.setItem('lyceum_verified', 'true');
+        document.getElementById('authModal').style.display = 'none';
+      } else {
+        errorMsg.style.display = 'block';
+      }
+    }
 
     function saveClassAndRender() {
       const selectedClass = document.getElementById('classSelect').value;
@@ -260,7 +365,6 @@
       renderSchedule();
     }
 
-    // Сохранение ДЗ в localStorage
     function saveHomework(lessonId, text) {
       const key = `hw_${lessonId}`;
       if (text.trim() === '') {
