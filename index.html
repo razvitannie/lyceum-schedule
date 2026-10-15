@@ -1,39 +1,117 @@
-body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  background-color: var(--bg-color);
-  color: var(--text-color);
-  margin: 0;
-  padding: 16px;
-}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Расписание Лицея</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    :root {
+      --bg-color: var(--tg-theme-bg-color, #ffffff);
+      --text-color: var(--tg-theme-text-color, #000000);
+      --card-bg: var(--tg-theme-secondary-bg-color, #f1f1f1);
+      --hint-color: var(--tg-theme-hint-color, #999999);
+    }
 
-h1 {
-  font-size: 1.4em;
-  margin-bottom: 12px;
-}
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      margin: 0;
+      padding: 16px;
+    }
 
-.class-selector {
-  margin-bottom: 16px;
-}
+    h1 {
+      font-size: 1.4em;
+      margin-bottom: 12px;
+    }
 
-select {
-  width: 100%;
-  padding: 10px;
-  border-radius: 8px;
-  border: 1px solid var(--hint-color);
-  background: var(--card-bg);
-  color: var(--text-color);
-  font-size: 1em;
-}
+    .class-selector {
+      margin-bottom: 16px;
+    }
 
-.lesson-card {
-  background: var(--card-bg);
-  padding: 12px;
-  border-radius: 10px;
-  margin-bottom: 10px;
-}
+    select {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid var(--hint-color);
+      background: var(--card-bg);
+      color: var(--text-color);
+      font-size: 1em;
+    }
 
-.lesson-time {
-  font-size: 0.85em;
-  color: var(--hint-color);
-  margin-top: 4px;
-}
+    .lesson-card {
+      background: var(--card-bg);
+      padding: 12px;
+      border-radius: 10px;
+      margin-bottom: 10px;
+    }
+
+    .lesson-time {
+      font-size: 0.85em;
+      color: var(--hint-color);
+      margin-top: 4px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🗓️ Расписание лицея</h1>
+
+  <div class="class-selector">
+    <select id="classSelect" onchange="updateSchedule()">
+      <option value="10A">10 «А» класс</option>
+      <option value="10B">10 «Б» класс</option>
+      <option value="11A">11 «А» класс</option>
+    </select>
+  </div>
+
+  <div id="schedule-container"></div>
+
+  <script>
+    const tg = window.Telegram.WebApp;
+    tg.expand();
+
+    const scheduleData = {
+      "10A": [
+        { num: 1, time: "08:30 - 09:15", subject: "Физика", room: "302" },
+        { num: 2, time: "09:25 - 10:10", subject: "Математика", room: "205" },
+        { num: 3, time: "10:30 - 11:15", subject: "Белорусская литература", room: "410" }
+      ],
+      "10B": [
+        { num: 1, time: "08:30 - 09:15", subject: "Химия", room: "104" },
+        { num: 2, time: "09:25 - 10:10", subject: "Физика", room: "302" }
+      ],
+      "11A": [
+        { num: 1, time: "08:30 - 09:15", subject: "История", room: "212" },
+        { num: 2, time: "09:25 - 10:10", subject: "Математика", room: "205" }
+      ]
+    };
+
+    function updateSchedule() {
+      const selectedClass = document.getElementById('classSelect').value;
+      const container = document.getElementById('schedule-container');
+      const lessons = scheduleData[selectedClass] || [];
+
+      container.innerHTML = '';
+      
+      if (lessons.length === 0) {
+        container.innerHTML = '<p>На этот класс расписание пока не добавлено.</p>';
+        return;
+      }
+
+      lessons.forEach(l => {
+        container.innerHTML += `
+          <div class="lesson-card">
+            <strong>${l.num}. ${l.subject}</strong> 
+            <div style="float: right;">Каб. ${l.room}</div>
+            <div class="lesson-time">⏰ ${l.time}</div>
+          </div>
+        `;
+      });
+    }
+
+    updateSchedule();
+  </script>
+</body>
+</html>
