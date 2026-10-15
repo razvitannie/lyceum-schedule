@@ -15,13 +15,16 @@
       --bntu-green-light: rgba(0, 133, 89, 0.08);
       --border-color: rgba(0, 0, 0, 0.08);
       --input-bg: rgba(0, 0, 0, 0.03);
-      --font-scale: 16px;
       --font-family-custom: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    html {
+      font-size: 16px; /* Базовый размер для масштабирования */
     }
 
     body {
       font-family: var(--font-family-custom);
-      font-size: var(--font-scale);
+      font-size: 1rem;
       background-color: var(--bg-color);
       color: var(--text-color);
       margin: 0;
@@ -150,7 +153,6 @@
       font-size: 0.85rem;
     }
 
-    /* Недели и дни */
     .weeks-scroll, .days-container {
       display: flex;
       gap: 6px;
@@ -198,7 +200,6 @@
       border-color: var(--bntu-green);
     }
 
-    /* Карточки */
     .lesson-card {
       background: var(--card-bg);
       padding: 14px;
@@ -248,7 +249,6 @@
 
     .empty-state { text-align: center; padding: 30px 20px; color: var(--hint-color); font-size: 0.9rem; }
 
-    /* Окно настроек */
     #settingsModal {
       position: fixed;
       top: 0; left: 0; width: 100%; height: 100%;
@@ -358,10 +358,10 @@
     <div id="classBadge" class="user-class-badge" style="display: none;"></div>
   </div>
 
-  <!-- Листалка недель четверти с датами -->
+  <!-- Листалка недель -->
   <div class="weeks-scroll" id="weeksContainer"></div>
 
-  <!-- Дни недели с динамическими датами -->
+  <!-- Дни недели -->
   <div class="days-container" id="daysTabs"></div>
 
   <!-- Контейнер уроков -->
@@ -394,8 +394,11 @@
       <div class="setting-card">
         <h3>Оформление текста</h3>
         <div class="slider-box">
-          <div class="setting-row"><label>Размер шрифта:</label><strong id="fontSizeVal">16 px</strong></div>
-          <input type="range" id="fontRange" class="font-slider" min="13" max="20" value="16" oninput="updateFontSize(this.value)" />
+          <div class="setting-row">
+            <label>Размер шрифта:</label>
+            <strong id="fontSizeVal">16 px</strong>
+          </div>
+          <input type="range" id="fontRange" class="font-slider" min="13" max="22" value="16" oninput="updateFontSize(this.value)" />
           <div class="slider-labels"><span>А (Мелкий)</span><span>А (Обычный)</span><span>А (Крупный)</span></div>
         </div>
         <div style="margin-top: 18px;" class="setting-row">
@@ -443,7 +446,6 @@
       "1102": { classId: "11B", name: "11 «Б» класс", fullName: "Елена Смирнова" }
     };
 
-    // Календарь четверти (Даты для каждой из 8 недель)
     const quarterWeeks = [
       { week: 1, range: "01.09 – 06.09", dates: { monday: "1 сен", tuesday: "2 сен", wednesday: "3 сен", thursday: "4 сен", friday: "5 сен", saturday: "6 сен" } },
       { week: 2, range: "08.09 – 13.09", dates: { monday: "8 сен", tuesday: "9 сен", wednesday: "10 сен", thursday: "11 сен", friday: "12 сен", saturday: "13 сен" } },
@@ -484,8 +486,9 @@
     let currentDay = 'monday';
 
     window.onload = function() {
-      const savedFontSize = localStorage.getItem('pref_font_size_px');
-      if (savedFontSize) updateFontSize(savedFontSize, false);
+      // Инициализация размера шрифта
+      const savedFontSize = localStorage.getItem('pref_font_size_px') || '16';
+      updateFontSize(savedFontSize, false);
 
       const savedFontFamily = localStorage.getItem('pref_font_family');
       if (savedFontFamily) changeFontFamily(savedFontFamily, false);
@@ -504,6 +507,26 @@
         renderSchedule();
       }
     };
+
+    // Мгновенное обновление размера шрифта
+    function updateFontSize(valPx, save = true) {
+      document.documentElement.style.fontSize = valPx + 'px';
+      
+      const valEl = document.getElementById('fontSizeVal');
+      const rangeEl = document.getElementById('fontRange');
+
+      if (valEl) valEl.textContent = valPx + ' px';
+      if (rangeEl) rangeEl.value = valPx;
+
+      if (save) localStorage.setItem('pref_font_size_px', valPx);
+    }
+
+    function changeFontFamily(family, save = true) {
+      document.documentElement.style.setProperty('--font-family-custom', family);
+      if (save) localStorage.setItem('pref_font_family', family);
+      const sel = document.getElementById('fontFamilySelect');
+      if (sel) sel.value = family;
+    }
 
     function renderWeeksTabs() {
       const container = document.getElementById('weeksContainer');
@@ -592,24 +615,6 @@
 
       document.getElementById(`sec-${secName}`).classList.add('active');
       if (event && event.target) event.target.classList.add('active');
-    }
-
-    function updateFontSize(valPx, save = true) {
-      document.documentElement.style.setProperty('--font-scale', `${valPx}px`);
-      const valEl = document.getElementById('fontSizeVal');
-      const rangeEl = document.getElementById('fontRange');
-
-      if (valEl) valEl.textContent = `${valPx} px`;
-      if (rangeEl) rangeEl.value = valPx;
-
-      if (save) localStorage.setItem('pref_font_size_px', valPx);
-    }
-
-    function changeFontFamily(family, save = true) {
-      document.documentElement.style.setProperty('--font-family-custom', family);
-      if (save) localStorage.setItem('pref_font_family', family);
-      const sel = document.getElementById('fontFamilySelect');
-      if (sel) sel.value = family;
     }
 
     function setWeek(weekNum) {
