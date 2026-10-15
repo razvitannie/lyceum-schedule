@@ -15,7 +15,7 @@
       --bntu-green-light: rgba(0, 133, 89, 0.08);
       --border-color: rgba(0, 0, 0, 0.08);
       --input-bg: rgba(0, 0, 0, 0.03);
-      --font-scale: 1em;
+      --font-scale: 16px;
       --font-family-custom: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     }
 
@@ -29,7 +29,6 @@
       -webkit-font-smoothing: antialiased;
     }
 
-    /* Авторизация */
     #authModal {
       position: fixed;
       top: 0; left: 0; width: 100%; height: 100%;
@@ -55,13 +54,13 @@
     }
 
     .auth-card h2 {
-      font-size: 1.2em;
+      font-size: 1.2rem;
       margin: 0 0 8px 0;
       color: var(--bntu-green);
     }
 
     .auth-card p {
-      font-size: 0.85em;
+      font-size: 0.85rem;
       color: var(--hint-color);
       margin-bottom: 16px;
     }
@@ -74,15 +73,13 @@
       border: 1px solid var(--border-color);
       background: var(--input-bg);
       color: var(--text-color);
-      font-size: 1em;
+      font-size: 1rem;
       text-align: center;
       outline: none;
       margin-bottom: 12px;
     }
 
-    .auth-input:focus {
-      border-color: var(--bntu-green);
-    }
+    .auth-input:focus { border-color: var(--bntu-green); }
 
     .auth-btn {
       width: 100%;
@@ -91,19 +88,18 @@
       border: none;
       background: var(--bntu-green);
       color: #ffffff;
-      font-size: 0.95em;
+      font-size: 0.95rem;
       font-weight: 600;
       cursor: pointer;
     }
 
     .error-msg {
       color: #dc3545;
-      font-size: 0.8em;
+      font-size: 0.8rem;
       margin-top: 8px;
       display: none;
     }
 
-    /* Шапка приложения */
     .header {
       position: relative;
       text-align: center;
@@ -111,33 +107,36 @@
     }
 
     .header h1 {
-      font-size: 1.3em;
+      font-size: 1.3rem;
       margin: 0 0 4px 0;
       font-weight: 700;
       color: var(--bntu-green);
     }
 
     .header p {
-      font-size: 0.85em;
+      font-size: 0.85rem;
       color: var(--hint-color);
       margin: 0;
     }
 
-    .settings-icon-btn {
+    .menu-icon-btn {
       position: absolute;
       top: 0;
       right: 0;
       background: var(--card-bg);
       border: 1px solid var(--border-color);
-      border-radius: 50%;
-      width: 36px;
-      height: 36px;
+      border-radius: 10px;
+      width: 38px;
+      height: 38px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.1em;
+      font-size: 1.3rem;
+      font-weight: bold;
+      color: var(--text-color);
       cursor: pointer;
       box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      user-select: none;
     }
 
     .user-class-badge {
@@ -148,7 +147,7 @@
       font-weight: 600;
       padding: 4px 12px;
       border-radius: 20px;
-      font-size: 0.85em;
+      font-size: 0.85rem;
     }
 
     /* Недели и дни */
@@ -169,9 +168,10 @@
       border: 1px solid var(--border-color);
       background: var(--card-bg);
       color: var(--hint-color);
-      font-size: 0.8em;
+      font-size: 0.8rem;
       font-weight: 600;
       cursor: pointer;
+      text-align: center;
     }
 
     .week-tab.active {
@@ -187,7 +187,7 @@
       border: 1px solid var(--border-color);
       background: var(--card-bg);
       color: var(--text-color);
-      font-size: 0.85em;
+      font-size: 0.85rem;
       font-weight: 500;
       cursor: pointer;
     }
@@ -214,14 +214,14 @@
       margin-bottom: 10px;
     }
 
-    .lesson-subject { font-size: 1em; font-weight: 600; }
-    .lesson-time { font-size: 0.8em; color: var(--hint-color); margin-top: 2px; }
+    .lesson-subject { font-size: 1rem; font-weight: 600; }
+    .lesson-time { font-size: 0.8rem; color: var(--hint-color); margin-top: 2px; }
     .lesson-room {
       background: var(--bntu-green-light);
       color: var(--bntu-green);
       padding: 5px 9px;
       border-radius: 8px;
-      font-size: 0.8em;
+      font-size: 0.8rem;
       font-weight: 600;
     }
 
@@ -238,7 +238,7 @@
       background: var(--input-bg);
       border-radius: 8px;
       padding: 8px 10px;
-      font-size: 0.85em;
+      font-size: 0.85rem;
       color: var(--text-color);
       outline: none;
     }
@@ -246,7 +246,7 @@
     .hw-input:focus { border-color: var(--bntu-green); background: var(--card-bg); }
     .hw-input.has-value { background: rgba(0, 133, 89, 0.05); border-color: rgba(0, 133, 89, 0.2); }
 
-    .empty-state { text-align: center; padding: 30px 20px; color: var(--hint-color); font-size: 0.9em; }
+    .empty-state { text-align: center; padding: 30px 20px; color: var(--hint-color); font-size: 0.9rem; }
 
     /* Окно настроек */
     #settingsModal {
@@ -270,18 +270,17 @@
       padding-bottom: 12px;
     }
 
-    .settings-header h2 { margin: 0; font-size: 1.2em; color: var(--bntu-green); }
+    .settings-header h2 { margin: 0; font-size: 1.2rem; color: var(--bntu-green); }
     .close-btn {
       background: var(--card-bg);
       border: 1px solid var(--border-color);
       border-radius: 8px;
       padding: 6px 12px;
-      font-size: 0.9em;
+      font-size: 0.9rem;
       cursor: pointer;
       color: var(--text-color);
     }
 
-    /* Навигация в настройках */
     .settings-nav {
       display: flex;
       gap: 6px;
@@ -299,7 +298,7 @@
       border: none;
       background: transparent;
       color: var(--hint-color);
-      font-size: 0.85em;
+      font-size: 0.85rem;
       font-weight: 600;
       cursor: pointer;
     }
@@ -320,8 +319,8 @@
       margin-bottom: 12px;
     }
 
-    .setting-card h3 { margin: 0 0 10px 0; font-size: 1em; color: var(--text-color); }
-    .setting-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-size: 0.9em; }
+    .setting-card h3 { margin: 0 0 10px 0; font-size: 1rem; color: var(--text-color); }
+    .setting-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-size: 0.9rem; }
     .setting-row label { color: var(--hint-color); }
     
     select.settings-select {
@@ -332,11 +331,15 @@
       color: var(--text-color);
       outline: none;
     }
+
+    .slider-box { margin-top: 10px; }
+    .font-slider { width: 100%; accent-color: var(--bntu-green); cursor: pointer; }
+    .slider-labels { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--hint-color); margin-top: 4px; }
   </style>
 </head>
 <body>
 
-  <!-- Модальное окно авторизации -->
+  <!-- Авторизация -->
   <div id="authModal">
     <div class="auth-card">
       <h2>Лицей БНТУ</h2>
@@ -347,47 +350,30 @@
     </div>
   </div>
 
-  <!-- Главная шапка -->
+  <!-- Шапка -->
   <div class="header">
-    <button class="settings-icon-btn" onclick="openSettings()">⚙️</button>
+    <button class="menu-icon-btn" onclick="openSettings()">☰</button>
     <h1>Лицей БНТУ</h1>
     <p>Электронный дневник</p>
     <div id="classBadge" class="user-class-badge" style="display: none;"></div>
   </div>
 
-  <!-- Листалка недель четверти -->
-  <div class="weeks-scroll" id="weeksContainer">
-    <button class="week-tab active" onclick="setWeek(1, event)">Неделя 1</button>
-    <button class="week-tab" onclick="setWeek(2, event)">Неделя 2</button>
-    <button class="week-tab" onclick="setWeek(3, event)">Неделя 3</button>
-    <button class="week-tab" onclick="setWeek(4, event)">Неделя 4</button>
-    <button class="week-tab" onclick="setWeek(5, event)">Неделя 5</button>
-    <button class="week-tab" onclick="setWeek(6, event)">Неделя 6</button>
-    <button class="week-tab" onclick="setWeek(7, event)">Неделя 7</button>
-    <button class="week-tab" onclick="setWeek(8, event)">Неделя 8</button>
-  </div>
+  <!-- Листалка недель четверти с датами -->
+  <div class="weeks-scroll" id="weeksContainer"></div>
 
-  <!-- Дни недели -->
-  <div class="days-container" id="daysTabs">
-    <button class="day-btn active" onclick="setDay('monday', event)">Понедельник</button>
-    <button class="day-btn" onclick="setDay('tuesday', event)">Вторник</button>
-    <button class="day-btn" onclick="setDay('wednesday', event)">Среда</button>
-    <button class="day-btn" onclick="setDay('thursday', event)">Четверг</button>
-    <button class="day-btn" onclick="setDay('friday', event)">Пятница</button>
-    <button class="day-btn" onclick="setDay('saturday', event)">Суббота</button>
-  </div>
+  <!-- Дни недели с динамическими датами -->
+  <div class="days-container" id="daysTabs"></div>
 
   <!-- Контейнер уроков -->
   <div id="schedule-container"></div>
 
-  <!-- Полноэкранное окно Настроек -->
+  <!-- Окно настроек -->
   <div id="settingsModal">
     <div class="settings-header">
-      <h2>⚙️ Настройки</h2>
+      <h2>Меню</h2>
       <button class="close-btn" onclick="closeSettings()">Закрыть ✖</button>
     </div>
 
-    <!-- Переключатель вкладок внутри настроек -->
     <div class="settings-nav">
       <button class="settings-nav-btn active" onclick="showSection('profile', event)">👤 Профиль</button>
       <button class="settings-nav-btn" onclick="showSection('appearance', event)">🎨 Внешний вид</button>
@@ -395,39 +381,25 @@
       <button class="settings-nav-btn" onclick="showSection('support', event)">💬 Поддержка</button>
     </div>
 
-    <!-- Раздел: Профиль -->
     <div id="sec-profile" class="settings-section active">
       <div class="setting-card">
         <h3>Персональная информация</h3>
-        <div class="setting-row">
-          <label>Имя и Фамилия:</label>
-          <strong id="profName">-</strong>
-        </div>
-        <div class="setting-row">
-          <label>Класс:</label>
-          <strong id="profClass">-</strong>
-        </div>
-        <div class="setting-row">
-          <label>Ваш ID:</label>
-          <strong id="profId">-</strong>
-        </div>
+        <div class="setting-row"><label>Имя и Фамилия:</label><strong id="profName">-</strong></div>
+        <div class="setting-row"><label>Класс:</label><strong id="profClass">-</strong></div>
+        <div class="setting-row"><label>Ваш ID:</label><strong id="profId">-</strong></div>
       </div>
     </div>
 
-    <!-- Раздел: Внешний вид -->
     <div id="sec-appearance" class="settings-section">
       <div class="setting-card">
         <h3>Оформление текста</h3>
-        <div class="setting-row">
-          <label for="fontSizeSelect">Размер шрифта:</label>
-          <select id="fontSizeSelect" class="settings-select" onchange="changeFontSize(this.value)">
-            <option value="0.9em">Мелкий</option>
-            <option value="1em" selected>Обычный</option>
-            <option value="1.1em">Крупный</option>
-          </select>
+        <div class="slider-box">
+          <div class="setting-row"><label>Размер шрифта:</label><strong id="fontSizeVal">16 px</strong></div>
+          <input type="range" id="fontRange" class="font-slider" min="13" max="20" value="16" oninput="updateFontSize(this.value)" />
+          <div class="slider-labels"><span>А (Мелкий)</span><span>А (Обычный)</span><span>А (Крупный)</span></div>
         </div>
-        <div class="setting-row">
-          <label for="fontFamilySelect">Шрифт:</label>
+        <div style="margin-top: 18px;" class="setting-row">
+          <label for="fontFamilySelect">Стиль шрифта:</label>
           <select id="fontFamilySelect" class="settings-select" onchange="changeFontFamily(this.value)">
             <option value="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif">Системный</option>
             <option value="Georgia, serif">Классический (Serif)</option>
@@ -437,22 +409,20 @@
       </div>
     </div>
 
-    <!-- Раздел: О нас -->
     <div id="sec-about" class="settings-section">
       <div class="setting-card">
         <h3>О приложении</h3>
-        <p style="font-size: 0.85em; color: var(--hint-color); line-height: 1.4;">
+        <p style="font-size: 0.85rem; color: var(--hint-color); line-height: 1.4;">
           Официальный электронный дневник и расписание для лицеистов БНТУ.<br><br>
           Разработано специально для оперативного доступа к учебным материалам, расписанию уроков и ведения персональных заметок по домашним заданиям.
         </p>
       </div>
     </div>
 
-    <!-- Раздел: Поддержка -->
     <div id="sec-support" class="settings-section">
       <div class="setting-card">
         <h3>Нужна помощь?</h3>
-        <p style="font-size: 0.85em; color: var(--hint-color); line-height: 1.4;">
+        <p style="font-size: 0.85rem; color: var(--hint-color); line-height: 1.4;">
           Если вы нашли ошибку в расписании или у вас не работает доступ по ID, напишите нам в поддержку:
         </p>
         <div style="margin-top: 12px; text-align: center;">
@@ -466,13 +436,24 @@
     const tg = window.Telegram.WebApp;
     tg.expand();
 
-    // Расширенная база данных участников (ID, Имя Фамилия, Класс)
     const usersDatabase = {
       "1001": { classId: "10A", name: "10 «А» класс", fullName: "Иван Иванов" },
       "1002": { classId: "10B", name: "10 «Б» класс", fullName: "Анна Петрова" },
       "1101": { classId: "11A", name: "11 «А» класс", fullName: "Максим Сидоров" },
       "1102": { classId: "11B", name: "11 «Б» класс", fullName: "Елена Смирнова" }
     };
+
+    // Календарь четверти (Даты для каждой из 8 недель)
+    const quarterWeeks = [
+      { week: 1, range: "01.09 – 06.09", dates: { monday: "1 сен", tuesday: "2 сен", wednesday: "3 сен", thursday: "4 сен", friday: "5 сен", saturday: "6 сен" } },
+      { week: 2, range: "08.09 – 13.09", dates: { monday: "8 сен", tuesday: "9 сен", wednesday: "10 сен", thursday: "11 сен", friday: "12 сен", saturday: "13 сен" } },
+      { week: 3, range: "15.09 – 20.09", dates: { monday: "15 сен", tuesday: "16 сен", wednesday: "17 сен", thursday: "18 сен", friday: "19 сен", saturday: "20 сен" } },
+      { week: 4, range: "22.09 – 27.09", dates: { monday: "22 сен", tuesday: "23 сен", wednesday: "24 сен", thursday: "25 сен", friday: "26 сен", saturday: "27 сен" } },
+      { week: 5, range: "29.09 – 04.10", dates: { monday: "29 сен", tuesday: "30 сен", wednesday: "1 окт", thursday: "2 окт", friday: "3 окт", saturday: "4 окт" } },
+      { week: 6, range: "06.10 – 11.10", dates: { monday: "6 окт", tuesday: "7 окт", wednesday: "8 окт", thursday: "9 окт", friday: "10 окт", saturday: "11 окт" } },
+      { week: 7, range: "13.10 – 18.10", dates: { monday: "13 окт", tuesday: "14 окт", wednesday: "15 окт", thursday: "16 окт", friday: "17 окт", saturday: "18 окт" } },
+      { week: 8, range: "20.10 – 25.10", dates: { monday: "20 окт", tuesday: "21 окт", wednesday: "22 окт", thursday: "23 окт", friday: "24 окт", saturday: "25 окт" } }
+    ];
 
     const scheduleData = {
       "10A": {
@@ -503,15 +484,17 @@
     let currentDay = 'monday';
 
     window.onload = function() {
-      // Загрузка настроек внешнего вида
-      const savedFontSize = localStorage.getItem('pref_font_size');
-      if (savedFontSize) changeFontSize(savedFontSize, false);
+      const savedFontSize = localStorage.getItem('pref_font_size_px');
+      if (savedFontSize) updateFontSize(savedFontSize, false);
 
       const savedFontFamily = localStorage.getItem('pref_font_family');
       if (savedFontFamily) changeFontFamily(savedFontFamily, false);
 
       const savedClassId = localStorage.getItem('lyceum_user_class');
       const savedClassName = localStorage.getItem('lyceum_user_class_name');
+
+      renderWeeksTabs();
+      renderDaysTabs();
 
       if (savedClassId && savedClassName) {
         userClassId = savedClassId;
@@ -521,6 +504,46 @@
         renderSchedule();
       }
     };
+
+    function renderWeeksTabs() {
+      const container = document.getElementById('weeksContainer');
+      container.innerHTML = '';
+
+      quarterWeeks.forEach(w => {
+        const activeClass = w.week === currentWeek ? 'active' : '';
+        container.innerHTML += `
+          <button class="week-tab ${activeClass}" onclick="setWeek(${w.week})">
+            <div>Неделя ${w.week}</div>
+            <div style="font-size: 0.7em; opacity: 0.8; margin-top: 2px;">${w.range}</div>
+          </button>
+        `;
+      });
+    }
+
+    function renderDaysTabs() {
+      const container = document.getElementById('daysTabs');
+      container.innerHTML = '';
+
+      const weekInfo = quarterWeeks.find(w => w.week === currentWeek) || quarterWeeks[0];
+      const days = [
+        { key: 'monday', name: 'Пн' },
+        { key: 'tuesday', name: 'Вт' },
+        { key: 'wednesday', name: 'Ср' },
+        { key: 'thursday', name: 'Чт' },
+        { key: 'friday', name: 'Пт' },
+        { key: 'saturday', name: 'Сб' }
+      ];
+
+      days.forEach(d => {
+        const activeClass = d.key === currentDay ? 'active' : '';
+        const dateStr = weekInfo.dates[d.key] || '';
+        container.innerHTML += `
+          <button class="day-btn ${activeClass}" onclick="setDay('${d.key}')">
+            ${d.name}, ${dateStr}
+          </button>
+        `;
+      });
+    }
 
     function verifyId() {
       const enteredId = document.getElementById('idInput').value.trim();
@@ -560,14 +583,8 @@
       badge.style.display = 'inline-block';
     }
 
-    /* Настройки окно */
-    function openSettings() {
-      document.getElementById('settingsModal').style.display = 'flex';
-    }
-
-    function closeSettings() {
-      document.getElementById('settingsModal').style.display = 'none';
-    }
+    function openSettings() { document.getElementById('settingsModal').style.display = 'flex'; }
+    function closeSettings() { document.getElementById('settingsModal').style.display = 'none'; }
 
     function showSection(secName, event) {
       document.querySelectorAll('.settings-section').forEach(sec => sec.classList.remove('active'));
@@ -577,11 +594,15 @@
       if (event && event.target) event.target.classList.add('active');
     }
 
-    function changeFontSize(size, save = true) {
-      document.documentElement.style.setProperty('--font-scale', size);
-      if (save) localStorage.setItem('pref_font_size', size);
-      const sel = document.getElementById('fontSizeSelect');
-      if (sel) sel.value = size;
+    function updateFontSize(valPx, save = true) {
+      document.documentElement.style.setProperty('--font-scale', `${valPx}px`);
+      const valEl = document.getElementById('fontSizeVal');
+      const rangeEl = document.getElementById('fontRange');
+
+      if (valEl) valEl.textContent = `${valPx} px`;
+      if (rangeEl) rangeEl.value = valPx;
+
+      if (save) localStorage.setItem('pref_font_size_px', valPx);
     }
 
     function changeFontFamily(family, save = true) {
@@ -591,17 +612,16 @@
       if (sel) sel.value = family;
     }
 
-    function setWeek(weekNum, event) {
+    function setWeek(weekNum) {
       currentWeek = weekNum;
-      document.querySelectorAll('.week-tab').forEach(tab => tab.classList.remove('active'));
-      if (event && event.target) event.target.classList.add('active');
+      renderWeeksTabs();
+      renderDaysTabs();
       renderSchedule();
     }
 
-    function setDay(day, event) {
+    function setDay(day) {
       currentDay = day;
-      document.querySelectorAll('.day-btn').forEach(btn => btn.classList.remove('active'));
-      if (event && event.target) event.target.classList.add('active');
+      renderDaysTabs();
       renderSchedule();
     }
 
@@ -629,6 +649,8 @@
       const container = document.getElementById('schedule-container');
       const classSchedule = scheduleData[userClassId] || {};
       const lessons = classSchedule[currentDay] || [];
+      const weekInfo = quarterWeeks.find(w => w.week === currentWeek) || quarterWeeks[0];
+      const dateStr = weekInfo.dates[currentDay] || '';
 
       container.innerHTML = '';
 
@@ -655,7 +677,7 @@
                 type="text" 
                 id="input_${l.id}"
                 class="hw-input ${hasValueClass}" 
-                placeholder="✍️ ДЗ на ${currentWeek} неделю..." 
+                placeholder="✍️ ДЗ на ${dateStr}..." 
                 value="${savedHw}"
                 oninput="saveHomework('${l.id}', this.value)"
               />
