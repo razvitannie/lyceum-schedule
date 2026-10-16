@@ -183,26 +183,37 @@
     }
     .day-btn.active { background: var(--bntu-green); color: #ffffff; border-color: var(--bntu-green); }
 
-    /* Карточка урока и ее динамические уровни цветом */
+    /* Карточка урока */
     .lesson-card {
       background: var(--card-bg); padding: 14px; border-radius: 12px;
       margin-bottom: 12px; border: 1px solid var(--border-color);
       transition: background-color 0.2s, border-color 0.2s;
     }
 
-    /* Цветовые стили карточек в зависимости от оценки */
-    .lesson-card.grade-green { background-color: rgba(40, 167, 69, 0.1); border-color: rgba(40, 167, 69, 0.4); }
-    .lesson-card.grade-lightgreen { background-color: rgba(144, 238, 144, 0.15); border-color: rgba(144, 238, 144, 0.5); }
-    .lesson-card.grade-yellow { background-color: rgba(255, 235, 59, 0.15); border-color: rgba(255, 235, 59, 0.5); }
-    .lesson-card.grade-orange { background-color: rgba(253, 126, 20, 0.1); border-color: rgba(253, 126, 20, 0.4); }
-    .lesson-card.grade-red { background-color: rgba(220, 53, 69, 0.1); border-color: rgba(220, 53, 69, 0.4); }
+    /* Уровни расцветки блоков и плашек кабинетов */
+    .lesson-card.grade-green { background-color: rgba(40, 167, 69, 0.12); border-color: rgba(40, 167, 69, 0.4); }
+    .lesson-card.grade-green .lesson-room { background-color: rgba(40, 167, 69, 0.2); color: #155724; }
+
+    .lesson-card.grade-lightgreen { background-color: rgba(144, 238, 144, 0.2); border-color: rgba(144, 238, 144, 0.6); }
+    .lesson-card.grade-lightgreen .lesson-room { background-color: rgba(40, 167, 69, 0.15); color: #28a745; }
+
+    .lesson-card.grade-yellow { background-color: rgba(255, 235, 59, 0.2); border-color: rgba(255, 193, 7, 0.5); }
+    .lesson-card.grade-yellow .lesson-room { background-color: rgba(255, 193, 7, 0.25); color: #856404; }
+
+    .lesson-card.grade-orange { background-color: rgba(253, 126, 20, 0.12); border-color: rgba(253, 126, 20, 0.4); }
+    .lesson-card.grade-orange .lesson-room { background-color: rgba(253, 126, 20, 0.2); color: #d35400; }
+
+    .lesson-card.grade-red { background-color: rgba(220, 53, 69, 0.12); border-color: rgba(220, 53, 69, 0.4); }
+    .lesson-card.grade-red .lesson-room { background-color: rgba(220, 53, 69, 0.2); color: #721c24; }
 
     .lesson-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
     .lesson-subject { font-size: 1rem; font-weight: 600; }
     .lesson-time { font-size: 0.8rem; color: var(--hint-color); margin-top: 2px; }
+    
     .lesson-room {
       background: var(--bntu-green-light); color: var(--bntu-green);
       padding: 5px 9px; border-radius: 8px; font-size: 0.8rem; font-weight: 600;
+      transition: background-color 0.2s, color 0.2s;
     }
 
     /* Инпуты оценки и ДЗ */
@@ -384,8 +395,8 @@
         </div>
         <div class="menu-item-content">
           <p style="font-size: 0.85rem; color: var(--hint-color); margin: 0 0 8px 0; line-height: 1.4;">
-            <strong>📌 Цветовая подсветка оценок</strong><br>
-            Теперь при вводе оценки карточка урока автоматически окрашивается в нужный цвет (от зеленого для 9-10 до красного для 1-2).
+            <strong>📌 Обновление дизайна</strong><br>
+            Теперь при выставлении оценки меняется цвет не только карточки урока, но и плашки кабинета под соответствующий уровень балла.
           </p>
         </div>
       </div>
@@ -720,22 +731,20 @@
       }
     }
 
-    /* Функция определения класса цвета карточки по значению оценки */
     function getGradeColorClass(val) {
       const num = parseInt(val);
       if (isNaN(num)) {
         if (val.toUpperCase() === 'Н' || val.toUpperCase() === 'N') return 'grade-red';
         return '';
       }
-      if (num >= 9 && num <= 10) return 'grade-green';     // Зеленый (отлично)
-      if (num >= 7 && num <= 8) return 'grade-lightgreen'; // Салатовый (хорошо)
-      if (num >= 5 && num <= 6) return 'grade-yellow';     // Желтый (удовлетворительно)
-      if (num >= 3 && num <= 4) return 'grade-orange';     // Оранжевый (низкий)
-      if (num >= 1 && num <= 2) return 'grade-red';        // Красный (плохо)
+      if (num >= 9 && num <= 10) return 'grade-green';     // Зеленый (9-10)
+      if (num >= 7 && num <= 8) return 'grade-lightgreen'; // Салатовый (7-8)
+      if (num >= 5 && num <= 6) return 'grade-yellow';     // Желтый (5-6)
+      if (num >= 3 && num <= 4) return 'grade-orange';     // Оранжевый (3-4)
+      if (num >= 1 && num <= 2) return 'grade-red';        // Красный (1-2)
       return '';
     }
 
-    /* Сохранение оценки и мгновенное обновление цвета карточки */
     function saveMark(lessonId, subjectName, val) {
       const key = `mark_w${currentWeek}_${currentDay}_${lessonId}`;
       const subjectKey = `mark_subj_w${currentWeek}_${currentDay}_${lessonId}`;
@@ -749,12 +758,9 @@
         localStorage.setItem(subjectKey, subjectName);
       }
 
-      // Обновляем класс цвета карточки урока на лету
       const cardEl = document.getElementById(`card_${lessonId}`);
       if (cardEl) {
-        // Убираем старые цветовые классы
         cardEl.classList.remove('grade-green', 'grade-lightgreen', 'grade-yellow', 'grade-orange', 'grade-red');
-        // Добавляем новый, если оценка задана
         const colorClass = getGradeColorClass(cleanVal);
         if (colorClass) cardEl.classList.add(colorClass);
       }
