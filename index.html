@@ -216,15 +216,16 @@
       transition: background-color 0.2s, color 0.2s;
     }
 
-    /* Инпуты оценки и ДЗ */
+    /* Выпадающий список выбора отметки и ДЗ */
     .lesson-inputs-row { display: flex; gap: 8px; margin-top: 8px; border-top: 1px dashed var(--border-color); padding-top: 8px; }
     
-    .mark-input {
-      width: 65px; box-sizing: border-box; border: 1px solid var(--border-color);
-      background: var(--input-bg); border-radius: 8px; padding: 8px;
-      font-size: 0.85rem; font-weight: 700; text-align: center; outline: none;
+    .mark-select {
+      width: 75px; box-sizing: border-box; border: 1px solid var(--border-color);
+      background: var(--card-bg); border-radius: 8px; padding: 6px;
+      font-size: 0.85rem; font-weight: 700; text-align: center; color: var(--text-color); outline: none;
+      cursor: pointer;
     }
-    .mark-input:focus { background: var(--card-bg); }
+    .mark-select:focus { border-color: var(--bntu-green); }
 
     .hw-container { flex: 1; }
     .hw-input {
@@ -395,8 +396,8 @@
         </div>
         <div class="menu-item-content">
           <p style="font-size: 0.85rem; color: var(--hint-color); margin: 0 0 8px 0; line-height: 1.4;">
-            <strong>📌 Обновление дизайна</strong><br>
-            Теперь при выставлении оценки меняется цвет не только карточки урока, но и плашки кабинета под соответствующий уровень балла.
+            <strong>📌 Выбор отметок из списка</strong><br>
+            Теперь оценку или пропуск «Н» можно удобно выбрать из выпадающего списка прямо в карточке урока.
           </p>
         </div>
       </div>
@@ -750,7 +751,7 @@
       const subjectKey = `mark_subj_w${currentWeek}_${currentDay}_${lessonId}`;
       const cleanVal = val.trim().toUpperCase();
 
-      if (cleanVal === '') {
+      if (cleanVal === '' || cleanVal === '-') {
         localStorage.removeItem(key);
         localStorage.removeItem(subjectKey);
       } else {
@@ -870,6 +871,15 @@
         const hasHwClass = savedHw ? 'has-value' : '';
         const cardColorClass = getGradeColorClass(savedMark);
 
+        // Формируем выпадающий список для оценок
+        let optionsHtml = `<option value="">—</option>`;
+        for (let i = 10; i >= 1; i--) {
+          const selected = savedMark == i ? 'selected' : '';
+          optionsHtml += `<option value="${i}" ${selected}>${i}</option>`;
+        }
+        const selectedN = (savedMark === 'Н' || savedMark === 'N') ? 'selected' : '';
+        optionsHtml += `<option value="Н" ${selectedN}>Н</option>`;
+
         container.innerHTML += `
           <div class="lesson-card ${cardColorClass}" id="card_${l.id}">
             <div class="lesson-header">
@@ -881,15 +891,13 @@
             </div>
             
             <div class="lesson-inputs-row">
-              <input 
-                type="text" 
+              <select 
                 id="mark_${l.id}"
-                class="mark-input"
-                placeholder="Балл/Н"
-                maxLength="2"
-                value="${savedMark}"
-                oninput="saveMark('${l.id}', '${l.subject}', this.value)"
-              />
+                class="mark-select"
+                onchange="saveMark('${l.id}', '${l.subject}', this.value)"
+              >
+                ${optionsHtml}
+              </select>
               <div class="hw-container">
                 <input 
                   type="text" 
