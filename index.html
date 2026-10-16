@@ -183,11 +183,20 @@
     }
     .day-btn.active { background: var(--bntu-green); color: #ffffff; border-color: var(--bntu-green); }
 
-    /* Карточка урока */
+    /* Карточка урока и ее динамические уровни цветом */
     .lesson-card {
       background: var(--card-bg); padding: 14px; border-radius: 12px;
       margin-bottom: 12px; border: 1px solid var(--border-color);
+      transition: background-color 0.2s, border-color 0.2s;
     }
+
+    /* Цветовые стили карточек в зависимости от оценки */
+    .lesson-card.grade-green { background-color: rgba(40, 167, 69, 0.1); border-color: rgba(40, 167, 69, 0.4); }
+    .lesson-card.grade-lightgreen { background-color: rgba(144, 238, 144, 0.15); border-color: rgba(144, 238, 144, 0.5); }
+    .lesson-card.grade-yellow { background-color: rgba(255, 235, 59, 0.15); border-color: rgba(255, 235, 59, 0.5); }
+    .lesson-card.grade-orange { background-color: rgba(253, 126, 20, 0.1); border-color: rgba(253, 126, 20, 0.4); }
+    .lesson-card.grade-red { background-color: rgba(220, 53, 69, 0.1); border-color: rgba(220, 53, 69, 0.4); }
+
     .lesson-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
     .lesson-subject { font-size: 1rem; font-weight: 600; }
     .lesson-time { font-size: 0.8rem; color: var(--hint-color); margin-top: 2px; }
@@ -202,11 +211,9 @@
     .mark-input {
       width: 65px; box-sizing: border-box; border: 1px solid var(--border-color);
       background: var(--input-bg); border-radius: 8px; padding: 8px;
-      font-size: 0.85rem; font-weight: 700; text-align: center; color: var(--bntu-green); outline: none;
+      font-size: 0.85rem; font-weight: 700; text-align: center; outline: none;
     }
-    .mark-input:focus { border-color: var(--bntu-green); background: var(--card-bg); }
-    .mark-input.has-value { background: rgba(0, 133, 89, 0.08); border-color: var(--bntu-green); }
-    .mark-input.is-absent { color: #dc3545; background: rgba(220, 53, 69, 0.08); border-color: #dc3545; }
+    .mark-input:focus { background: var(--card-bg); }
 
     .hw-container { flex: 1; }
     .hw-input {
@@ -347,7 +354,7 @@
         </div>
       </div>
 
-      <!-- Успеваемость и пропускаемость (НОВАЯ ПЛАШКА) -->
+      <!-- Успеваемость и пропускаемость -->
       <div class="menu-item-card" id="card-performance">
         <div class="menu-item-header" onclick="toggleMenu('performance')">
           <span>📊 Успеваемость и пропуски</span> <span>▼</span>
@@ -377,8 +384,8 @@
         </div>
         <div class="menu-item-content">
           <p style="font-size: 0.85rem; color: var(--hint-color); margin: 0 0 8px 0; line-height: 1.4;">
-            <strong>📌 Учёт успеваемости</strong><br>
-            В дневник добавлена возможность ставит отметки от 1 до 10 или «Н» напротив уроков! Средний балл автоматически рассчитывается в меню.
+            <strong>📌 Цветовая подсветка оценок</strong><br>
+            Теперь при вводе оценки карточка урока автоматически окрашивается в нужный цвет (от зеленого для 9-10 до красного для 1-2).
           </p>
         </div>
       </div>
@@ -698,7 +705,6 @@
       renderSchedule();
     }
 
-    /* Сохранение домашнего задания */
     function saveHomework(lessonId, text) {
       const key = `hw_w${currentWeek}_${currentDay}_${lessonId}`;
       if (text.trim() === '') {
@@ -714,7 +720,22 @@
       }
     }
 
-    /* Сохранение оценки или "Н" */
+    /* Функция определения класса цвета карточки по значению оценки */
+    function getGradeColorClass(val) {
+      const num = parseInt(val);
+      if (isNaN(num)) {
+        if (val.toUpperCase() === 'Н' || val.toUpperCase() === 'N') return 'grade-red';
+        return '';
+      }
+      if (num >= 9 && num <= 10) return 'grade-green';     // Зеленый (отлично)
+      if (num >= 7 && num <= 8) return 'grade-lightgreen'; // Салатовый (хорошо)
+      if (num >= 5 && num <= 6) return 'grade-yellow';     // Желтый (удовлетворительно)
+      if (num >= 3 && num <= 4) return 'grade-orange';     // Оранжевый (низкий)
+      if (num >= 1 && num <= 2) return 'grade-red';        // Красный (плохо)
+      return '';
+    }
+
+    /* Сохранение оценки и мгновенное обновление цвета карточки */
     function saveMark(lessonId, subjectName, val) {
       const key = `mark_w${currentWeek}_${currentDay}_${lessonId}`;
       const subjectKey = `mark_subj_w${currentWeek}_${currentDay}_${lessonId}`;
@@ -728,27 +749,23 @@
         localStorage.setItem(subjectKey, subjectName);
       }
 
-      const markInputEl = document.getElementById(`mark_${lessonId}`);
-      if (markInputEl) {
-        markInputEl.value = cleanVal;
-        markInputEl.classList.remove('has-value', 'is-absent');
-
-        if (cleanVal === 'Н' || cleanVal === 'N') {
-          markInputEl.classList.add('is-absent');
-        } else if (cleanVal !== '') {
-          markInputEl.classList.add('has-value');
-        }
+      // Обновляем класс цвета карточки урока на лету
+      const cardEl = document.getElementById(`card_${lessonId}`);
+      if (cardEl) {
+        // Убираем старые цветовые классы
+        cardEl.classList.remove('grade-green', 'grade-lightgreen', 'grade-yellow', 'grade-orange', 'grade-red');
+        // Добавляем новый, если оценка задана
+        const colorClass = getGradeColorClass(cleanVal);
+        if (colorClass) cardEl.classList.add(colorClass);
       }
     }
 
-    /* Расчет статистики по успеваемости */
     function calculatePerformanceStats() {
       let subjectMarks = {};
       let totalAbsencesCount = 0;
       let allNumericMarksSum = 0;
       let allNumericMarksCount = 0;
 
-      // Пробегаем по локальному хранилищу
       for (let i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i);
         if (key.startsWith('mark_w')) {
@@ -774,7 +791,6 @@
         }
       }
 
-      // Выводим суммарные данные
       const totalAvgEl = document.getElementById('totalAvgMark');
       const totalAbsencesEl = document.getElementById('totalAbsences');
       const container = document.getElementById('subjectStatsContainer');
@@ -846,12 +862,10 @@
         const savedMark = localStorage.getItem(`mark_w${currentWeek}_${currentDay}_${l.id}`) || '';
         
         const hasHwClass = savedHw ? 'has-value' : '';
-        let markClass = '';
-        if (savedMark === 'Н' || savedMark === 'N') markClass = 'is-absent';
-        else if (savedMark !== '') markClass = 'has-value';
+        const cardColorClass = getGradeColorClass(savedMark);
 
         container.innerHTML += `
-          <div class="lesson-card">
+          <div class="lesson-card ${cardColorClass}" id="card_${l.id}">
             <div class="lesson-header">
               <div>
                 <div class="lesson-subject">${l.num}. ${l.subject}</div>
@@ -864,7 +878,7 @@
               <input 
                 type="text" 
                 id="mark_${l.id}"
-                class="mark-input ${markClass}"
+                class="mark-input"
                 placeholder="Балл/Н"
                 maxLength="2"
                 value="${savedMark}"
