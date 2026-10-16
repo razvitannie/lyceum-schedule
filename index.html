@@ -109,15 +109,62 @@
       user-select: none;
     }
 
-    .user-class-badge {
-      display: inline-block;
-      margin-top: 6px;
+    /* Интерактивная кнопка выбора недели в шапке */
+    .week-dropdown-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 8px;
       background: var(--bntu-green-light);
       color: var(--bntu-green);
+      border: 1px solid rgba(0, 133, 89, 0.2);
       font-weight: 600;
-      padding: 4px 12px;
+      padding: 6px 14px;
       border-radius: 20px;
       font-size: 0.85rem;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .week-dropdown-btn:active {
+      background: rgba(0, 133, 89, 0.15);
+    }
+
+    /* Модальное окно со списком недель */
+    #weekSelectModal {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(4px);
+      z-index: 2500; display: none;
+      justify-content: center; align-items: center; padding: 20px; box-sizing: border-box;
+    }
+
+    .week-modal-card {
+      background: var(--card-bg);
+      width: 100%; max-width: 340px;
+      border-radius: 16px; padding: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      border: 1px solid var(--border-color);
+      max-height: 80vh; overflow-y: auto;
+    }
+
+    .week-modal-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 14px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;
+    }
+    .week-modal-header h3 { margin: 0; font-size: 1.1rem; color: var(--bntu-green); }
+
+    .week-list-item {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 10px 12px; border-radius: 10px; margin-bottom: 6px;
+      background: var(--bg-color); border: 1px solid var(--border-color);
+      cursor: pointer; transition: background 0.2s;
+      font-size: 0.9rem;
+    }
+    .week-list-item.selected {
+      background: var(--bntu-green-light);
+      border-color: var(--bntu-green);
+      color: var(--bntu-green);
+      font-weight: 600;
     }
 
     /* Переключатель недель со стрелочками */
@@ -261,12 +308,26 @@
     </div>
   </div>
 
+  <!-- Модальное окно выбора недели со списком -->
+  <div id="weekSelectModal" onclick="closeWeekModal(event)">
+    <div class="week-modal-card" onclick="event.stopPropagation()">
+      <div class="week-modal-header">
+        <h3>Выберите неделю</h3>
+        <button class="close-btn" onclick="toggleWeekModal(false)">✖</button>
+      </div>
+      <div id="weekModalList"></div>
+    </div>
+  </div>
+
   <!-- Шапка -->
   <div class="header">
     <button class="menu-icon-btn" onclick="openSettings()">☰</button>
     <h1>Лицей БНТУ</h1>
     <p>Электронный дневник</p>
-    <div id="classBadge" class="user-class-badge" style="display: none;"></div>
+    <!-- Кнопка выбора недели вместо названия класса -->
+    <button class="week-dropdown-btn" onclick="toggleWeekModal(true)">
+      <span id="headerWeekBadge">Неделя 1 (01.09 – 06.09)</span> ▼
+    </button>
   </div>
 
   <!-- Переключатель недель со стрелочками -->
@@ -334,8 +395,8 @@
         </div>
         <div class="menu-item-content">
           <p style="font-size: 0.85rem; color: var(--hint-color); margin: 0; line-height: 1.4;">
-  Официальный электронный дневник и расписание Лицея БНТУ.<br><br>
-  Приложение создано для удобного просмотра актуального расписания уроков с учетом деления на группы и замены кабинетов, а также для ведения персональных заметок по домашним заданиям на каждую неделю четверти.
+            Официальный электронный дневник и расписание Лицея БНТУ.<br><br>
+            Приложение создано для удобного просмотра актуального расписания уроков с учетом деления на группы и замены кабинетов, а также для ведения персональных заметок по домашним заданиям на каждую неделю четверти.
           </p>
         </div>
       </div>
@@ -345,12 +406,12 @@
           <span>💬 Поддержка</span> <span>▼</span>
         </div>
         <div class="menu-item-content">
-         <p style="font-size: 0.85rem; color: var(--hint-color); margin: 0 0 10px 0; line-height: 1.4;">
-          Если у вас возникли вопросы по работе дневника, ошибки в расписании или проблемы с входом по ID, напишите нам в службу поддержки:
-        </p>
-        <div style="text-align: center;">
-          <a href="https://t.me/telegram" target="_blank" style="color: var(--bntu-green); font-weight: 600; text-decoration: none;">💬 Написать в поддержку</a>
-        </div>
+          <p style="font-size: 0.85rem; color: var(--hint-color); margin: 0 0 10px 0; line-height: 1.4;">
+            Если у вас возникли вопросы по работе дневника, ошибки в расписании или проблемы с входом по ID, напишите нам в службу поддержки:
+          </p>
+          <div style="text-align: center;">
+            <a href="https://t.me/telegram" target="_blank" style="color: var(--bntu-green); font-weight: 600; text-decoration: none;">💬 Написать в поддержку</a>
+          </div>
         </div>
       </div>
     </div>
@@ -456,11 +517,11 @@
 
       updateWeekUI();
       renderDaysTabs();
+      renderWeekModalList();
 
       if (savedClassId && savedClassName) {
         userClassId = savedClassId;
         userGroup = savedGroup ? parseInt(savedGroup) : 1;
-        showClassBadge(savedClassName);
         document.getElementById('authModal').style.display = 'none';
         updateProfileData();
         renderSchedule();
@@ -492,6 +553,34 @@
       if (!isExpanded) card.classList.add('expanded');
     }
 
+    // Управление модальным окном выбора недели
+    function toggleWeekModal(show) {
+      document.getElementById('weekSelectModal').style.display = show ? 'flex' : 'none';
+      if (show) renderWeekModalList();
+    }
+
+    function renderWeekModalList() {
+      const container = document.getElementById('weekModalList');
+      container.innerHTML = '';
+      quarterWeeks.forEach(w => {
+        const isSelected = w.week === currentWeek ? 'selected' : '';
+        container.innerHTML += `
+          <div class="week-list-item ${isSelected}" onclick="selectWeek(${w.week})">
+            <span>Неделя ${w.week}</span>
+            <span style="font-size: 0.8rem; color: var(--hint-color);">${w.range}</span>
+          </div>
+        `;
+      });
+    }
+
+    function selectWeek(weekNum) {
+      currentWeek = weekNum;
+      toggleWeekModal(false);
+      updateWeekUI();
+      renderDaysTabs();
+      renderSchedule();
+    }
+
     function changeWeek(direction) {
       currentWeek += direction;
       if (currentWeek < 1) currentWeek = 8;
@@ -506,6 +595,7 @@
       const weekInfo = quarterWeeks.find(w => w.week === currentWeek) || quarterWeeks[0];
       document.getElementById('weekTitle').textContent = `Неделя ${weekInfo.week}`;
       document.getElementById('weekRange').textContent = weekInfo.range;
+      document.getElementById('headerWeekBadge').textContent = `Неделя ${weekInfo.week} (${weekInfo.range})`;
     }
 
     function renderDaysTabs() {
@@ -547,7 +637,6 @@
         localStorage.setItem('lyceum_user_class_name', userData.name);
         localStorage.setItem('lyceum_user_fullname', userData.fullName);
 
-        showClassBadge(userData.name);
         document.getElementById('authModal').style.display = 'none';
         updateProfileData();
         renderSchedule();
@@ -564,12 +653,6 @@
       document.getElementById('profName').textContent = userName;
       document.getElementById('profClass').textContent = className;
       document.getElementById('profId').textContent = userId;
-    }
-
-    function showClassBadge(className) {
-      const badge = document.getElementById('classBadge');
-      badge.textContent = `Класс: ${className}`;
-      badge.style.display = 'inline-block';
     }
 
     function openSettings() { document.getElementById('settingsModal').style.display = 'flex'; }
