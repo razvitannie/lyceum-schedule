@@ -802,4 +802,243 @@
         localStorage.setItem('lyceum_user_class', userData.classId);
         localStorage.setItem('lyceum_user_group', userData.group);
         localStorage.setItem('lyceum_user_class_name', userData.name);
-        localStorage.setItem('lyce
+        localStorage.setItem('lyceum_user_fullname', userData.fullName);
+
+        document.getElementById('authModal').style.display = 'none';
+        updateProfileData();
+        renderSchedule();
+      } else {
+        errorMsg.style.display = 'block';
+      }
+    }
+
+    function updateProfileData() {
+      const userId = localStorage.getItem('lyceum_user_id') || '-';
+      const userName = localStorage.getItem('lyceum_user_fullname') || '-';
+      const className = localStorage.getItem('lyceum_user_class_name') || '-';
+
+      document.getElementById('profName').textContent = userName;
+      document.getElementById('profClass').textContent = className;
+      document.getElementById('profId').textContent = userId;
+    }
+
+    function logoutAccount() {
+      localStorage.removeItem('lyceum_user_id');
+      localStorage.removeItem('lyceum_user_class');
+      localStorage.removeItem('lyceum_user_group');
+      localStorage.removeItem('lyceum_user_class_name');
+      localStorage.removeItem('lyceum_user_fullname');
+      location.reload();
+    }
+
+    function openSettings() { document.getElementById('settingsModal').style.display = 'flex'; }
+    function closeSettings() { document.getElementById('settingsModal').style.display = 'none'; }
+
+    function setDay(day) {
+      currentDay = day;
+      renderDaysTabs();
+      renderSchedule();
+    }
+
+    function saveHomework(lessonId, text) {
+      const key = `hw_w${currentWeek}_${currentDay}_${lessonId}`;
+      if (text.trim() === '') {
+        localStorage.removeItem(key);
+      } else {
+        localStorage.setItem(key, text);
+      }
+      
+      const inputEl = document.getElementById(`input_${lessonId}`);
+      if (inputEl) {
+        if (text.trim() !== '') inputEl.classList.add('has-value');
+        else inputEl.classList.remove('has-value');
+      }
+    }
+
+    function getGradeColorClass(val) {
+      const num = parseInt(val);
+      if (isNaN(num)) {
+        if (val.toUpperCase() === 'Н' || val.toUpperCase() === 'N') return 'grade-red';
+        return '';
+      }
+      if (num >= 9 && num <= 10) return 'grade-green';
+      if (num >= 7 && num <= 8) return 'grade-lightgreen';
+      if (num >= 5 && num <= 6) return 'grade-yellow';
+      if (num >= 3 && num <= 4) return 'grade-orange';
+      if (num >= 1 && num <= 2) return 'grade-red';
+      return '';
+    }
+
+    function saveMark(lessonId, subjectName, val) {
+      const key = `mark_w${currentWeek}_${currentDay}_${lessonId}`;
+      const subjectKey = `mark_subj_w${currentWeek}_${currentDay}_${lessonId}`;
+      const cleanVal = val.trim().toUpperCase();
+
+      if (cleanVal === '' || cleanVal === '-') {
+        localStorage.removeItem(key);
+        localStorage.removeItem(subjectKey);
+      } else {
+        localStorage.setItem(key, cleanVal);
+        localStorage.setItem(subjectKey, subjectName);
+      }
+
+      const cardEl = document.getElementById(`card_${lessonId}`);
+      if (cardEl) {
+        cardEl.classList.remove('grade-green', 'grade-lightgreen', 'grade-yellow', 'grade-orange', 'grade-red');
+        const colorClass = getGradeColorClass(cleanVal);
+        if (colorClass) cardEl.classList.add(colorClass);
+      }
+    }
+
+    function calculatePerformanceStats() {
+      let subjectMarks = {};
+      let totalAbsencesCount = 0;
+      let allNumericMarksSum = 0;
+      let allNumericMarksCount = 0;
+
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key.startsWith('mark_w')) {
+          const val = localStorage.getItem(key);
+          const subjKey = key.replace('mark_w', 'mark_subj_w');
+          const subjectName = localStorage.getItem(subjKey) || 'Прочие предметы';
+
+          if (!subjectMarks[subjectName]) {
+            subjectMarks[subjectName] = { marks: [], absences: 0 };
+          }
+
+          if (val === 'Н' || val === 'N') {
+            subjectMarks[subjectName].absences += 1;
+            totalAbsencesCount += 1;
+          } else {
+            const num = parseFloat(val);
+            if (!isNaN(num) && num >= 1 && num <= 10) {
+              subjectMarks[subjectName].marks.push(num);
+              allNumericMarksSum += num;
+              allNumericMarksCount += 1;
+            }
+          }
+        }
+      }
+
+      const totalAvgEl = document.getElementById('totalAvgMark');
+      const totalAbsencesEl = document.getElementById('totalAbsences');
+      const container = document.getElementById('subjectStatsContainer');
+
+      totalAbsencesEl.textContent = `${totalAbsencesCount} уроков`;
+
+      if (allNumericMarksCount > 0) {
+        totalAvgEl.textContent = (allNumericMarksSum / allNumericMarksCount).toFixed(2);
+      } else {
+        totalAvgEl.textContent = '-';
+      }
+
+      const subjects = Object.keys(subjectMarks);
+      if (subjects.length === 0) {
+        container.innerHTML = `<div style="color: var(--hint-color); font-size: 0.88rem;">Оценки пока не выставлены.</div>`;
+        return;
+      }
+
+      let html = `<table class="subject-stat-table">
+        <thead>
+          <tr>
+            <th>Предмет</th>
+            <th>Оценки</th>
+            <th style="text-align: center;">Ср. балл</th>
+            <th style="text-align: center;">Пропуски</th>
+          </tr>
+        </thead>
+        <tbody>`;
+
+      subjects.forEach(subj => {
+        const data = subjectMarks[subj];
+        const marksStr = data.marks.length > 0 ? data.marks.join(', ') : '-';
+        const avg = data.marks.length > 0 ? (data.marks.reduce((a, b) => a + b, 0) / data.marks.length).toFixed(2) : '-';
+
+        html += `
+          <tr>
+            <td><strong>${subj}</strong></td>
+            <td style="color: var(--bntu-green); font-weight: 500;">${marksStr}</td>
+            <td style="text-align: center; font-weight: 600;">${avg}</td>
+            <td style="text-align: center; color: #dc3545; font-weight: 600;">${data.absences > 0 ? data.absences : '-'}</td>
+          </tr>
+        `;
+      });
+
+      html += `</tbody></table>`;
+      container.innerHTML = html;
+    }
+
+    function renderSchedule() {
+      if (!userClassId) return;
+
+      const weekInfo = quarterWeeks.find(w => w.week === currentWeek) || quarterWeeks[0];
+      const dateStr = weekInfo.dates[currentDay] || '';
+
+      document.getElementById('selectedDayFull').textContent = fullDayNames[currentDay] || 'Понедельник';
+      document.getElementById('selectedDateBadge').textContent = dateStr;
+
+      const container = document.getElementById('schedule-container');
+      const classSchedule = scheduleData[userClassId] || {};
+      const allLessons = classSchedule[currentDay] || [];
+      
+      const lessons = allLessons.filter(l => !l.group || l.group === userGroup);
+
+      container.innerHTML = '';
+
+      if (lessons.length === 0) {
+        container.innerHTML = `<div class="empty-state">🎉 На этот день уроков нет или расписание не заполнено.</div>`;
+        return;
+      }
+
+      lessons.forEach(l => {
+        const savedHw = localStorage.getItem(`hw_w${currentWeek}_${currentDay}_${l.id}`) || '';
+        const savedMark = localStorage.getItem(`mark_w${currentWeek}_${currentDay}_${l.id}`) || '';
+        
+        const hasHwClass = savedHw ? 'has-value' : '';
+        const cardColorClass = getGradeColorClass(savedMark);
+
+        let optionsHtml = `<option value="">—</option>`;
+        for (let i = 10; i >= 1; i--) {
+          const selected = savedMark == i ? 'selected' : '';
+          optionsHtml += `<option value="${i}" ${selected}>${i}</option>`;
+        }
+        const selectedN = (savedMark === 'Н' || savedMark === 'N') ? 'selected' : '';
+        optionsHtml += `<option value="Н" ${selectedN}>Н</option>`;
+
+        container.innerHTML += `
+          <div class="lesson-card ${cardColorClass}" id="card_${l.id}">
+            <div class="lesson-header">
+              <div>
+                <div class="lesson-subject">${l.num}. ${l.subject}</div>
+                <div class="lesson-time">⏰ ${l.time}</div>
+              </div>
+              <div class="lesson-room">каб. ${l.room}</div>
+            </div>
+            
+            <div class="lesson-inputs-row">
+              <select 
+                id="mark_${l.id}"
+                class="mark-select"
+                onchange="saveMark('${l.id}', '${l.subject}', this.value)"
+              >
+                ${optionsHtml}
+              </select>
+              <div class="hw-container">
+                <input 
+                  type="text" 
+                  id="input_${l.id}"
+                  class="hw-input ${hasHwClass}" 
+                  placeholder="✍️ ДЗ на ${dateStr}..." 
+                  value="${savedHw}"
+                  oninput="saveHomework('${l.id}', this.value)"
+                />
+              </div>
+            </div>
+          </div>
+        `;
+      });
+    }
+  </script>
+</body>
+</html>
