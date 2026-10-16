@@ -2,6 +2,939 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Электронный дневник • Лицей БНТУ</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    :root {
+      --bg-color: var(--tg-theme-bg-color, #f8f9fa);
+      --text-color: var(--tg-theme-text-color, #212529);
+      --card-bg: var(--tg-theme-secondary-bg-color, #ffffff);
+      --hint-color: var(--tg-theme-hint-color, #6c757d);
+      --bntu-green: #008559;
+      --bntu-green-light: rgba(0, 133, 89, 0.08);
+      --border-color: rgba(0, 0, 0, 0.08);
+      --input-bg: rgba(0, 0, 0, 0.03);
+      --font-family-custom: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    html { font-size: 16px; }
+
+    body {
+      font-family: var(--font-family-custom);
+      font-size: 1rem;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      margin: 0;
+      padding: 16px;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden; /* Жестко запрещаем сдвиг страницы влево-вправо */
+      box-sizing: border-box;
+      width: 100vw;
+    }
+
+    *, *:before, *:after {
+      box-sizing: border-box;
+    }
+
+    #authModal {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.65);
+      backdrop-filter: blur(6px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      padding: 20px;
+    }
+
+    .auth-card {
+      background: var(--card-bg);
+      width: 100%;
+      max-width: 340px;
+      padding: 24px;
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+      text-align: center;
+      border: 1px solid var(--border-color);
+    }
+
+    .auth-card h2 { font-size: 1.2rem; margin: 0 0 8px 0; color: var(--bntu-green); }
+    .auth-card p { font-size: 0.85rem; color: var(--hint-color); margin-bottom: 16px; }
+
+    .auth-input {
+      width: 100%;
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border-color);
+      background: var(--input-bg);
+      color: var(--text-color);
+      font-size: 1rem;
+      text-align: center;
+      outline: none;
+      margin-bottom: 12px;
+    }
+
+    .auth-input:focus { border-color: var(--bntu-green); }
+
+    .auth-btn {
+      width: 100%;
+      padding: 12px;
+      border-radius: 10px;
+      border: none;
+      background: var(--bntu-green);
+      color: #ffffff;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .error-msg { color: #dc3545; font-size: 0.8rem; margin-top: 8px; display: none; }
+
+    .header {
+      position: relative;
+      text-align: center;
+      margin-bottom: 14px;
+    }
+
+    .header h1 { font-size: 1.3rem; margin: 0 0 4px 0; font-weight: 700; color: var(--bntu-green); }
+    .header p { font-size: 0.85rem; color: var(--hint-color); margin: 0; }
+
+    .menu-icon-btn {
+      position: absolute;
+      top: 0; right: 0;
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      width: 38px; height: 38px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.3rem; font-weight: bold; color: var(--text-color);
+      cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      user-select: none;
+    }
+
+    /* Переключатель недель со стрелочками */
+    .week-switcher {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 8px 16px;
+      margin-bottom: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+    }
+
+    .week-arrow-btn {
+      background: var(--bntu-green-light);
+      color: var(--bntu-green);
+      border: none;
+      border-radius: 8px;
+      width: 32px;
+      height: 32px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+    }
+
+    .week-arrow-btn:active {
+      background: rgba(0, 133, 89, 0.2);
+    }
+
+    .week-title-block { text-align: center; }
+    .week-title-text { font-weight: 600; font-size: 0.95rem; color: var(--text-color); }
+    .week-range-text { font-size: 0.75rem; color: var(--hint-color); margin-top: 2px; }
+
+    /* Кнопка текущей недели под стрелочками */
+    .current-week-btn-container { text-align: center; margin-bottom: 12px; }
+
+    .week-dropdown-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      background: var(--bntu-green-light);
+      color: var(--bntu-green);
+      border: 1px solid rgba(0, 133, 89, 0.2);
+      font-weight: 600;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      width: 100%;
+      transition: background 0.2s;
+    }
+
+    .week-dropdown-btn:active { background: rgba(0, 133, 89, 0.15); }
+
+    /* Дни недели */
+    .days-container {
+      display: flex; gap: 6px; overflow-x: auto;
+      padding-bottom: 8px; margin-bottom: 12px; scrollbar-width: none;
+    }
+    .days-container::-webkit-scrollbar { display: none; }
+
+    .day-btn {
+      flex: 0 0 auto; padding: 8px 14px; border-radius: 20px;
+      border: 1px solid var(--border-color); background: var(--card-bg);
+      color: var(--text-color); font-size: 0.85rem; font-weight: 500; cursor: pointer;
+    }
+    .day-btn.active { background: var(--bntu-green); color: #ffffff; border-color: var(--bntu-green); }
+
+    /* Карточка урока */
+    .lesson-card {
+      background: var(--card-bg); padding: 14px; border-radius: 12px;
+      margin-bottom: 12px; border: 1px solid var(--border-color);
+      transition: background-color 0.2s, border-color 0.2s;
+      width: 100%;
+      overflow: hidden;
+    }
+
+    /* Адаптивные уровни расцветки */
+    .lesson-card.grade-green { background-color: rgba(40, 167, 69, 0.12); border-color: rgba(40, 167, 69, 0.4); }
+    .lesson-card.grade-green .lesson-room { background-color: rgba(40, 167, 69, 0.2); color: #155724; }
+    .lesson-card.grade-green .mark-select { background-color: rgba(40, 167, 69, 0.2); border-color: rgba(40, 167, 69, 0.4); color: #155724; }
+    .lesson-card.grade-green .hw-input { background-color: rgba(40, 167, 69, 0.1); border-color: rgba(40, 167, 69, 0.3); }
+
+    .lesson-card.grade-lightgreen { background-color: rgba(144, 238, 144, 0.2); border-color: rgba(144, 238, 144, 0.6); }
+    .lesson-card.grade-lightgreen .lesson-room { background-color: rgba(40, 167, 69, 0.15); color: #28a745; }
+    .lesson-card.grade-lightgreen .mark-select { background-color: rgba(144, 238, 144, 0.35); border-color: rgba(40, 167, 69, 0.3); color: #1e7e34; }
+    .lesson-card.grade-lightgreen .hw-input { background-color: rgba(144, 238, 144, 0.2); border-color: rgba(40, 167, 69, 0.3); }
+
+    .lesson-card.grade-yellow { background-color: rgba(255, 235, 59, 0.2); border-color: rgba(255, 193, 7, 0.5); }
+    .lesson-card.grade-yellow .lesson-room { background-color: rgba(255, 193, 7, 0.25); color: #856404; }
+    .lesson-card.grade-yellow .mark-select { background-color: rgba(255, 235, 59, 0.35); border-color: rgba(255, 193, 7, 0.5); color: #856404; }
+    .lesson-card.grade-yellow .hw-input { background-color: rgba(255, 235, 59, 0.2); border-color: rgba(255, 193, 7, 0.4); }
+
+    .lesson-card.grade-orange { background-color: rgba(253, 126, 20, 0.12); border-color: rgba(253, 126, 20, 0.4); }
+    .lesson-card.grade-orange .lesson-room { background-color: rgba(253, 126, 20, 0.2); color: #d35400; }
+    .lesson-card.grade-orange .mark-select { background-color: rgba(253, 126, 20, 0.25); border-color: rgba(253, 126, 20, 0.4); color: #d35400; }
+    .lesson-card.grade-orange .hw-input { background-color: rgba(253, 126, 20, 0.1); border-color: rgba(253, 126, 20, 0.3); }
+
+    .lesson-card.grade-red { background-color: rgba(220, 53, 69, 0.12); border-color: rgba(220, 53, 69, 0.4); }
+    .lesson-card.grade-red .lesson-room { background-color: rgba(220, 53, 69, 0.2); color: #721c24; }
+    .lesson-card.grade-red .mark-select { background-color: rgba(220, 53, 69, 0.2); border-color: rgba(220, 53, 69, 0.4); color: #721c24; }
+    .lesson-card.grade-red .hw-input { background-color: rgba(220, 53, 69, 0.1); border-color: rgba(220, 53, 69, 0.3); }
+
+    .lesson-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+    .lesson-subject { font-size: 1rem; font-weight: 600; }
+    .lesson-time { font-size: 0.8rem; color: var(--hint-color); margin-top: 2px; }
+    
+    .lesson-room {
+      background: var(--bntu-green-light); color: var(--bntu-green);
+      padding: 5px 9px; border-radius: 8px; font-size: 0.8rem; font-weight: 600;
+      transition: background-color 0.2s, color 0.2s;
+    }
+
+    .lesson-inputs-row { display: flex; gap: 8px; margin-top: 8px; border-top: 1px dashed var(--border-color); padding-top: 8px; }
+    
+    .mark-select {
+      width: 75px; flex-shrink: 0; border: 1px solid var(--border-color);
+      background: var(--card-bg); border-radius: 8px; padding: 6px;
+      font-size: 0.85rem; font-weight: 700; text-align: center; color: var(--text-color); outline: none;
+      cursor: pointer;
+      transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+    }
+    .mark-select:focus { border-color: var(--bntu-green); }
+
+    .hw-container { flex: 1; min-width: 0; }
+    .hw-input {
+      width: 100%; border: 1px solid transparent;
+      background: var(--input-bg); border-radius: 8px; padding: 8px 10px;
+      font-size: 0.85rem; color: var(--text-color); outline: none;
+      transition: background-color 0.2s, border-color 0.2s;
+    }
+    .hw-input:focus { border-color: var(--bntu-green); background: var(--card-bg); }
+    .hw-input.has-value { background: rgba(0, 133, 89, 0.05); border-color: rgba(0, 133, 89, 0.2); }
+
+    .empty-state { text-align: center; padding: 30px 20px; color: var(--hint-color); font-size: 0.9rem; }
+
+    /* Окно настроек (меню) */
+    #settingsModal {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: var(--bg-color); z-index: 2000; display: none;
+      flex-direction: column; padding: 16px; overflow-y: auto; overflow-x: hidden;
+    }
+
+    .settings-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 16px; border-bottom: 1px solid var(--border-color); padding-bottom: 12px;
+    }
+    .settings-header h2 { margin: 0; font-size: 1.2rem; color: var(--bntu-green); }
+    .close-btn {
+      background: var(--card-bg); border: 1px solid var(--border-color);
+      border-radius: 8px; padding: 6px 12px; font-size: 0.9rem; cursor: pointer; color: var(--text-color);
+    }
+
+    .menu-list { display: flex; flex-direction: column; gap: 10px; }
+    .menu-item-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden; }
+    .menu-item-header {
+      padding: 14px 16px; font-size: 1rem; font-weight: 600;
+      display: flex; justify-content: space-between; align-items: center; cursor: pointer;
+    }
+    .menu-item-content {
+      padding: 0 16px 14px 16px; border-top: 1px solid var(--border-color);
+      display: none; margin-top: 10px; padding-top: 10px;
+    }
+    .menu-item-card.expanded .menu-item-content { display: block; }
+
+    .setting-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 0.9rem; }
+    .setting-row label { color: var(--hint-color); }
+    
+    select.settings-select {
+      padding: 6px 10px; border-radius: 8px; border: 1px solid var(--border-color);
+      background: var(--bg-color); color: var(--text-color); outline: none;
+    }
+
+    .slider-box { margin-top: 6px; }
+    .font-slider { width: 100%; accent-color: var(--bntu-green); cursor: pointer; }
+    .slider-labels { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--hint-color); margin-top: 4px; }
+
+    /* Таблица статистики успеваемости */
+    .stat-summary-box {
+      background: var(--bntu-green-light); border: 1px solid rgba(0, 133, 89, 0.2);
+      border-radius: 10px; padding: 12px; margin-bottom: 12px;
+    }
+    .stat-row { display: flex; justify-content: space-between; font-size: 0.9rem; margin-bottom: 6px; }
+    .stat-row:last-child { margin-bottom: 0; }
+    
+    .subject-stat-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; margin-top: 8px; }
+    .subject-stat-table th, .subject-stat-table td { padding: 6px 4px; text-align: left; border-bottom: 1px solid var(--border-color); }
+    .subject-stat-table th { color: var(--hint-color); font-weight: 600; }
+
+    /* Кнопка выхода */
+    .logout-btn {
+      width: 100%; background: rgba(220, 53, 69, 0.1); color: #dc3545;
+      border: 1px solid rgba(220, 53, 69, 0.2); padding: 10px; border-radius: 8px;
+      font-size: 0.9rem; font-weight: 600; cursor: pointer; text-align: center;
+    }
+    .logout-btn:active { background: rgba(220, 53, 69, 0.2); }
+  </style>
+</head>
+<body>
+
+  <!-- Авторизация -->
+  <div id="authModal">
+    <div class="auth-card">
+      <h2>Лицей БНТУ</h2>
+      <p>Введите ваш персональный идентификационный номер:</p>
+      <input type="text" id="idInput" class="auth-input" placeholder="Например: 1001" />
+      <button class="auth-btn" onclick="verifyId()">Войти</button>
+      <div id="errorMsg" class="error-msg">Неверный код доступа!</div>
+    </div>
+  </div>
+
+  <!-- Шапка -->
+  <div class="header">
+    <button class="menu-icon-btn" onclick="openSettings()">☰</button>
+    <h1>Лицей БНТУ</h1>
+    <p>Электронный дневник</p>
+  </div>
+
+  <!-- Переключатель недель со стрелочками -->
+  <div class="week-switcher">
+    <button class="week-arrow-btn" onclick="changeWeek(-1)">❮</button>
+    <div class="week-title-block">
+      <div class="week-title-text" id="weekTitle">Неделя 1</div>
+      <div class="week-range-text" id="weekRange">01.09 – 06.09</div>
+    </div>
+    <button class="week-arrow-btn" onclick="changeWeek(1)">❯</button>
+  </div>
+
+  <!-- Кнопка текущей недели -->
+  <div class="current-week-btn-container">
+    <button class="week-dropdown-btn" onclick="goToRealCurrentWeek()">
+      📅 На сегодняшнюю неделю (<span id="headerRealWeekName">Неделя 1</span>)
+    </button>
+  </div>
+
+  <!-- Дни недели -->
+  <div class="days-container" id="daysTabs"></div>
+
+  <!-- Контейнер уроков -->
+  <div id="schedule-container"></div>
+
+  <!-- Меню настроек -->
+  <div id="settingsModal">
+    <div class="settings-header">
+      <h2>Меню</h2>
+      <button class="close-btn" onclick="closeSettings()">Закрыть ✖</button>
+    </div>
+
+    <div class="menu-list">
+      <!-- Профиль -->
+      <div class="menu-item-card" id="card-profile">
+        <div class="menu-item-header" onclick="toggleMenu('profile')">
+          <span>👤 Профиль</span> <span>▼</span>
+        </div>
+        <div class="menu-item-content">
+          <div class="setting-row"><label>Имя и Фамилия:</label><strong id="profName">-</strong></div>
+          <div class="setting-row"><label>Класс и Группа:</label><strong id="profClass">-</strong></div>
+          <div class="setting-row"><label>Ваш ID:</label><strong id="profId">-</strong></div>
+          <div style="margin-top: 12px;">
+            <button class="logout-btn" onclick="logoutAccount()">🚪 Выйти из аккаунта</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Успеваемость и пропускаемость -->
+      <div class="menu-item-card" id="card-performance">
+        <div class="menu-item-header" onclick="toggleMenu('performance')">
+          <span>📊 Успеваемость и пропуски</span> <span>▼</span>
+        </div>
+        <div class="menu-item-content">
+          <div class="stat-summary-box">
+            <div class="stat-row">
+              <span>Общий средний балл:</span>
+              <strong id="totalAvgMark" style="color: var(--bntu-green);">-</strong>
+            </div>
+            <div class="stat-row">
+              <span>Всего пропусков (Н):</span>
+              <strong id="totalAbsences" style="color: #dc3545;">0 уроков</strong>
+            </div>
+          </div>
+          <div style="font-weight: 600; font-size: 0.9rem; margin-bottom: 6px;">Предметы:</div>
+          <div id="subjectStatsContainer">
+            <div style="color: var(--hint-color); font-size: 0.85rem;">Оценки пока не выставлены.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Новости -->
+      <div class="menu-item-card" id="card-news">
+        <div class="menu-item-header" onclick="toggleMenu('news')">
+          <span>📰 Новости лицея</span> <span>▼</span>
+        </div>
+        <div class="menu-item-content">
+          <p style="font-size: 0.85rem; color: var(--hint-color); margin: 0 0 8px 0; line-height: 1.4;">
+            <strong>📌 Защита от сдвига экрана</strong><br>
+            Исправлена проблема с горизонтальной прокруткой приложения при вводе длинного текста домашнего задания.
+          </p>
+        </div>
+      </div>
+
+      <!-- Внешний вид -->
+      <div class="menu-item-card" id="card-appearance">
+        <div class="menu-item-header" onclick="toggleMenu('appearance')">
+          <span>🎨 Внешний вид</span> <span>▼</span>
+        </div>
+        <div class="menu-item-content">
+          <div class="slider-box">
+            <div class="setting-row">
+              <label>Размер шрифта:</label>
+              <strong id="fontSizeVal">16 px</strong>
+            </div>
+            <input type="range" id="fontRange" class="font-slider" min="13" max="22" value="16" oninput="updateFontSize(this.value)" />
+            <div class="slider-labels"><span>Мелкий</span><span>Обычный</span><span>Крупный</span></div>
+          </div>
+          <div style="margin-top: 14px;" class="setting-row">
+            <label for="fontFamilySelect">Стиль шрифта:</label>
+            <select id="fontFamilySelect" class="settings-select" onchange="changeFontFamily(this.value)">
+              <option value="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif">Системный</option>
+              <option value="Georgia, serif">Классический</option>
+              <option value="'Courier New', monospace">Моноширинный</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- О нас -->
+      <div class="menu-item-card" id="card-about">
+        <div class="menu-item-header" onclick="toggleMenu('about')">
+          <span>ℹ️ О нас</span> <span>▼</span>
+        </div>
+        <div class="menu-item-content">
+          <p style="font-size: 0.85rem; color: var(--hint-color); margin: 0; line-height: 1.4;">
+            Официальный электронный дневник и расписание Лицея БНТУ.<br><br>
+            Приложение создано для удобного просмотра актуального расписания уроков, фиксации успеваемости и ведения заметок по ДЗ.
+          </p>
+        </div>
+      </div>
+
+      <!-- Поддержка -->
+      <div class="menu-item-card" id="card-support">
+        <div class="menu-item-header" onclick="toggleMenu('support')">
+          <span>💬 Поддержка</span> <span>▼</span>
+        </div>
+        <div class="menu-item-content">
+          <p style="font-size: 0.85rem; color: var(--hint-color); margin: 0 0 10px 0; line-height: 1.4;">
+            Если у вас возникли вопросы по работе дневника, ошибки в расписании или проблемы с входом по ID, напишите нам в службу поддержки:
+          </p>
+          <div style="text-align: center;">
+            <a href="https://t.me/telegram" target="_blank" style="color: var(--bntu-green); font-weight: 600; text-decoration: none;">💬 Написать в поддержку</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const tg = window.Telegram.WebApp;
+    tg.expand();
+
+    const usersDatabase = {
+      "1001": { classId: "10A", group: 1, name: "10 «А» класс (Группа 1)", fullName: "Иван Иванов" },
+      "1002": { classId: "10A", group: 2, name: "10 «А» класс (Группа 2)", fullName: "Анна Петрова" },
+      "1101": { classId: "11A", group: 1, name: "11 «А» класс (Группа 1)", fullName: "Максим Сидоров" }
+    };
+
+    const quarterWeeks = [
+      { week: 1, range: "01.09 – 06.09", dates: { monday: "1 сен", tuesday: "2 сен", wednesday: "3 сен", thursday: "4 сен", friday: "5 сен", saturday: "6 сен" } },
+      { week: 2, range: "08.09 – 13.09", dates: { monday: "8 сен", tuesday: "9 сен", wednesday: "10 сен", thursday: "11 сен", friday: "12 сен", saturday: "13 сен" } },
+      { week: 3, range: "15.09 – 20.09", dates: { monday: "15 сен", tuesday: "16 сен", wednesday: "17 сен", thursday: "18 сен", friday: "19 сен", saturday: "20 сен" } },
+      { week: 4, range: "22.09 – 27.09", dates: { monday: "22 сен", tuesday: "23 сен", wednesday: "24 сен", thursday: "25 сен", friday: "26 сен", saturday: "27 сен" } },
+      { week: 5, range: "29.09 – 04.10", dates: { monday: "29 сен", tuesday: "30 сен", wednesday: "1 окт", thursday: "2 окт", friday: "3 окт", saturday: "4 окт" } },
+      { week: 6, range: "06.10 – 11.10", dates: { monday: "6 окт", tuesday: "7 окт", wednesday: "8 окт", thursday: "9 окт", friday: "10 окт", saturday: "11 окт" } },
+      { week: 7, range: "13.10 – 18.10", dates: { monday: "13 окт", tuesday: "14 окт", wednesday: "15 окт", thursday: "16 окт", friday: "17 окт", saturday: "18 окт" } },
+      { week: 8, range: "20.10 – 25.10", dates: { monday: "20 окт", tuesday: "21 окт", wednesday: "22 окт", thursday: "23 окт", friday: "24 окт", saturday: "25 окт" } }
+    ];
+
+    const scheduleData = {
+      "10A": {
+        monday: [
+          { id: "mon_1", num: 1, time: "08:30 – 09:15", subject: "Математика", room: "205" },
+          { id: "mon_2", num: 2, time: "09:25 – 10:10", subject: "Математика", room: "205" },
+          { id: "mon_3", num: 3, time: "10:30 – 11:15", subject: "Физ.культура и зд.", room: "спортзал" },
+          { id: "mon_4", num: 4, time: "11:35 – 12:20", subject: "Физ.культура и зд.", room: "спортзал" },
+          { id: "mon_6", num: 6, time: "13:35 – 14:20", subject: "История", room: "205" },
+          { id: "mon_7", num: 7, time: "14:30 – 15:15", subject: "Классный час", room: "205" }
+        ],
+        tuesday: [
+          { id: "tue_1", num: 1, time: "08:30 – 09:15", subject: "Обществоведение", room: "205" },
+          { id: "tue_2", num: 2, time: "09:25 – 10:10", subject: "Белорусский язык", room: "205" },
+          { id: "tue_3", num: 3, time: "10:30 – 11:15", subject: "Белорусская литература", room: "205" },
+          { id: "tue_4", num: 4, time: "11:35 – 12:20", subject: "Белорусская литература", room: "205" },
+          { id: "tue_5_g1", num: 5, time: "12:40 – 13:25", subject: "Английский язык", room: "106", group: 1 },
+          { id: "tue_5_g2", num: 5, time: "12:40 – 13:25", subject: "Английский язык", room: "103", group: 2 },
+          { id: "tue_6_g1", num: 6, time: "13:35 – 14:20", subject: "Английский язык", room: "106", group: 1 },
+          { id: "tue_6_g2", num: 6, time: "13:35 – 14:20", subject: "Английский язык", room: "103", group: 2 }
+        ],
+        wednesday: [
+          { id: "wed_2", num: 2, time: "09:25 – 10:10", subject: "Черчение", room: "205" },
+          { id: "wed_3_g1", num: 3, time: "10:30 – 11:15", subject: "Физика", room: "205", group: 1 },
+          { id: "wed_3_g2", num: 3, time: "10:30 – 11:15", subject: "Математика", room: "107", group: 2 },
+          { id: "wed_4_g1", num: 4, time: "11:35 – 12:20", subject: "Физика", room: "205", group: 1 },
+          { id: "wed_4_g2", num: 4, time: "11:35 – 12:20", subject: "Математика", room: "107", group: 2 },
+          { id: "wed_5_g1", num: 5, time: "12:40 – 13:25", subject: "Математика", room: "205", group: 1 },
+          { id: "wed_5_g2", num: 5, time: "12:40 – 13:25", subject: "Физика", room: "303", group: 2 },
+          { id: "wed_6_g1", num: 6, time: "13:35 – 14:20", subject: "Математика", room: "205", group: 1 },
+          { id: "wed_6_g2", num: 6, time: "13:35 – 14:20", subject: "Физика", room: "303", group: 2 },
+          { id: "wed_7", num: 7, time: "14:30 – 15:15", subject: "Русская литература", room: "205" },
+          { id: "wed_8", num: 8, time: "15:25 – 16:10", subject: "Физ.культура и зд.", room: "спортзал" }
+        ],
+        thursday: [
+          { id: "thu_1", num: 1, time: "08:30 – 09:15", subject: "Математика", room: "205" },
+          { id: "thu_2", num: 2, time: "09:25 – 10:10", subject: "Математика", room: "205" },
+          { id: "thu_3", num: 3, time: "10:30 – 11:15", subject: "Химия", room: "208" },
+          { id: "thu_4", num: 4, time: "11:35 – 12:20", subject: "Русский язык", room: "205" },
+          { id: "thu_5_1", num: 5, time: "12:40 – 13:10", subject: "Информационный час", room: "205" },
+          { id: "thu_5_2", num: "5*", time: "13:20 – 14:05", subject: "Русский язык", room: "205" },
+          { id: "thu_6_g1", num: 6, time: "14:15 – 15:00", subject: "ДП", room: "205", group: 1 },
+          { id: "thu_6_g2", num: 6, time: "14:15 – 15:00", subject: "МП", room: "106", group: 2 },
+          { id: "thu_7", num: 7, time: "15:10 – 15:55", subject: "География", room: "205" }
+        ],
+        friday: [
+          { id: "fri_1", num: 1, time: "08:30 – 09:15", subject: "Физика", room: "205" },
+          { id: "fri_2", num: 2, time: "09:25 – 10:10", subject: "Физика", room: "205" },
+          { id: "fri_3_g1", num: 3, time: "10:30 – 11:15", subject: "Информатика", room: "202", group: 1 },
+          { id: "fri_3_g2", num: 3, time: "10:30 – 11:15", subject: "Математика", room: "205", group: 2 },
+          { id: "fri_4_g1", num: 4, time: "11:35 – 12:20", subject: "Математика", room: "205", group: 1 },
+          { id: "fri_4_g2", num: 4, time: "11:35 – 12:20", subject: "Информатика", room: "202", group: 2 },
+          { id: "fri_5", num: 5, time: "12:40 – 13:25", subject: "Химия", room: "208" },
+          { id: "fri_6", num: 6, time: "13:35 – 14:20", subject: "Химия", room: "208" }
+        ],
+        saturday: []
+      },
+      "10B": { monday: [], tuesday: [], wednesday: [], thursday: [], friday: [], saturday: [] },
+      "11A": { monday: [], tuesday: [], wednesday: [], thursday: [], friday: [], saturday: [] },
+      "11B": { monday: [], tuesday: [], wednesday: [], thursday: [], friday: [], saturday: [] }
+    };
+
+    let userClassId = null;
+    let userGroup = 1;
+    let currentWeek = 1;
+    let currentDay = 'monday';
+
+    function calculateCurrentWeek() {
+      const now = new Date();
+      const startDate = new Date(2026, 8, 1);
+      const diffTime = now - startDate;
+      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+      if (diffDays < 0) return 1;
+      let calculatedWeek = Math.floor(diffDays / 7) + 1;
+      if (calculatedWeek < 1) calculatedWeek = 1;
+      if (calculatedWeek > 8) calculatedWeek = 8;
+      return calculatedWeek;
+    }
+
+    function calculateCurrentDay() {
+      const dayIndex = new Date().getDay();
+      const daysMap = { 1: 'monday', 2: 'tuesday', 3: 'wednesday', 4: 'thursday', 5: 'friday', 6: 'saturday' };
+      return daysMap[dayIndex] || 'monday';
+    }
+
+    window.onload = function() {
+      const savedFontSize = localStorage.getItem('pref_font_size_px') || '16';
+      updateFontSize(savedFontSize, false);
+
+      const savedFontFamily = localStorage.getItem('pref_font_family');
+      if (savedFontFamily) changeFontFamily(savedFontFamily, false);
+
+      currentWeek = calculateCurrentWeek();
+      currentDay = calculateCurrentDay();
+
+      const realWeekInfo = quarterWeeks.find(w => w.week === currentWeek) || quarterWeeks[0];
+      document.getElementById('headerRealWeekName').textContent = `Неделя ${realWeekInfo.week} (${realWeekInfo.range})`;
+
+      const savedClassId = localStorage.getItem('lyceum_user_class');
+      const savedClassName = localStorage.getItem('lyceum_user_class_name');
+      const savedGroup = localStorage.getItem('lyceum_user_group');
+
+      updateWeekUI();
+      renderDaysTabs();
+
+      if (savedClassId && savedClassName) {
+        userClassId = savedClassId;
+        userGroup = savedGroup ? parseInt(savedGroup) : 1;
+        document.getElementById('authModal').style.display = 'none';
+        updateProfileData();
+        renderSchedule();
+      }
+    };
+
+    function updateFontSize(valPx, save = true) {
+      document.documentElement.style.fontSize = valPx + 'px';
+      const valEl = document.getElementById('fontSizeVal');
+      const rangeEl = document.getElementById('fontRange');
+
+      if (valEl) valEl.textContent = valPx + ' px';
+      if (rangeEl) rangeEl.value = valPx;
+
+      if (save) localStorage.setItem('pref_font_size_px', valPx);
+    }
+
+    function changeFontFamily(family, save = true) {
+      document.documentElement.style.setProperty('--font-family-custom', family);
+      if (save) localStorage.setItem('pref_font_family', family);
+      const sel = document.getElementById('fontFamilySelect');
+      if (sel) sel.value = family;
+    }
+
+    function toggleMenu(menuId) {
+      const card = document.getElementById(`card-${menuId}`);
+      const isExpanded = card.classList.contains('expanded');
+      document.querySelectorAll('.menu-item-card').forEach(c => c.classList.remove('expanded'));
+      if (!isExpanded) {
+        card.classList.add('expanded');
+        if (menuId === 'performance') calculatePerformanceStats();
+      }
+    }
+
+    function goToRealCurrentWeek() {
+      currentWeek = calculateCurrentWeek();
+      updateWeekUI();
+      renderDaysTabs();
+      renderSchedule();
+    }
+
+    function changeWeek(direction) {
+      currentWeek += direction;
+      if (currentWeek < 1) currentWeek = 8;
+      if (currentWeek > 8) currentWeek = 1;
+
+      updateWeekUI();
+      renderDaysTabs();
+      renderSchedule();
+    }
+
+    function updateWeekUI() {
+      const weekInfo = quarterWeeks.find(w => w.week === currentWeek) || quarterWeeks[0];
+      document.getElementById('weekTitle').textContent = `Неделя ${weekInfo.week}`;
+      document.getElementById('weekRange').textContent = weekInfo.range;
+    }
+
+    function renderDaysTabs() {
+      const container = document.getElementById('daysTabs');
+      container.innerHTML = '';
+      const weekInfo = quarterWeeks.find(w => w.week === currentWeek) || quarterWeeks[0];
+      const days = [
+        { key: 'monday', name: 'Пн' },
+        { key: 'tuesday', name: 'Вт' },
+        { key: 'wednesday', name: 'Ср' },
+        { key: 'thursday', name: 'Чт' },
+        { key: 'friday', name: 'Пт' },
+        { key: 'saturday', name: 'Сб' }
+      ];
+
+      days.forEach(d => {
+        const activeClass = d.key === currentDay ? 'active' : '';
+        const dateStr = weekInfo.dates[d.key] || '';
+        container.innerHTML += `
+          <button class="day-btn ${activeClass}" onclick="setDay('${d.key}')">
+            ${d.name}, ${dateStr}
+          </button>
+        `;
+      });
+    }
+
+    function verifyId() {
+      const enteredId = document.getElementById('idInput').value.trim();
+      const errorMsg = document.getElementById('errorMsg');
+
+      if (usersDatabase[enteredId]) {
+        const userData = usersDatabase[enteredId];
+        userClassId = userData.classId;
+        userGroup = userData.group;
+
+        localStorage.setItem('lyceum_user_id', enteredId);
+        localStorage.setItem('lyceum_user_class', userData.classId);
+        localStorage.setItem('lyceum_user_group', userData.group);
+        localStorage.setItem('lyceum_user_class_name', userData.name);
+        localStorage.setItem('lyceum_user_fullname', userData.fullName);
+
+        document.getElementById('authModal').style.display = 'none';
+        updateProfileData();
+        renderSchedule();
+      } else {
+        errorMsg.style.display = 'block';
+      }
+    }
+
+    function updateProfileData() {
+      const userId = localStorage.getItem('lyceum_user_id') || '-';
+      const userName = localStorage.getItem('lyceum_user_fullname') || '-';
+      const className = localStorage.getItem('lyceum_user_class_name') || '-';
+
+      document.getElementById('profName').textContent = userName;
+      document.getElementById('profClass').textContent = className;
+      document.getElementById('profId').textContent = userId;
+    }
+
+    function logoutAccount() {
+      localStorage.removeItem('lyceum_user_id');
+      localStorage.removeItem('lyceum_user_class');
+      localStorage.removeItem('lyceum_user_group');
+      localStorage.removeItem('lyceum_user_class_name');
+      localStorage.removeItem('lyceum_user_fullname');
+      location.reload();
+    }
+
+    function openSettings() { document.getElementById('settingsModal').style.display = 'flex'; }
+    function closeSettings() { document.getElementById('settingsModal').style.display = 'none'; }
+
+    function setDay(day) {
+      currentDay = day;
+      renderDaysTabs();
+      renderSchedule();
+    }
+
+    function saveHomework(lessonId, text) {
+      const key = `hw_w${currentWeek}_${currentDay}_${lessonId}`;
+      if (text.trim() === '') {
+        localStorage.removeItem(key);
+      } else {
+        localStorage.setItem(key, text);
+      }
+      
+      const inputEl = document.getElementById(`input_${lessonId}`);
+      if (inputEl) {
+        if (text.trim() !== '') inputEl.classList.add('has-value');
+        else inputEl.classList.remove('has-value');
+      }
+    }
+
+    function getGradeColorClass(val) {
+      const num = parseInt(val);
+      if (isNaN(num)) {
+        if (val.toUpperCase() === 'Н' || val.toUpperCase() === 'N') return 'grade-red';
+        return '';
+      }
+      if (num >= 9 && num <= 10) return 'grade-green';     // Зеленый (9-10)
+      if (num >= 7 && num <= 8) return 'grade-lightgreen'; // Салатовый (7-8)
+      if (num >= 5 && num <= 6) return 'grade-yellow';     // Желтый (5-6)
+      if (num >= 3 && num <= 4) return 'grade-orange';     // Оранжевый (3-4)
+      if (num >= 1 && num <= 2) return 'grade-red';        // Красный (1-2)
+      return '';
+    }
+
+    function saveMark(lessonId, subjectName, val) {
+      const key = `mark_w${currentWeek}_${currentDay}_${lessonId}`;
+      const subjectKey = `mark_subj_w${currentWeek}_${currentDay}_${lessonId}`;
+      const cleanVal = val.trim().toUpperCase();
+
+      if (cleanVal === '' || cleanVal === '-') {
+        localStorage.removeItem(key);
+        localStorage.removeItem(subjectKey);
+      } else {
+        localStorage.setItem(key, cleanVal);
+        localStorage.setItem(subjectKey, subjectName);
+      }
+
+      const cardEl = document.getElementById(`card_${lessonId}`);
+      if (cardEl) {
+        cardEl.classList.remove('grade-green', 'grade-lightgreen', 'grade-yellow', 'grade-orange', 'grade-red');
+        const colorClass = getGradeColorClass(cleanVal);
+        if (colorClass) cardEl.classList.add(colorClass);
+      }
+    }
+
+    function calculatePerformanceStats() {
+      let subjectMarks = {};
+      let totalAbsencesCount = 0;
+      let allNumericMarksSum = 0;
+      let allNumericMarksCount = 0;
+
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key.startsWith('mark_w')) {
+          const val = localStorage.getItem(key);
+          const subjKey = key.replace('mark_w', 'mark_subj_w');
+          const subjectName = localStorage.getItem(subjKey) || 'Прочие предметы';
+
+          if (!subjectMarks[subjectName]) {
+            subjectMarks[subjectName] = { marks: [], absences: 0 };
+          }
+
+          if (val === 'Н' || val === 'N') {
+            subjectMarks[subjectName].absences += 1;
+            totalAbsencesCount += 1;
+          } else {
+            const num = parseFloat(val);
+            if (!isNaN(num) && num >= 1 && num <= 10) {
+              subjectMarks[subjectName].marks.push(num);
+              allNumericMarksSum += num;
+              allNumericMarksCount += 1;
+            }
+          }
+        }
+      }
+
+      const totalAvgEl = document.getElementById('totalAvgMark');
+      const totalAbsencesEl = document.getElementById('totalAbsences');
+      const container = document.getElementById('subjectStatsContainer');
+
+      totalAbsencesEl.textContent = `${totalAbsencesCount} уроков`;
+
+      if (allNumericMarksCount > 0) {
+        totalAvgEl.textContent = (allNumericMarksSum / allNumericMarksCount).toFixed(2);
+      } else {
+        totalAvgEl.textContent = '-';
+      }
+
+      const subjects = Object.keys(subjectMarks);
+      if (subjects.length === 0) {
+        container.innerHTML = `<div style="color: var(--hint-color); font-size: 0.85rem;">Оценки пока не выставлены.</div>`;
+        return;
+      }
+
+      let html = `<table class="subject-stat-table">
+        <thead>
+          <tr>
+            <th>Предмет</th>
+            <th>Оценки</th>
+            <th style="text-align: center;">Ср. балл</th>
+            <th style="text-align: center;">Пропуски</th>
+          </tr>
+        </thead>
+        <tbody>`;
+
+      subjects.forEach(subj => {
+        const data = subjectMarks[subj];
+        const marksStr = data.marks.length > 0 ? data.marks.join(', ') : '-';
+        const avg = data.marks.length > 0 ? (data.marks.reduce((a, b) => a + b, 0) / data.marks.length).toFixed(2) : '-';
+
+        html += `
+          <tr>
+            <td><strong>${subj}</strong></td>
+            <td style="color: var(--bntu-green); font-weight: 500;">${marksStr}</td>
+            <td style="text-align: center; font-weight: 600;">${avg}</td>
+            <td style="text-align: center; color: #dc3545; font-weight: 600;">${data.absences > 0 ? data.absences : '-'}</td>
+          </tr>
+        `;
+      });
+
+      html += `</tbody></table>`;
+      container.innerHTML = html;
+    }
+
+    function renderSchedule() {
+      if (!userClassId) return;
+
+      const container = document.getElementById('schedule-container');
+      const classSchedule = scheduleData[userClassId] || {};
+      const allLessons = classSchedule[currentDay] || [];
+      
+      const lessons = allLessons.filter(l => !l.group || l.group === userGroup);
+      const weekInfo = quarterWeeks.find(w => w.week === currentWeek) || quarterWeeks[0];
+      const dateStr = weekInfo.dates[currentDay] || '';
+
+      container.innerHTML = '';
+
+      if (lessons.length === 0) {
+        container.innerHTML = `<div class="empty-state">🎉 На этот день уроков нет или расписание не заполнено.</div>`;
+        return;
+      }
+
+      lessons.forEach(l => {
+        const savedHw = localStorage.getItem(`hw_w${currentWeek}_${currentDay}_${l.id}`) || '';
+        const savedMark = localStorage.getItem(`mark_w${currentWeek}_${currentDay}_${l.id}`) || '';
+        
+        const hasHwClass = savedHw ? 'has-value' : '';
+        const cardColorClass = getGradeColorClass(savedMark);
+
+        let optionsHtml = `<option value="">—</option>`;
+        for (let i = 10; i >= 1; i--) {
+          const selected = savedMark == i ? 'selected' : '';
+          optionsHtml += `<option value="${i}" ${selected}>${i}</option>`;
+        }
+        const selectedN = (savedMark === 'Н' || savedMark === 'N') ? 'selected' : '';
+        optionsHtml += `<option value="Н" ${selectedN}>Н</option>`;
+
+        container.innerHTML += `
+          <div class="lesson-card ${cardColorClass}" id="card_${l.id}">
+            <div class="lesson-header">
+              <div>
+                <div class="lesson-subject">${l.num}. ${l.subject}</div>
+                <div class="lesson-time">⏰ ${l.time}</div>
+              </div>
+              <div class="lesson-room">каб. ${l.room}</div>
+            </div>
+            
+            <div class="lesson-inputs-row">
+              <select 
+                id="mark_${l.id}"
+                class="mark-select"
+                onchange="saveMark('${l.id}', '${l.subject}', this.value)"
+              >
+                ${optionsHtml}
+              </select>
+              <div class="hw-container">
+                <input 
+                  type="text" 
+                  id="input_${l.id}"
+                  class="hw-input ${hasHwClass}" 
+                  placeholder="✍️ ДЗ на ${dateStr}..." 
+                  value="${savedHw}"
+                  oninput="saveHomework('${l.id}', this.value)"
+                />
+              </div>
+            </div>
+          </div>
+        `;
+      });
+    }
+  </script>
+</body>
+</html><!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Электронный дневник • Лицей БНТУ</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
