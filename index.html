@@ -1,3 +1,28 @@
+Вот обновленная часть CSS, которая делает текст номера кабинета (`.lesson-room`) **белым** в темной теме при выставлении любой отметки!
+
+### Что изменилось:
+
+В блоке стилей для темной темы `[data-theme="dark"]` добавлены правила, переопределяющие цвет текста кабинета на `#ffffff` для всех цветных карточек оценок (`.grade-green`, `.grade-lightgreen`, `.grade-yellow`, `.grade-orange`, `.grade-red`). Теперь номер кабинета будет отлично виден на любом фоне.
+
+Замени блок `<style>...</style>` или добавь в него следующие правила:
+
+```css
+/* Переопределение цвета кабинета в темной теме для оценок */
+[data-theme="dark"] .lesson-card.grade-green .lesson-room,
+[data-theme="dark"] .lesson-card.grade-lightgreen .lesson-room,
+[data-theme="dark"] .lesson-card.grade-yellow .lesson-room,
+[data-theme="dark"] .lesson-card.grade-orange .lesson-room,
+[data-theme="dark"] .lesson-card.grade-red .lesson-room {
+  color: #ffffff !important;
+}
+
+```
+
+---
+
+### Полный код `index.html` с внесенным исправлением:
+
+```html
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -1169,3 +1194,5 @@
   </script>
 </body>
 </html>
+
+```
