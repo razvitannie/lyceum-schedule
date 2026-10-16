@@ -158,7 +158,7 @@
       margin-top: 2px;
     }
 
-    /* Кнопка перехода к реальной текущей неделе (под стрелочками) */
+    /* Кнопка текущей недели под стрелочками */
     .current-week-btn-container {
       text-align: center;
       margin-bottom: 12px;
@@ -223,7 +223,7 @@
 
     .empty-state { text-align: center; padding: 30px 20px; color: var(--hint-color); font-size: 0.9rem; }
 
-    /* Окно настроек */
+    /* Окно настроек (меню) */
     #settingsModal {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: var(--bg-color); z-index: 2000; display: none;
@@ -263,6 +263,24 @@
     .slider-box { margin-top: 6px; }
     .font-slider { width: 100%; accent-color: var(--bntu-green); cursor: pointer; }
     .slider-labels { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--hint-color); margin-top: 4px; }
+
+    /* Кнопка выхода из аккаунта */
+    .logout-btn {
+      width: 100%;
+      background: rgba(220, 53, 69, 0.1);
+      color: #dc3545;
+      border: 1px solid rgba(220, 53, 69, 0.2);
+      padding: 10px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: center;
+      transition: background 0.2s;
+    }
+    .logout-btn:active {
+      background: rgba(220, 53, 69, 0.2);
+    }
   </style>
 </head>
 <body>
@@ -295,7 +313,7 @@
     <button class="week-arrow-btn" onclick="changeWeek(1)">❯</button>
   </div>
 
-  <!-- Кнопка текущей недели сразу под стрелочками -->
+  <!-- Кнопка текущей недели под стрелочками -->
   <div class="current-week-btn-container">
     <button class="week-dropdown-btn" onclick="goToRealCurrentWeek()">
       📅 На сегодняшнюю неделю (<span id="headerRealWeekName">Неделя 1</span>)
@@ -316,6 +334,7 @@
     </div>
 
     <div class="menu-list">
+      <!-- Профиль -->
       <div class="menu-item-card" id="card-profile">
         <div class="menu-item-header" onclick="toggleMenu('profile')">
           <span>👤 Профиль</span> <span>▼</span>
@@ -324,9 +343,30 @@
           <div class="setting-row"><label>Имя и Фамилия:</label><strong id="profName">-</strong></div>
           <div class="setting-row"><label>Класс и Группа:</label><strong id="profClass">-</strong></div>
           <div class="setting-row"><label>Ваш ID:</label><strong id="profId">-</strong></div>
+          <div style="margin-top: 12px;">
+            <button class="logout-btn" onclick="logoutAccount()">🚪 Выйти из аккаунта</button>
+          </div>
         </div>
       </div>
 
+      <!-- Новости (Новая плашка) -->
+      <div class="menu-item-card" id="card-news">
+        <div class="menu-item-header" onclick="toggleMenu('news')">
+          <span>📰 Новости лицея</span> <span>▼</span>
+        </div>
+        <div class="menu-item-content">
+          <p style="font-size: 0.85rem; color: var(--hint-color); margin: 0 0 8px 0; line-height: 1.4;">
+            <strong>📌 Обновление расписания</strong><br>
+            Внимание! Уточнены кабинеты для занятий по физике и иностранным языкам. Проверяйте актуальное расписание в группах.
+          </p>
+          <p style="font-size: 0.85rem; color: var(--hint-color); margin: 0; line-height: 1.4;">
+            <strong>🚀 О приложении</strong><br>
+            Теперь можно быстро переключаться на текущую неделю с помощью кнопки на главном экране.
+          </p>
+        </div>
+      </div>
+
+      <!-- Внешний вид -->
       <div class="menu-item-card" id="card-appearance">
         <div class="menu-item-header" onclick="toggleMenu('appearance')">
           <span>🎨 Внешний вид</span> <span>▼</span>
@@ -351,6 +391,7 @@
         </div>
       </div>
 
+      <!-- О нас -->
       <div class="menu-item-card" id="card-about">
         <div class="menu-item-header" onclick="toggleMenu('about')">
           <span>ℹ️ О нас</span> <span>▼</span>
@@ -363,6 +404,7 @@
         </div>
       </div>
 
+      <!-- Поддержка -->
       <div class="menu-item-card" id="card-support">
         <div class="menu-item-header" onclick="toggleMenu('support')">
           <span>💬 Поддержка</span> <span>▼</span>
@@ -495,7 +537,6 @@
       currentWeek = calculateCurrentWeek();
       currentDay = calculateCurrentDay();
 
-      // Устанавливаем название текущей недели на кнопке под стрелочками
       const realWeekInfo = quarterWeeks.find(w => w.week === currentWeek) || quarterWeeks[0];
       document.getElementById('headerRealWeekName').textContent = `Неделя ${realWeekInfo.week} (${realWeekInfo.range})`;
 
@@ -618,6 +659,16 @@
       document.getElementById('profName').textContent = userName;
       document.getElementById('profClass').textContent = className;
       document.getElementById('profId').textContent = userId;
+    }
+
+    // Функция выхода из аккаунта
+    function logoutAccount() {
+      localStorage.removeItem('lyceum_user_id');
+      localStorage.removeItem('lyceum_user_class');
+      localStorage.removeItem('lyceum_user_group');
+      localStorage.removeItem('lyceum_user_class_name');
+      localStorage.removeItem('lyceum_user_fullname');
+      location.reload();
     }
 
     function openSettings() { document.getElementById('settingsModal').style.display = 'flex'; }
