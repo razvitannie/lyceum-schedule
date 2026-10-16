@@ -423,16 +423,16 @@
     .font-slider { width: 100%; accent-color: var(--bntu-green); cursor: pointer; }
     .slider-labels { display: flex; justify-content: space-between; font-size: 0.78rem; color: var(--hint-color); margin-top: 6px; }
 
-    /* Ультра-стабильная карусель с плавной цикличной анимацией */
+    /* Увеличенная и стабильная карусель с плавной цикличной анимацией */
     .team-carousel {
       position: relative;
       background: var(--input-bg);
       border: 1px solid var(--border-color);
       border-radius: 14px;
-      padding: 14px 44px;
+      padding: 20px 44px;
       text-align: center;
       margin-top: 12px;
-      height: 195px; /* Строго фиксированная высота без прыжков */
+      height: 210px; /* Увеличено по высоте для простора */
       overflow: hidden;
     }
 
@@ -463,8 +463,8 @@
     }
 
     .team-avatar {
-      width: 48px;
-      height: 48px;
+      width: 50px;
+      height: 50px;
       border-radius: 50%;
       object-fit: cover;
       border: 2px solid var(--bntu-green);
@@ -679,8 +679,8 @@
         </div>
         <div class="menu-item-content">
           <p style="font-size: 0.88rem; color: var(--hint-color); margin: 0 0 8px 0; line-height: 1.4;">
-            <strong>📌 Цикличная карусель без рывков</strong><br>
-            Слайдер команды полностью переработан: переключение идет по кругу с плавной бесшовной анимацией.
+            <strong>📌 Обновление карусели</strong><br>
+            Блок участников проекта в разделе «О нас» теперь имеет увеличенную стабильную высоту и цикличную анимацию.
           </p>
         </div>
       </div>
@@ -1034,7 +1034,6 @@
         if (dot) dot.classList.remove('active');
       });
 
-      // Полностью цикличный расчет индекса (после последнего идет первый, до первого — последний)
       currentTeamIndex = (index + teamMembers.length) % teamMembers.length;
       
       const activeSlide = document.getElementById(`teamSlide_${currentTeamIndex}`);
