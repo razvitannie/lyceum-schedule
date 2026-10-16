@@ -190,21 +190,26 @@
       transition: background-color 0.2s, border-color 0.2s;
     }
 
-    /* Уровни расцветки блоков и плашек кабинетов */
+    /* Уровни расцветки блоков, плашек кабинетов и списков оценок */
     .lesson-card.grade-green { background-color: rgba(40, 167, 69, 0.12); border-color: rgba(40, 167, 69, 0.4); }
     .lesson-card.grade-green .lesson-room { background-color: rgba(40, 167, 69, 0.2); color: #155724; }
+    .lesson-card.grade-green .mark-select { background-color: rgba(40, 167, 69, 0.2); border-color: rgba(40, 167, 69, 0.4); color: #155724; }
 
     .lesson-card.grade-lightgreen { background-color: rgba(144, 238, 144, 0.2); border-color: rgba(144, 238, 144, 0.6); }
     .lesson-card.grade-lightgreen .lesson-room { background-color: rgba(40, 167, 69, 0.15); color: #28a745; }
+    .lesson-card.grade-lightgreen .mark-select { background-color: rgba(144, 238, 144, 0.35); border-color: rgba(40, 167, 69, 0.3); color: #1e7e34; }
 
     .lesson-card.grade-yellow { background-color: rgba(255, 235, 59, 0.2); border-color: rgba(255, 193, 7, 0.5); }
     .lesson-card.grade-yellow .lesson-room { background-color: rgba(255, 193, 7, 0.25); color: #856404; }
+    .lesson-card.grade-yellow .mark-select { background-color: rgba(255, 235, 59, 0.35); border-color: rgba(255, 193, 7, 0.5); color: #856404; }
 
     .lesson-card.grade-orange { background-color: rgba(253, 126, 20, 0.12); border-color: rgba(253, 126, 20, 0.4); }
     .lesson-card.grade-orange .lesson-room { background-color: rgba(253, 126, 20, 0.2); color: #d35400; }
+    .lesson-card.grade-orange .mark-select { background-color: rgba(253, 126, 20, 0.25); border-color: rgba(253, 126, 20, 0.4); color: #d35400; }
 
     .lesson-card.grade-red { background-color: rgba(220, 53, 69, 0.12); border-color: rgba(220, 53, 69, 0.4); }
     .lesson-card.grade-red .lesson-room { background-color: rgba(220, 53, 69, 0.2); color: #721c24; }
+    .lesson-card.grade-red .mark-select { background-color: rgba(220, 53, 69, 0.2); border-color: rgba(220, 53, 69, 0.4); color: #721c24; }
 
     .lesson-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
     .lesson-subject { font-size: 1rem; font-weight: 600; }
@@ -224,6 +229,7 @@
       background: var(--card-bg); border-radius: 8px; padding: 6px;
       font-size: 0.85rem; font-weight: 700; text-align: center; color: var(--text-color); outline: none;
       cursor: pointer;
+      transition: background-color 0.2s, color 0.2s, border-color 0.2s;
     }
     .mark-select:focus { border-color: var(--bntu-green); }
 
@@ -396,8 +402,8 @@
         </div>
         <div class="menu-item-content">
           <p style="font-size: 0.85rem; color: var(--hint-color); margin: 0 0 8px 0; line-height: 1.4;">
-            <strong>📌 Выбор отметок из списка</strong><br>
-            Теперь оценку или пропуск «Н» можно удобно выбрать из выпадающего списка прямо в карточке урока.
+            <strong>📌 Подсветка списков оценок</strong><br>
+            Теперь выпадающий список выбора отметки также подсвечивается в едином стиле с карточкой урока и плашкой кабинета.
           </p>
         </div>
       </div>
@@ -871,7 +877,6 @@
         const hasHwClass = savedHw ? 'has-value' : '';
         const cardColorClass = getGradeColorClass(savedMark);
 
-        // Формируем выпадающий список для оценок
         let optionsHtml = `<option value="">—</option>`;
         for (let i = 10; i >= 1; i--) {
           const selected = savedMark == i ? 'selected' : '';
