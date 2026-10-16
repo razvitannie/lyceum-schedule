@@ -90,28 +90,45 @@
       cursor: pointer;
     }
 
-    .error-msg { color: #dc3545; font-size: 0.8rem; margin-top: 8px; display: none; }
+    .error-msg { color: #dc3545; font-size: 0.80rem; margin-top: 8px; display: none; }
 
+    /* Шапка с иконкой слева, текстом по центру и кнопкой меню справа */
     .header {
-      position: relative;
-      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
       margin-bottom: 14px;
     }
 
-    .header h1 { font-size: 1.3rem; margin: 0 0 4px 0; font-weight: 700; color: var(--bntu-green); }
-    .header p { font-size: 0.85rem; color: var(--hint-color); margin: 0; }
+    .header-center {
+      text-align: center;
+      flex: 1;
+      padding: 0 8px;
+    }
 
-    .menu-icon-btn {
-      position: absolute;
-      top: 0; right: 0;
+    .header h1 { font-size: 1.3rem; margin: 0 0 2px 0; font-weight: 700; color: var(--bntu-green); }
+    .header p { font-size: 0.8rem; color: var(--hint-color); margin: 0; }
+
+    .menu-icon-btn, .header-icon-box {
       background: var(--card-bg);
       border: 1px solid var(--border-color);
       border-radius: 10px;
       width: 38px; height: 38px;
       display: flex; align-items: center; justify-content: center;
-      font-size: 1.3rem; font-weight: bold; color: var(--text-color);
-      cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      font-size: 1.2rem; box-shadow: 0 2px 6px rgba(0,0,0,0.05);
       user-select: none;
+      flex-shrink: 0;
+    }
+
+    .menu-icon-btn {
+      font-size: 1.3rem; font-weight: bold; color: var(--text-color);
+      cursor: pointer;
+    }
+
+    .header-icon-box img {
+      width: 22px;
+      height: 22px;
+      object-fit: contain;
     }
 
     /* Переключатель недель со стрелочками */
@@ -354,11 +371,17 @@
     </div>
   </div>
 
-  <!-- Шапка -->
+  <!-- Шапка с иконкой слева, текстом по центру и кнопкой меню справа -->
   <div class="header">
+    <div class="header-icon-box">
+      <!-- Замените src на ссылку вашей иконки/логотипа или оставьте эмодзи/SVG -->
+      <span>🐝</span>
+    </div>
+    <div class="header-center">
+      <h1>Лицей БНТУ</h1>
+      <p>Электронный дневник</p>
+    </div>
     <button class="menu-icon-btn" onclick="openSettings()">☰</button>
-    <h1>Лицей БНТУ</h1>
-    <p>Электронный дневник</p>
   </div>
 
   <!-- Переключатель недель со стрелочками -->
@@ -443,8 +466,8 @@
         </div>
         <div class="menu-item-content">
           <p style="font-size: 0.85rem; color: var(--hint-color); margin: 0 0 8px 0; line-height: 1.4;">
-            <strong>📌 Обновленный заголовок даты</strong><br>
-            Дата и день недели теперь четко и красиво отображаются перед уроками.
+            <strong>📌 Иконка лицея в шапке</strong><br>
+            В левом углу шапки добавлена аккуратная иконка в едином стиле с кнопкой меню.
           </p>
         </div>
       </div>
@@ -904,7 +927,6 @@
       const weekInfo = quarterWeeks.find(w => w.week === currentWeek) || quarterWeeks[0];
       const dateStr = weekInfo.dates[currentDay] || '';
 
-      // Обновляем информационный заголовок даты над расписанием
       document.getElementById('selectedDayFull').textContent = fullDayNames[currentDay] || 'Понедельник';
       document.getElementById('selectedDateBadge').textContent = dateStr;
 
