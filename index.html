@@ -137,7 +137,7 @@
     .header h1 { font-size: 1.35rem; margin: 0 0 2px 0; font-weight: 700; color: var(--bntu-green); }
     .header p { font-size: 0.82rem; color: var(--hint-color); margin: 0 0 6px 0; }
 
-    /* Кастомный селектор четверти в шапке (с кроссбраузерной стрелочкой) */
+    /* Кастомный селектор четверти в шапке */
     .quarter-select-header {
       -webkit-appearance: none;
       -moz-appearance: none;
@@ -423,6 +423,115 @@
     .font-slider { width: 100%; accent-color: var(--bntu-green); cursor: pointer; }
     .slider-labels { display: flex; justify-content: space-between; font-size: 0.78rem; color: var(--hint-color); margin-top: 6px; }
 
+    /* Стили для карусели команды в разделе «О нас» */
+    .team-carousel {
+      position: relative;
+      background: var(--input-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 16px 40px;
+      text-align: center;
+      margin-top: 12px;
+      overflow: hidden;
+    }
+
+    .team-slide {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      animation: fadeIn 0.4s ease-in-out;
+    }
+
+    .team-slide.active {
+      display: flex;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .team-avatar {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--bntu-green);
+      margin-bottom: 10px;
+      background: var(--card-bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+    }
+
+    .team-name {
+      font-weight: 700;
+      font-size: 1rem;
+      margin-bottom: 4px;
+      color: var(--text-color);
+    }
+
+    .team-role {
+      font-size: 0.82rem;
+      color: var(--bntu-green);
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .team-desc {
+      font-size: 0.8rem;
+      color: var(--hint-color);
+      line-height: 1.3;
+      max-width: 220px;
+    }
+
+    .team-arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      color: var(--bntu-green);
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 0.9rem;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      z-index: 2;
+      transition: background 0.2s;
+    }
+
+    .team-arrow:active { background: var(--bntu-green-light); }
+    .team-arrow.prev { left: 8px; }
+    .team-arrow.next { right: 8px; }
+
+    .team-dots {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      margin-top: 10px;
+    }
+
+    .team-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--border-color);
+      transition: background 0.2s;
+    }
+
+    .team-dot.active {
+      background: var(--bntu-green);
+      width: 16px;
+      border-radius: 4px;
+    }
+
     /* Таблица статистики успеваемости */
     .stat-summary-box {
       background: var(--bntu-green-light); border: 1px solid rgba(0, 133, 89, 0.2);
@@ -554,8 +663,8 @@
         </div>
         <div class="menu-item-content">
           <p style="font-size: 0.88rem; color: var(--hint-color); margin: 0 0 8px 0; line-height: 1.4;">
-            <strong>📌 Улучшенный дизайн и iOS-совместимость</strong><br>
-            Стрелочки выпадающих списков теперь адаптированы под светлую и темную тему на всех устройствах, включая iPhone.
+            <strong>📌 Обновление «О нас»</strong><br>
+            В раздел «О нас» добавлен интерактивный слайдер с информацией об участниках проекта.
           </p>
         </div>
       </div>
@@ -591,10 +700,27 @@
           <span>ℹ️ О нас</span> <span>▼</span>
         </div>
         <div class="menu-item-content">
-          <p style="font-size: 0.88rem; color: var(--hint-color); margin: 0; line-height: 1.4;">
-            Официальный электронный дневник и расписание Лицея БНТУ.<br><br>
-            Приложение создано для удобного просмотра актуального расписания уроков, фиксации успеваемости и ведения заметок по ДЗ.
+          <p style="font-size: 0.88rem; color: var(--hint-color); margin: 0 0 12px 0; line-height: 1.4;">
+            Официальный электронный дневник и расписание Лицея БНТУ.<br>
+            Приложение создано для удобного просмотра расписания, фиксации успеваемости и ДЗ.
           </p>
+
+          <div style="font-weight: 600; font-size: 0.9rem; margin-top: 8px; text-align: center;">Участники проекта:</div>
+          
+          <!-- Карусель команды -->
+          <div class="team-carousel" id="teamCarousel" onmouseenter="pauseTeamAutoSlide()" onmouseleave="resumeTeamAutoSlide()">
+            <button class="team-arrow prev" onclick="changeTeamSlide(-1)">❮</button>
+            
+            <div id="teamSlidesContainer">
+              <!-- Слайды генерируются скриптом -->
+            </div>
+
+            <button class="team-arrow next" onclick="changeTeamSlide(1)">❯</button>
+
+            <div class="team-dots" id="teamDotsContainer">
+              <!-- Точки индикаторы -->
+            </div>
+          </div>
         </div>
       </div>
 
@@ -763,6 +889,31 @@
       sunday: "Воскресенье"
     };
 
+    // Данные команды проекта
+    const teamMembers = [
+      {
+        name: "Русецкий Арсений",
+        role: "Главный разработчик & Архитектор",
+        desc: "Разработка концепции, логики приложения, интерфейса и интеграция систем.",
+        avatar: "👨‍💻"
+      },
+      {
+        name: "Лицей БНТУ",
+        role: "Учебная база проекта",
+        desc: "Официальная платформа расписания и академическая поддержка.",
+        avatar: "🏫"
+      },
+      {
+        name: "Команда ФИТР",
+        role: "Технический консалтинг",
+        desc: "Консультации по архитектуре ПО, клиент-серверным решениям и дизайну.",
+        avatar: "💡"
+      }
+    ];
+
+    let currentTeamIndex = 0;
+    let teamAutoInterval = null;
+
     let userClassId = null;
     let userGroup = 1;
     let currentQuarter = 1;
@@ -817,6 +968,8 @@
 
       updateWeekUI();
       renderDaysTabs();
+      initTeamCarousel();
+      startTeamAutoSlide();
 
       if (savedClassId && savedClassName) {
         userClassId = savedClassId;
@@ -826,6 +979,76 @@
         renderSchedule();
       }
     };
+
+    // Инициализация карусели команды
+    function initTeamCarousel() {
+      const container = document.getElementById('teamSlidesContainer');
+      const dotsContainer = document.getElementById('teamDotsContainer');
+      container.innerHTML = '';
+      dotsContainer.innerHTML = '';
+
+      teamMembers.forEach((member, index) => {
+        const activeClass = index === 0 ? 'active' : '';
+        container.innerHTML += `
+          <div class="team-slide ${activeClass}" id="teamSlide_${index}">
+            <div class="team-avatar">${member.avatar}</div>
+            <div class="team-name">${member.name}</div>
+            <div class="team-role">${member.role}</div>
+            <div class="team-desc">${member.desc}</div>
+          </div>
+        `;
+
+        dotsContainer.innerHTML += `
+          <div class="team-dot ${activeClass}" id="teamDot_${index}" onclick="setTeamSlide(${index})"></div>
+        `;
+      });
+    }
+
+    function showTeamSlide(index) {
+      teamMembers.forEach((_, i) => {
+        const slide = document.getElementById(`teamSlide_${i}`);
+        const dot = document.getElementById(`teamDot_${i}`);
+        if (slide) slide.classList.remove('active');
+        if (dot) dot.classList.remove('active');
+      });
+
+      currentTeamIndex = (index + teamMembers.length) % teamMembers.length;
+      
+      const activeSlide = document.getElementById(`teamSlide_${currentTeamIndex}`);
+      const activeDot = document.getElementById(`teamDot_${currentTeamIndex}`);
+      if (activeSlide) activeSlide.classList.add('active');
+      if (activeDot) activeDot.classList.add('active');
+    }
+
+    function changeTeamSlide(direction) {
+      showTeamSlide(currentTeamIndex + direction);
+      resetTeamAutoSlide();
+    }
+
+    function setTeamSlide(index) {
+      showTeamSlide(index);
+      resetTeamAutoSlide();
+    }
+
+    function startTeamAutoSlide() {
+      if (teamAutoInterval) clearInterval(teamAutoInterval);
+      teamAutoInterval = setInterval(() => {
+        showTeamSlide(currentTeamIndex + 1);
+      }, 4000);
+    }
+
+    function pauseTeamAutoSlide() {
+      if (teamAutoInterval) clearInterval(teamAutoInterval);
+    }
+
+    function resumeTeamAutoSlide() {
+      startTeamAutoSlide();
+    }
+
+    function resetTeamAutoSlide() {
+      pauseTeamAutoSlide();
+      startTeamAutoSlide();
+    }
 
     function toggleTheme() {
       const currentTheme = document.documentElement.getAttribute('data-theme');
@@ -1047,7 +1270,6 @@
     }
 
     function calculatePerformanceStats() {
-      // Динамически выводим выбранную четверть в заголовке статистики
       document.getElementById('statTitleAvg').textContent = `Средний балл (${currentQuarter}-я четверть):`;
 
       let subjectMarks = {};
