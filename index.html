@@ -38,7 +38,7 @@
       background-color: var(--bg-color);
       color: var(--text-color);
       margin: 0;
-      padding: 16px;
+      padding: 20px 16px 32px 16px; /* Просторные отступы по краям приложения */
       -webkit-font-smoothing: antialiased;
       overflow-x: hidden;
       box-sizing: border-box;
@@ -66,100 +66,98 @@
       background: var(--card-bg);
       width: 100%;
       max-width: 340px;
-      padding: 24px;
-      border-radius: 16px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+      padding: 28px 24px;
+      border-radius: 20px;
+      box-shadow: 0 12px 32px rgba(0,0,0,0.15);
       text-align: center;
       border: 1px solid var(--border-color);
     }
 
-    .auth-card h2 { font-size: 1.2rem; margin: 0 0 8px 0; color: var(--bntu-green); }
-    .auth-card p { font-size: 0.85rem; color: var(--hint-color); margin-bottom: 16px; }
+    .auth-card h2 { font-size: 1.3rem; margin: 0 0 10px 0; color: var(--bntu-green); }
+    .auth-card p { font-size: 0.88rem; color: var(--hint-color); margin-bottom: 20px; line-height: 1.4; }
 
     .auth-input {
       width: 100%;
-      padding: 12px;
-      border-radius: 10px;
+      padding: 14px;
+      border-radius: 12px;
       border: 1px solid var(--border-color);
       background: var(--input-bg);
       color: var(--text-color);
       font-size: 1rem;
       text-align: center;
       outline: none;
-      margin-bottom: 12px;
+      margin-bottom: 16px;
     }
 
     .auth-input:focus { border-color: var(--bntu-green); }
 
     .auth-btn {
       width: 100%;
-      padding: 12px;
-      border-radius: 10px;
+      padding: 14px;
+      border-radius: 12px;
       border: none;
       background: var(--bntu-green);
       color: #ffffff;
-      font-size: 0.95rem;
+      font-size: 1rem;
       font-weight: 600;
       cursor: pointer;
     }
 
-    .error-msg { color: #dc3545; font-size: 0.80rem; margin-top: 8px; display: none; }
+    .error-msg { color: #dc3545; font-size: 0.85rem; margin-top: 10px; display: none; }
 
-    /* Шапка с кнопкой смены темы слева, текстом по центру и кнопкой меню справа */
+    /* Шапка с увеличенными отступами */
     .header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 14px;
+      margin-bottom: 20px;
     }
 
     .header-center {
       text-align: center;
       flex: 1;
-      padding: 0 8px;
+      padding: 0 12px;
     }
 
-    .header h1 { font-size: 1.3rem; margin: 0 0 2px 0; font-weight: 700; color: var(--bntu-green); }
-    .header p { font-size: 0.8rem; color: var(--hint-color); margin: 0; }
+    .header h1 { font-size: 1.35rem; margin: 0 0 4px 0; font-weight: 700; color: var(--bntu-green); }
+    .header p { font-size: 0.85rem; color: var(--hint-color); margin: 0; }
 
     .menu-icon-btn, .theme-toggle-btn {
       background: var(--card-bg);
       border: 1px solid var(--border-color);
-      border-radius: 10px;
-      width: 38px; height: 38px;
+      border-radius: 12px;
+      width: 42px; height: 42px;
       display: flex; align-items: center; justify-content: center;
-      font-size: 1.2rem; box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      font-size: 1.25rem; box-shadow: 0 3px 8px rgba(0,0,0,0.04);
       user-select: none;
       flex-shrink: 0;
       cursor: pointer;
       color: var(--text-color);
     }
 
-    .menu-icon-btn {
-      font-size: 1.3rem; font-weight: bold;
-    }
+    .menu-icon-btn { font-size: 1.35rem; font-weight: bold; }
 
-    /* Переключатель недель со стрелочками */
+    /* Переключатель недель */
     .week-switcher {
       display: flex;
       align-items: center;
       justify-content: space-between;
       background: var(--card-bg);
       border: 1px solid var(--border-color);
-      border-radius: 12px;
-      padding: 8px 16px;
-      margin-bottom: 8px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+      border-radius: 16px;
+      padding: 12px 18px;
+      margin-bottom: 12px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.02);
     }
 
     .week-arrow-btn {
       background: var(--bntu-green-light);
       color: var(--bntu-green);
       border: none;
-      border-radius: 8px;
-      width: 32px;
-      height: 32px;
-      font-size: 1rem;
+      border-radius: 10px;
+      width: 36px;
+      height: 36px;
+      font-size: 1.1rem;
       font-weight: bold;
       cursor: pointer;
       display: flex;
@@ -168,16 +166,14 @@
       transition: background 0.2s;
     }
 
-    .week-arrow-btn:active {
-      background: rgba(0, 133, 89, 0.2);
-    }
+    .week-arrow-btn:active { background: rgba(0, 133, 89, 0.2); }
 
     .week-title-block { text-align: center; }
-    .week-title-text { font-weight: 600; font-size: 0.95rem; color: var(--text-color); }
-    .week-range-text { font-size: 0.75rem; color: var(--hint-color); margin-top: 2px; }
+    .week-title-text { font-weight: 600; font-size: 1rem; color: var(--text-color); }
+    .week-range-text { font-size: 0.8rem; color: var(--hint-color); margin-top: 3px; }
 
-    /* Кнопка текущей недели под стрелочками */
-    .current-week-btn-container { text-align: center; margin-bottom: 12px; }
+    /* Кнопка текущей недели */
+    .current-week-btn-container { text-align: center; margin-bottom: 20px; }
 
     .week-dropdown-btn {
       display: inline-flex;
@@ -188,9 +184,9 @@
       color: var(--bntu-green);
       border: 1px solid rgba(0, 133, 89, 0.2);
       font-weight: 600;
-      padding: 6px 14px;
+      padding: 8px 16px;
       border-radius: 20px;
-      font-size: 0.8rem;
+      font-size: 0.85rem;
       cursor: pointer;
       width: 100%;
       transition: background 0.2s;
@@ -198,51 +194,55 @@
 
     .week-dropdown-btn:active { background: rgba(0, 133, 89, 0.15); }
 
-    /* Дни недели */
+    /* Дни недели с увеличенными кнопками */
     .days-container {
-      display: flex; gap: 6px; overflow-x: auto;
-      padding-bottom: 8px; margin-bottom: 10px; scrollbar-width: none;
+      display: flex; gap: 8px; overflow-x: auto;
+      padding-bottom: 10px; margin-bottom: 16px; scrollbar-width: none;
     }
     .days-container::-webkit-scrollbar { display: none; }
 
     .day-btn {
-      flex: 0 0 auto; padding: 8px 14px; border-radius: 20px;
+      flex: 0 0 auto; padding: 10px 16px; border-radius: 20px;
       border: 1px solid var(--border-color); background: var(--card-bg);
-      color: var(--text-color); font-size: 0.85rem; font-weight: 500; cursor: pointer;
+      color: var(--text-color); font-size: 0.88rem; font-weight: 500; cursor: pointer;
+      transition: all 0.2s;
     }
-    .day-btn.active { background: var(--bntu-green); color: #ffffff; border-color: var(--bntu-green); }
+    .day-btn.active { background: var(--bntu-green); color: #ffffff; border-color: var(--bntu-green); font-weight: 600; }
 
-    /* Информационная плашка даты над расписанием */
+    /* Плашка даты над расписанием */
     .schedule-date-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin: 4px 0 10px 0;
-      padding: 0 4px;
+      margin: 8px 4px 14px 4px;
     }
 
     .schedule-date-title {
-      font-size: 0.95rem;
+      font-size: 1.05rem;
       font-weight: 700;
       color: var(--text-color);
     }
 
     .schedule-date-sub {
-      font-size: 0.8rem;
+      font-size: 0.85rem;
       font-weight: 600;
       color: var(--bntu-green);
       background: var(--bntu-green-light);
-      padding: 3px 8px;
+      padding: 4px 10px;
       border-radius: 12px;
     }
 
-    /* Карточка урока */
+    /* Просторная карточка урока */
     .lesson-card {
-      background: var(--card-bg); padding: 14px; border-radius: 12px;
-      margin-bottom: 12px; border: 1px solid var(--border-color);
+      background: var(--card-bg);
+      padding: 18px;
+      border-radius: 16px;
+      margin-bottom: 16px;
+      border: 1px solid var(--border-color);
       transition: background-color 0.2s, border-color 0.2s;
       width: 100%;
       overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.02);
     }
 
     /* Адаптивные уровни расцветки */
@@ -271,22 +271,23 @@
     .lesson-card.grade-red .mark-select { background-color: rgba(220, 53, 69, 0.2); border-color: rgba(220, 53, 69, 0.4); color: #721c24; }
     .lesson-card.grade-red .hw-input { background-color: rgba(220, 53, 69, 0.1); border-color: rgba(220, 53, 69, 0.3); }
 
-    .lesson-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
-    .lesson-subject { font-size: 1rem; font-weight: 600; }
-    .lesson-time { font-size: 0.8rem; color: var(--hint-color); margin-top: 2px; }
+    .lesson-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+    .lesson-subject { font-size: 1.05rem; font-weight: 600; line-height: 1.3; }
+    .lesson-time { font-size: 0.82rem; color: var(--hint-color); margin-top: 4px; }
     
     .lesson-room {
       background: var(--bntu-green-light); color: var(--bntu-green);
-      padding: 5px 9px; border-radius: 8px; font-size: 0.8rem; font-weight: 600;
+      padding: 6px 10px; border-radius: 10px; font-size: 0.82rem; font-weight: 600;
       transition: background-color 0.2s, color 0.2s;
     }
 
-    .lesson-inputs-row { display: flex; gap: 8px; margin-top: 8px; border-top: 1px dashed var(--border-color); padding-top: 8px; }
+    /* Поля выпадающего списка оценок и ДЗ */
+    .lesson-inputs-row { display: flex; gap: 10px; margin-top: 12px; border-top: 1px dashed var(--border-color); padding-top: 12px; }
     
     .mark-select {
-      width: 75px; flex-shrink: 0; border: 1px solid var(--border-color);
-      background: var(--card-bg); border-radius: 8px; padding: 6px;
-      font-size: 0.85rem; font-weight: 700; text-align: center; color: var(--text-color); outline: none;
+      width: 78px; height: 42px; flex-shrink: 0; border: 1px solid var(--border-color);
+      background: var(--card-bg); border-radius: 10px; padding: 6px;
+      font-size: 0.9rem; font-weight: 700; text-align: center; color: var(--text-color); outline: none;
       cursor: pointer;
       transition: background-color 0.2s, color 0.2s, border-color 0.2s;
     }
@@ -294,74 +295,74 @@
 
     .hw-container { flex: 1; min-width: 0; }
     .hw-input {
-      width: 100%; border: 1px solid transparent;
-      background: var(--input-bg); border-radius: 8px; padding: 8px 10px;
-      font-size: 0.85rem; color: var(--text-color); outline: none;
+      width: 100%; height: 42px; border: 1px solid transparent;
+      background: var(--input-bg); border-radius: 10px; padding: 8px 12px;
+      font-size: 0.88rem; color: var(--text-color); outline: none;
       transition: background-color 0.2s, border-color 0.2s;
     }
     .hw-input:focus { border-color: var(--bntu-green); background: var(--card-bg); }
     .hw-input.has-value { background: rgba(0, 133, 89, 0.05); border-color: rgba(0, 133, 89, 0.2); }
 
-    .empty-state { text-align: center; padding: 30px 20px; color: var(--hint-color); font-size: 0.9rem; }
+    .empty-state { text-align: center; padding: 40px 20px; color: var(--hint-color); font-size: 0.95rem; }
 
     /* Окно настроек (меню) */
     #settingsModal {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: var(--bg-color); z-index: 2000; display: none;
-      flex-direction: column; padding: 16px; overflow-y: auto; overflow-x: hidden;
+      flex-direction: column; padding: 20px; overflow-y: auto; overflow-x: hidden;
     }
 
     .settings-header {
       display: flex; justify-content: space-between; align-items: center;
-      margin-bottom: 16px; border-bottom: 1px solid var(--border-color); padding-bottom: 12px;
+      margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 14px;
     }
-    .settings-header h2 { margin: 0; font-size: 1.2rem; color: var(--bntu-green); }
+    .settings-header h2 { margin: 0; font-size: 1.25rem; color: var(--bntu-green); }
     .close-btn {
       background: var(--card-bg); border: 1px solid var(--border-color);
-      border-radius: 8px; padding: 6px 12px; font-size: 0.9rem; cursor: pointer; color: var(--text-color);
+      border-radius: 10px; padding: 8px 14px; font-size: 0.9rem; cursor: pointer; color: var(--text-color);
     }
 
-    .menu-list { display: flex; flex-direction: column; gap: 10px; }
-    .menu-item-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden; }
+    .menu-list { display: flex; flex-direction: column; gap: 12px; }
+    .menu-item-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 14px; overflow: hidden; }
     .menu-item-header {
-      padding: 14px 16px; font-size: 1rem; font-weight: 600;
+      padding: 16px 18px; font-size: 1.02rem; font-weight: 600;
       display: flex; justify-content: space-between; align-items: center; cursor: pointer;
     }
     .menu-item-content {
-      padding: 0 16px 14px 16px; border-top: 1px solid var(--border-color);
-      display: none; margin-top: 10px; padding-top: 10px;
+      padding: 0 18px 16px 18px; border-top: 1px solid var(--border-color);
+      display: none; margin-top: 12px; padding-top: 12px;
     }
     .menu-item-card.expanded .menu-item-content { display: block; }
 
-    .setting-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 0.9rem; }
+    .setting-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-size: 0.92rem; }
     .setting-row label { color: var(--hint-color); }
     
     select.settings-select {
-      padding: 6px 10px; border-radius: 8px; border: 1px solid var(--border-color);
+      padding: 8px 12px; border-radius: 10px; border: 1px solid var(--border-color);
       background: var(--bg-color); color: var(--text-color); outline: none;
     }
 
-    .slider-box { margin-top: 6px; }
+    .slider-box { margin-top: 8px; }
     .font-slider { width: 100%; accent-color: var(--bntu-green); cursor: pointer; }
-    .slider-labels { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--hint-color); margin-top: 4px; }
+    .slider-labels { display: flex; justify-content: space-between; font-size: 0.78rem; color: var(--hint-color); margin-top: 6px; }
 
     /* Таблица статистики успеваемости */
     .stat-summary-box {
       background: var(--bntu-green-light); border: 1px solid rgba(0, 133, 89, 0.2);
-      border-radius: 10px; padding: 12px; margin-bottom: 12px;
+      border-radius: 12px; padding: 14px; margin-bottom: 14px;
     }
-    .stat-row { display: flex; justify-content: space-between; font-size: 0.9rem; margin-bottom: 6px; }
+    .stat-row { display: flex; justify-content: space-between; font-size: 0.92rem; margin-bottom: 8px; }
     .stat-row:last-child { margin-bottom: 0; }
     
-    .subject-stat-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; margin-top: 8px; }
-    .subject-stat-table th, .subject-stat-table td { padding: 6px 4px; text-align: left; border-bottom: 1px solid var(--border-color); }
+    .subject-stat-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; margin-top: 10px; }
+    .subject-stat-table th, .subject-stat-table td { padding: 8px 6px; text-align: left; border-bottom: 1px solid var(--border-color); }
     .subject-stat-table th { color: var(--hint-color); font-weight: 600; }
 
     /* Кнопка выхода */
     .logout-btn {
       width: 100%; background: rgba(220, 53, 69, 0.1); color: #dc3545;
-      border: 1px solid rgba(220, 53, 69, 0.2); padding: 10px; border-radius: 8px;
-      font-size: 0.9rem; font-weight: 600; cursor: pointer; text-align: center;
+      border: 1px solid rgba(220, 53, 69, 0.2); padding: 12px; border-radius: 10px;
+      font-size: 0.92rem; font-weight: 600; cursor: pointer; text-align: center;
     }
     .logout-btn:active { background: rgba(220, 53, 69, 0.2); }
   </style>
@@ -379,7 +380,7 @@
     </div>
   </div>
 
-  <!-- Шапка с кнопкой смены темы слева, текстом по центру и кнопкой меню справа -->
+  <!-- Шапка -->
   <div class="header">
     <button class="theme-toggle-btn" id="themeToggleBtn" onclick="toggleTheme()" title="Сменить тему">☀️</button>
     <div class="header-center">
@@ -394,7 +395,7 @@
     <button class="week-arrow-btn" onclick="changeWeek(-1)">❮</button>
     <div class="week-title-block">
       <div class="week-title-text" id="weekTitle">Неделя 1</div>
-      <div class="week-range-text" id="weekRange">01.09 – 06.09</div>
+      <div class="week-range-text" id="weekRange">01.09 – 07.09</div>
     </div>
     <button class="week-arrow-btn" onclick="changeWeek(1)">❯</button>
   </div>
@@ -406,7 +407,7 @@
     </button>
   </div>
 
-  <!-- Дни недели -->
+  <!-- Дни недели (включая воскресенье) -->
   <div class="days-container" id="daysTabs"></div>
 
   <!-- Дата выбранного дня над расписанием -->
@@ -435,7 +436,7 @@
           <div class="setting-row"><label>Имя и Фамилия:</label><strong id="profName">-</strong></div>
           <div class="setting-row"><label>Класс и Группа:</label><strong id="profClass">-</strong></div>
           <div class="setting-row"><label>Ваш ID:</label><strong id="profId">-</strong></div>
-          <div style="margin-top: 12px;">
+          <div style="margin-top: 14px;">
             <button class="logout-btn" onclick="logoutAccount()">🚪 Выйти из аккаунта</button>
           </div>
         </div>
@@ -457,9 +458,9 @@
               <strong id="totalAbsences" style="color: #dc3545;">0 уроков</strong>
             </div>
           </div>
-          <div style="font-weight: 600; font-size: 0.9rem; margin-bottom: 6px;">Предметы:</div>
+          <div style="font-weight: 600; font-size: 0.92rem; margin-bottom: 8px;">Предметы:</div>
           <div id="subjectStatsContainer">
-            <div style="color: var(--hint-color); font-size: 0.85rem;">Оценки пока не выставлены.</div>
+            <div style="color: var(--hint-color); font-size: 0.88rem;">Оценки пока не выставлены.</div>
           </div>
         </div>
       </div>
@@ -470,9 +471,9 @@
           <span>📰 Новости лицея</span> <span>▼</span>
         </div>
         <div class="menu-item-content">
-          <p style="font-size: 0.85rem; color: var(--hint-color); margin: 0 0 8px 0; line-height: 1.4;">
-            <strong>📌 Переключатель темы</strong><br>
-            В левом углу шапки добавлена кнопка быстрой смены светлой и темной тем.
+          <p style="font-size: 0.88rem; color: var(--hint-color); margin: 0 0 8px 0; line-height: 1.4;">
+            <strong>📌 Просторный интерфейс и воскресенье</strong><br>
+            В переключатель дней добавлена Суббота и Воскресенье, а отступы расширены для более комфортного и приятного использования.
           </p>
         </div>
       </div>
@@ -491,7 +492,7 @@
             <input type="range" id="fontRange" class="font-slider" min="13" max="22" value="16" oninput="updateFontSize(this.value)" />
             <div class="slider-labels"><span>Мелкий</span><span>Обычный</span><span>Крупный</span></div>
           </div>
-          <div style="margin-top: 14px;" class="setting-row">
+          <div style="margin-top: 16px;" class="setting-row">
             <label for="fontFamilySelect">Стиль шрифта:</label>
             <select id="fontFamilySelect" class="settings-select" onchange="changeFontFamily(this.value)">
               <option value="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif">Системный</option>
@@ -508,7 +509,7 @@
           <span>ℹ️ О нас</span> <span>▼</span>
         </div>
         <div class="menu-item-content">
-          <p style="font-size: 0.85rem; color: var(--hint-color); margin: 0; line-height: 1.4;">
+          <p style="font-size: 0.88rem; color: var(--hint-color); margin: 0; line-height: 1.4;">
             Официальный электронный дневник и расписание Лицея БНТУ.<br><br>
             Приложение создано для удобного просмотра актуального расписания уроков, фиксации успеваемости и ведения заметок по ДЗ.
           </p>
@@ -521,7 +522,7 @@
           <span>💬 Поддержка</span> <span>▼</span>
         </div>
         <div class="menu-item-content">
-          <p style="font-size: 0.85rem; color: var(--hint-color); margin: 0 0 10px 0; line-height: 1.4;">
+          <p style="font-size: 0.88rem; color: var(--hint-color); margin: 0 0 12px 0; line-height: 1.4;">
             Если у вас возникли вопросы по работе дневника, ошибки в расписании или проблемы с входом по ID, напишите нам в службу поддержки:
           </p>
           <div style="text-align: center;">
@@ -543,14 +544,14 @@
     };
 
     const quarterWeeks = [
-      { week: 1, range: "01.09 – 06.09", dates: { monday: "1 сен", tuesday: "2 сен", wednesday: "3 сен", thursday: "4 сен", friday: "5 сен", saturday: "6 сен" } },
-      { week: 2, range: "08.09 – 13.09", dates: { monday: "8 сен", tuesday: "9 сен", wednesday: "10 сен", thursday: "11 сен", friday: "12 сен", saturday: "13 сен" } },
-      { week: 3, range: "15.09 – 20.09", dates: { monday: "15 сен", tuesday: "16 сен", wednesday: "17 сен", thursday: "18 сен", friday: "19 сен", saturday: "20 сен" } },
-      { week: 4, range: "22.09 – 27.09", dates: { monday: "22 сен", tuesday: "23 сен", wednesday: "24 сен", thursday: "25 сен", friday: "26 сен", saturday: "27 сен" } },
-      { week: 5, range: "29.09 – 04.10", dates: { monday: "29 сен", tuesday: "30 сен", wednesday: "1 окт", thursday: "2 окт", friday: "3 окт", saturday: "4 окт" } },
-      { week: 6, range: "06.10 – 11.10", dates: { monday: "6 окт", tuesday: "7 окт", wednesday: "8 окт", thursday: "9 окт", friday: "10 окт", saturday: "11 окт" } },
-      { week: 7, range: "13.10 – 18.10", dates: { monday: "13 окт", tuesday: "14 окт", wednesday: "15 окт", thursday: "16 окт", friday: "17 окт", saturday: "18 окт" } },
-      { week: 8, range: "20.10 – 25.10", dates: { monday: "20 окт", tuesday: "21 окт", wednesday: "22 окт", thursday: "23 окт", friday: "24 окт", saturday: "25 окт" } }
+      { week: 1, range: "01.09 – 07.09", dates: { monday: "1 сен", tuesday: "2 сен", wednesday: "3 сен", thursday: "4 сен", friday: "5 сен", saturday: "6 сен", sunday: "7 сен" } },
+      { week: 2, range: "08.09 – 14.09", dates: { monday: "8 сен", tuesday: "9 сен", wednesday: "10 сен", thursday: "11 сен", friday: "12 сен", saturday: "13 сен", sunday: "14 сен" } },
+      { week: 3, range: "15.09 – 21.09", dates: { monday: "15 сен", tuesday: "16 сен", wednesday: "17 сен", thursday: "18 сен", friday: "19 сен", saturday: "20 сен", sunday: "21 сен" } },
+      { week: 4, range: "22.09 – 28.09", dates: { monday: "22 сен", tuesday: "23 сен", wednesday: "24 сен", thursday: "25 сен", friday: "26 сен", saturday: "27 сен", sunday: "28 сен" } },
+      { week: 5, range: "29.09 – 05.10", dates: { monday: "29 сен", tuesday: "30 сен", wednesday: "1 окт", thursday: "2 окт", friday: "3 окт", saturday: "4 окт", sunday: "5 окт" } },
+      { week: 6, range: "06.10 – 12.10", dates: { monday: "6 окт", tuesday: "7 окт", wednesday: "8 окт", thursday: "9 окт", friday: "10 окт", saturday: "11 окт", sunday: "12 окт" } },
+      { week: 7, range: "13.10 – 19.10", dates: { monday: "13 окт", tuesday: "14 окт", wednesday: "15 окт", thursday: "16 окт", friday: "17 окт", saturday: "18 окт", sunday: "19 окт" } },
+      { week: 8, range: "20.10 – 26.10", dates: { monday: "20 окт", tuesday: "21 окт", wednesday: "22 окт", thursday: "23 окт", friday: "24 окт", saturday: "25 окт", sunday: "26 окт" } }
     ];
 
     const scheduleData = {
@@ -607,11 +608,12 @@
           { id: "fri_5", num: 5, time: "12:40 – 13:25", subject: "Химия", room: "208" },
           { id: "fri_6", num: 6, time: "13:35 – 14:20", subject: "Химия", room: "208" }
         ],
-        saturday: []
+        saturday: [],
+        sunday: []
       },
-      "10B": { monday: [], tuesday: [], wednesday: [], thursday: [], friday: [], saturday: [] },
-      "11A": { monday: [], tuesday: [], wednesday: [], thursday: [], friday: [], saturday: [] },
-      "11B": { monday: [], tuesday: [], wednesday: [], thursday: [], friday: [], saturday: [] }
+      "10B": { monday: [], tuesday: [], wednesday: [], thursday: [], friday: [], saturday: [], sunday: [] },
+      "11A": { monday: [], tuesday: [], wednesday: [], thursday: [], friday: [], saturday: [], sunday: [] },
+      "11B": { monday: [], tuesday: [], wednesday: [], thursday: [], friday: [], saturday: [], sunday: [] }
     };
 
     const fullDayNames = {
@@ -620,7 +622,8 @@
       wednesday: "Среда",
       thursday: "Четверг",
       friday: "Пятница",
-      saturday: "Суббота"
+      saturday: "Суббота",
+      sunday: "Воскресенье"
     };
 
     let userClassId = null;
@@ -642,12 +645,11 @@
 
     function calculateCurrentDay() {
       const dayIndex = new Date().getDay();
-      const daysMap = { 1: 'monday', 2: 'tuesday', 3: 'wednesday', 4: 'thursday', 5: 'friday', 6: 'saturday' };
+      const daysMap = { 0: 'sunday', 1: 'monday', 2: 'tuesday', 3: 'wednesday', 4: 'thursday', 5: 'friday', 6: 'saturday' };
       return daysMap[dayIndex] || 'monday';
     }
 
     window.onload = function() {
-      // Инициализация темы
       const savedTheme = localStorage.getItem('lyceum_theme') || 'light';
       if (savedTheme === 'dark') {
         document.documentElement.setAttribute('data-theme', 'dark');
@@ -754,7 +756,8 @@
         { key: 'wednesday', name: 'Ср' },
         { key: 'thursday', name: 'Чт' },
         { key: 'friday', name: 'Пт' },
-        { key: 'saturday', name: 'Сб' }
+        { key: 'saturday', name: 'Сб' },
+        { key: 'sunday', name: 'Вс' }
       ];
 
       days.forEach(d => {
@@ -913,7 +916,7 @@
 
       const subjects = Object.keys(subjectMarks);
       if (subjects.length === 0) {
-        container.innerHTML = `<div style="color: var(--hint-color); font-size: 0.85rem;">Оценки пока не выставлены.</div>`;
+        container.innerHTML = `<div style="color: var(--hint-color); font-size: 0.88rem;">Оценки пока не выставлены.</div>`;
         return;
       }
 
