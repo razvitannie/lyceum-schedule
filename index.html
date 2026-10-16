@@ -34,6 +34,15 @@
       --option-bg-color: #2a2a2a;
     }
 
+    /* Белый цвет текста кабинета в темной теме при выставленной отметке */
+    [data-theme="dark"] .lesson-card.grade-green .lesson-room,
+    [data-theme="dark"] .lesson-card.grade-lightgreen .lesson-room,
+    [data-theme="dark"] .lesson-card.grade-yellow .lesson-room,
+    [data-theme="dark"] .lesson-card.grade-orange .lesson-room,
+    [data-theme="dark"] .lesson-card.grade-red .lesson-room {
+      color: #ffffff !important;
+    }
+
     html { font-size: 16px; }
 
     body {
@@ -109,7 +118,7 @@
 
     .error-msg { color: #dc3545; font-size: 0.85rem; margin-top: 10px; display: none; }
 
-    /* Шапка с кнопкой четверти под надписью */
+    /* Шапка */
     .header {
       display: flex;
       align-items: flex-start;
@@ -126,7 +135,6 @@
     .header h1 { font-size: 1.35rem; margin: 0 0 2px 0; font-weight: 700; color: var(--bntu-green); }
     .header p { font-size: 0.82rem; color: var(--hint-color); margin: 0 0 6px 0; }
 
-    /* Селектор четверти в шапке */
     .quarter-select-header {
       background: var(--bntu-green-light);
       color: var(--bntu-green);
@@ -514,8 +522,8 @@
         </div>
         <div class="menu-item-content">
           <p style="font-size: 0.88rem; color: var(--hint-color); margin: 0 0 8px 0; line-height: 1.4;">
-            <strong>📌 Обновленный выбор четверти</strong><br>
-            Кнопка выбора четверти размещена прямо под подзаголовком в шапке приложения.
+            <strong>📌 Улучшена читаемость в темной теме</strong><br>
+            Номер кабинета при выставлении отметки теперь всегда отображается белым цветом.
           </p>
         </div>
       </div>
