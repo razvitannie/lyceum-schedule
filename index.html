@@ -28,7 +28,7 @@
       margin: 0;
       padding: 16px;
       -webkit-font-smoothing: antialiased;
-      overflow-x: hidden; /* Жестко запрещаем сдвиг страницы влево-вправо */
+      overflow-x: hidden;
       box-sizing: border-box;
       width: 100vw;
     }
@@ -176,7 +176,7 @@
     /* Дни недели */
     .days-container {
       display: flex; gap: 6px; overflow-x: auto;
-      padding-bottom: 8px; margin-bottom: 12px; scrollbar-width: none;
+      padding-bottom: 8px; margin-bottom: 10px; scrollbar-width: none;
     }
     .days-container::-webkit-scrollbar { display: none; }
 
@@ -186,6 +186,30 @@
       color: var(--text-color); font-size: 0.85rem; font-weight: 500; cursor: pointer;
     }
     .day-btn.active { background: var(--bntu-green); color: #ffffff; border-color: var(--bntu-green); }
+
+    /* Информационная плашка даты над расписанием */
+    .schedule-date-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 4px 0 10px 0;
+      padding: 0 4px;
+    }
+
+    .schedule-date-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text-color);
+    }
+
+    .schedule-date-sub {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--bntu-green);
+      background: var(--bntu-green-light);
+      padding: 3px 8px;
+      border-radius: 12px;
+    }
 
     /* Карточка урока */
     .lesson-card {
@@ -347,15 +371,21 @@
     <button class="week-arrow-btn" onclick="changeWeek(1)">❯</button>
   </div>
 
-  <!-- Кнопка текущей недели -->
+  <!-- Кнопка перехода на текущую неделю -->
   <div class="current-week-btn-container">
     <button class="week-dropdown-btn" onclick="goToRealCurrentWeek()">
-      📅 На сегодняшнюю неделю (<span id="headerRealWeekName">Неделя 1</span>)
+      📅 На текущую неделю
     </button>
   </div>
 
   <!-- Дни недели -->
   <div class="days-container" id="daysTabs"></div>
+
+  <!-- Дата выбранного дня над расписанием -->
+  <div class="schedule-date-header">
+    <span class="schedule-date-title" id="selectedDayFull">Понедельник</span>
+    <span class="schedule-date-sub" id="selectedDateBadge">1 сентября</span>
+  </div>
 
   <!-- Контейнер уроков -->
   <div id="schedule-container"></div>
@@ -413,8 +443,8 @@
         </div>
         <div class="menu-item-content">
           <p style="font-size: 0.85rem; color: var(--hint-color); margin: 0 0 8px 0; line-height: 1.4;">
-            <strong>📌 Защита от сдвига экрана</strong><br>
-            Исправлена проблема с горизонтальной прокруткой приложения при вводе длинного текста домашнего задания.
+            <strong>📌 Обновленный заголовок даты</strong><br>
+            Дата и день недели теперь четко и красиво отображаются перед уроками.
           </p>
         </div>
       </div>
@@ -556,6 +586,15 @@
       "11B": { monday: [], tuesday: [], wednesday: [], thursday: [], friday: [], saturday: [] }
     };
 
+    const fullDayNames = {
+      monday: "Понедельник",
+      tuesday: "Вторник",
+      wednesday: "Среда",
+      thursday: "Четверг",
+      friday: "Пятница",
+      saturday: "Суббота"
+    };
+
     let userClassId = null;
     let userGroup = 1;
     let currentWeek = 1;
@@ -588,9 +627,6 @@
 
       currentWeek = calculateCurrentWeek();
       currentDay = calculateCurrentDay();
-
-      const realWeekInfo = quarterWeeks.find(w => w.week === currentWeek) || quarterWeeks[0];
-      document.getElementById('headerRealWeekName').textContent = `Неделя ${realWeekInfo.week} (${realWeekInfo.range})`;
 
       const savedClassId = localStorage.getItem('lyceum_user_class');
       const savedClassName = localStorage.getItem('lyceum_user_class_name');
@@ -638,6 +674,7 @@
 
     function goToRealCurrentWeek() {
       currentWeek = calculateCurrentWeek();
+      currentDay = calculateCurrentDay();
       updateWeekUI();
       renderDaysTabs();
       renderSchedule();
@@ -662,7 +699,6 @@
     function renderDaysTabs() {
       const container = document.getElementById('daysTabs');
       container.innerHTML = '';
-      const weekInfo = quarterWeeks.find(w => w.week === currentWeek) || quarterWeeks[0];
       const days = [
         { key: 'monday', name: 'Пн' },
         { key: 'tuesday', name: 'Вт' },
@@ -674,10 +710,9 @@
 
       days.forEach(d => {
         const activeClass = d.key === currentDay ? 'active' : '';
-        const dateStr = weekInfo.dates[d.key] || '';
         container.innerHTML += `
           <button class="day-btn ${activeClass}" onclick="setDay('${d.key}')">
-            ${d.name}, ${dateStr}
+            ${d.name}
           </button>
         `;
       });
@@ -755,11 +790,11 @@
         if (val.toUpperCase() === 'Н' || val.toUpperCase() === 'N') return 'grade-red';
         return '';
       }
-      if (num >= 9 && num <= 10) return 'grade-green';     // Зеленый (9-10)
-      if (num >= 7 && num <= 8) return 'grade-lightgreen'; // Салатовый (7-8)
-      if (num >= 5 && num <= 6) return 'grade-yellow';     // Желтый (5-6)
-      if (num >= 3 && num <= 4) return 'grade-orange';     // Оранжевый (3-4)
-      if (num >= 1 && num <= 2) return 'grade-red';        // Красный (1-2)
+      if (num >= 9 && num <= 10) return 'grade-green';
+      if (num >= 7 && num <= 8) return 'grade-lightgreen';
+      if (num >= 5 && num <= 6) return 'grade-yellow';
+      if (num >= 3 && num <= 4) return 'grade-orange';
+      if (num >= 1 && num <= 2) return 'grade-red';
       return '';
     }
 
@@ -866,13 +901,18 @@
     function renderSchedule() {
       if (!userClassId) return;
 
+      const weekInfo = quarterWeeks.find(w => w.week === currentWeek) || quarterWeeks[0];
+      const dateStr = weekInfo.dates[currentDay] || '';
+
+      // Обновляем информационный заголовок даты над расписанием
+      document.getElementById('selectedDayFull').textContent = fullDayNames[currentDay] || 'Понедельник';
+      document.getElementById('selectedDateBadge').textContent = dateStr;
+
       const container = document.getElementById('schedule-container');
       const classSchedule = scheduleData[userClassId] || {};
       const allLessons = classSchedule[currentDay] || [];
       
       const lessons = allLessons.filter(l => !l.group || l.group === userGroup);
-      const weekInfo = quarterWeeks.find(w => w.week === currentWeek) || quarterWeeks[0];
-      const dateStr = weekInfo.dates[currentDay] || '';
 
       container.innerHTML = '';
 
