@@ -423,7 +423,7 @@
     .font-slider { width: 100%; accent-color: var(--bntu-green); cursor: pointer; }
     .slider-labels { display: flex; justify-content: space-between; font-size: 0.78rem; color: var(--hint-color); margin-top: 6px; }
 
-    /* Стили для карусели команды в разделе «О нас» */
+    /* Ссылочные стили для карусели команды (с фиксированной высотой) */
     .team-carousel {
       position: relative;
       background: var(--input-bg);
@@ -433,12 +433,23 @@
       text-align: center;
       margin-top: 12px;
       overflow: hidden;
+      height: 165px; /* Фиксированная высота блока */
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
     }
 
     .team-slide {
       display: none;
       flex-direction: column;
       align-items: center;
+      width: 100%;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      padding: 0 40px;
       animation: fadeIn 0.4s ease-in-out;
     }
 
@@ -447,43 +458,43 @@
     }
 
     @keyframes fadeIn {
-      from { opacity: 0; transform: scale(0.95); }
-      to { opacity: 1; transform: scale(1); }
+      from { opacity: 0; transform: translate(-50%, -50%) scale(0.95); }
+      to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
     }
 
     .team-avatar {
-      width: 64px;
-      height: 64px;
+      width: 50px;
+      height: 50px;
       border-radius: 50%;
       object-fit: cover;
       border: 2px solid var(--bntu-green);
-      margin-bottom: 10px;
+      margin-bottom: 6px;
       background: var(--card-bg);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.5rem;
+      font-size: 1.3rem;
     }
 
     .team-name {
       font-weight: 700;
-      font-size: 1rem;
-      margin-bottom: 4px;
+      font-size: 0.95rem;
+      margin-bottom: 2px;
       color: var(--text-color);
     }
 
     .team-role {
-      font-size: 0.82rem;
+      font-size: 0.8rem;
       color: var(--bntu-green);
       font-weight: 600;
-      margin-bottom: 6px;
+      margin-bottom: 4px;
     }
 
     .team-desc {
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       color: var(--hint-color);
       line-height: 1.3;
-      max-width: 220px;
+      max-width: 230px;
     }
 
     .team-arrow {
@@ -512,10 +523,13 @@
     .team-arrow.next { right: 8px; }
 
     .team-dots {
+      position: absolute;
+      bottom: 8px;
+      left: 50%;
+      transform: translateX(-50%);
       display: flex;
       justify-content: center;
       gap: 6px;
-      margin-top: 10px;
     }
 
     .team-dot {
@@ -663,8 +677,8 @@
         </div>
         <div class="menu-item-content">
           <p style="font-size: 0.88rem; color: var(--hint-color); margin: 0 0 8px 0; line-height: 1.4;">
-            <strong>📌 Обновление команды проекта</strong><br>
-            В раздел «О нас» добавлена актуальная информация об участии БРСМ лицея БНТУ.
+            <strong>📌 Фиксированный размер слайдера</strong><br>
+            Блок участников проекта в разделе «О нас» теперь имеет фиксированную высоту и плавно переключается без смещений.
           </p>
         </div>
       </div>
@@ -711,7 +725,7 @@
           <div class="team-carousel" id="teamCarousel" onmouseenter="pauseTeamAutoSlide()" onmouseleave="resumeTeamAutoSlide()">
             <button class="team-arrow prev" onclick="changeTeamSlide(-1)">❮</button>
             
-            <div id="teamSlidesContainer">
+            <div id="teamSlidesContainer" style="width: 100%; height: 100%; position: relative;">
               <!-- Слайды генерируются скриптом -->
             </div>
 
@@ -889,7 +903,7 @@
       sunday: "Воскресенье"
     };
 
-    // Массив участников проекта с обновленной информацией о БРСМ
+    // Массив участников проекта
     const teamMembers = [
       {
         name: "Русецкий Арсений",
@@ -900,7 +914,7 @@
       {
         name: "БРСМ Лицея БНТУ",
         role: "Партнер проекта",
-        desc: "Сбор и анализ мнений учащихся, информационная поддержка и помощь в реализации проекта.",
+        desc: "Сбор и анализ мнений учащихся о том, каким должен быть удобный электронный дневник, информационная поддержка и помощь в реализации проекта.",
         avatar: "🔴"
       },
       {
