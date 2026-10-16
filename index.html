@@ -109,7 +109,7 @@
       user-select: none;
     }
 
-    /* Интерактивная кнопка выбора недели в шапке */
+    /* Кнопка быстрого перехода к текущей неделе в шапке */
     .week-dropdown-btn {
       display: inline-flex;
       align-items: center;
@@ -128,43 +128,6 @@
 
     .week-dropdown-btn:active {
       background: rgba(0, 133, 89, 0.15);
-    }
-
-    /* Модальное окно со списком недель */
-    #weekSelectModal {
-      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(4px);
-      z-index: 2500; display: none;
-      justify-content: center; align-items: center; padding: 20px; box-sizing: border-box;
-    }
-
-    .week-modal-card {
-      background: var(--card-bg);
-      width: 100%; max-width: 340px;
-      border-radius: 16px; padding: 20px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-      border: 1px solid var(--border-color);
-      max-height: 80vh; overflow-y: auto;
-    }
-
-    .week-modal-header {
-      display: flex; justify-content: space-between; align-items: center;
-      margin-bottom: 14px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;
-    }
-    .week-modal-header h3 { margin: 0; font-size: 1.1rem; color: var(--bntu-green); }
-
-    .week-list-item {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 10px 12px; border-radius: 10px; margin-bottom: 6px;
-      background: var(--bg-color); border: 1px solid var(--border-color);
-      cursor: pointer; transition: background 0.2s;
-      font-size: 0.9rem;
-    }
-    .week-list-item.selected {
-      background: var(--bntu-green-light);
-      border-color: var(--bntu-green);
-      color: var(--bntu-green);
-      font-weight: 600;
     }
 
     /* Переключатель недель со стрелочками */
@@ -308,25 +271,14 @@
     </div>
   </div>
 
-  <!-- Модальное окно выбора недели со списком -->
-  <div id="weekSelectModal" onclick="closeWeekModal(event)">
-    <div class="week-modal-card" onclick="event.stopPropagation()">
-      <div class="week-modal-header">
-        <h3>Выберите неделю</h3>
-        <button class="close-btn" onclick="toggleWeekModal(false)">✖</button>
-      </div>
-      <div id="weekModalList"></div>
-    </div>
-  </div>
-
   <!-- Шапка -->
   <div class="header">
     <button class="menu-icon-btn" onclick="openSettings()">☰</button>
     <h1>Лицей БНТУ</h1>
     <p>Электронный дневник</p>
-    <!-- Кнопка выбора недели вместо названия класса -->
-    <button class="week-dropdown-btn" onclick="toggleWeekModal(true)">
-      <span id="headerWeekBadge">Неделя 1 (01.09 – 06.09)</span> ▼
+    <!-- Кнопка по клике на которую мгновенно переходим на текущую (первую) неделю -->
+    <button class="week-dropdown-btn" onclick="goToCurrentWeek()">
+      📅 <span id="headerWeekBadge">Неделя 1 (01.09 – 06.09)</span>
     </button>
   </div>
 
@@ -517,7 +469,6 @@
 
       updateWeekUI();
       renderDaysTabs();
-      renderWeekModalList();
 
       if (savedClassId && savedClassName) {
         userClassId = savedClassId;
@@ -553,29 +504,9 @@
       if (!isExpanded) card.classList.add('expanded');
     }
 
-    // Управление модальным окном выбора недели
-    function toggleWeekModal(show) {
-      document.getElementById('weekSelectModal').style.display = show ? 'flex' : 'none';
-      if (show) renderWeekModalList();
-    }
-
-    function renderWeekModalList() {
-      const container = document.getElementById('weekModalList');
-      container.innerHTML = '';
-      quarterWeeks.forEach(w => {
-        const isSelected = w.week === currentWeek ? 'selected' : '';
-        container.innerHTML += `
-          <div class="week-list-item ${isSelected}" onclick="selectWeek(${w.week})">
-            <span>Неделя ${w.week}</span>
-            <span style="font-size: 0.8rem; color: var(--hint-color);">${w.range}</span>
-          </div>
-        `;
-      });
-    }
-
-    function selectWeek(weekNum) {
-      currentWeek = weekNum;
-      toggleWeekModal(false);
+    // Функция быстрого возврата к текущей неделе (например, Неделя 1 или можно указать любую нужную)
+    function goToCurrentWeek() {
+      currentWeek = 1; // Здесь можно указать номер текущей недели по умолчанию
       updateWeekUI();
       renderDaysTabs();
       renderSchedule();
