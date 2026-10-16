@@ -1,4 +1,49 @@
--webkit-font-smoothing: antialiased;
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Электронный дневник • Лицей БНТУ</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    :root {
+      --bg-color: var(--tg-theme-bg-color, #f8f9fa);
+      --text-color: var(--tg-theme-text-color, #212529);
+      --card-bg: var(--tg-theme-secondary-bg-color, #ffffff);
+      --hint-color: var(--tg-theme-hint-color, #6c757d);
+      --bntu-green: #008559;
+      --bntu-green-light: rgba(0, 133, 89, 0.08);
+      --border-color: rgba(0, 0, 0, 0.08);
+      --input-bg: rgba(0, 0, 0, 0.03);
+      --font-family-custom: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      --select-text-color: var(--text-color);
+      --option-bg-color: #ffffff;
+    }
+
+    /* Ручная темная тема */
+    [data-theme="dark"] {
+      --bg-color: #121212;
+      --text-color: #f8f9fa;
+      --card-bg: #1e1e1e;
+      --hint-color: #adb5bd;
+      --bntu-green: #00a86b;
+      --bntu-green-light: rgba(0, 168, 107, 0.15);
+      --border-color: rgba(255, 255, 255, 0.1);
+      --input-bg: rgba(255, 255, 255, 0.05);
+      --select-text-color: #ffffff;
+      --option-bg-color: #2a2a2a;
+    }
+
+    html { font-size: 16px; }
+
+    body {
+      font-family: var(--font-family-custom);
+      font-size: 1rem;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      margin: 0;
+      padding: 20px 12px 32px 12px;
+      -webkit-font-smoothing: antialiased;
       overflow-x: hidden;
       box-sizing: border-box;
       width: 100vw;
