@@ -142,27 +142,12 @@
       background: rgba(0, 133, 89, 0.2);
     }
 
-    .week-title-block {
-      text-align: center;
-    }
-
-    .week-title-text {
-      font-weight: 600;
-      font-size: 0.95rem;
-      color: var(--text-color);
-    }
-
-    .week-range-text {
-      font-size: 0.75rem;
-      color: var(--hint-color);
-      margin-top: 2px;
-    }
+    .week-title-block { text-align: center; }
+    .week-title-text { font-weight: 600; font-size: 0.95rem; color: var(--text-color); }
+    .week-range-text { font-size: 0.75rem; color: var(--hint-color); margin-top: 2px; }
 
     /* Кнопка текущей недели под стрелочками */
-    .current-week-btn-container {
-      text-align: center;
-      margin-bottom: 12px;
-    }
+    .current-week-btn-container { text-align: center; margin-bottom: 12px; }
 
     .week-dropdown-btn {
       display: inline-flex;
@@ -182,9 +167,7 @@
       transition: background 0.2s;
     }
 
-    .week-dropdown-btn:active {
-      background: rgba(0, 133, 89, 0.15);
-    }
+    .week-dropdown-btn:active { background: rgba(0, 133, 89, 0.15); }
 
     /* Дни недели */
     .days-container {
@@ -200,11 +183,12 @@
     }
     .day-btn.active { background: var(--bntu-green); color: #ffffff; border-color: var(--bntu-green); }
 
+    /* Карточка урока */
     .lesson-card {
       background: var(--card-bg); padding: 14px; border-radius: 12px;
       margin-bottom: 12px; border: 1px solid var(--border-color);
     }
-    .lesson-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .lesson-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
     .lesson-subject { font-size: 1rem; font-weight: 600; }
     .lesson-time { font-size: 0.8rem; color: var(--hint-color); margin-top: 2px; }
     .lesson-room {
@@ -212,7 +196,19 @@
       padding: 5px 9px; border-radius: 8px; font-size: 0.8rem; font-weight: 600;
     }
 
-    .hw-container { margin-top: 8px; border-top: 1px dashed var(--border-color); padding-top: 8px; }
+    /* Инпуты оценки и ДЗ */
+    .lesson-inputs-row { display: flex; gap: 8px; margin-top: 8px; border-top: 1px dashed var(--border-color); padding-top: 8px; }
+    
+    .mark-input {
+      width: 65px; box-sizing: border-box; border: 1px solid var(--border-color);
+      background: var(--input-bg); border-radius: 8px; padding: 8px;
+      font-size: 0.85rem; font-weight: 700; text-align: center; color: var(--bntu-green); outline: none;
+    }
+    .mark-input:focus { border-color: var(--bntu-green); background: var(--card-bg); }
+    .mark-input.has-value { background: rgba(0, 133, 89, 0.08); border-color: var(--bntu-green); }
+    .mark-input.is-absent { color: #dc3545; background: rgba(220, 53, 69, 0.08); border-color: #dc3545; }
+
+    .hw-container { flex: 1; }
     .hw-input {
       width: 100%; box-sizing: border-box; border: 1px solid transparent;
       background: var(--input-bg); border-radius: 8px; padding: 8px 10px;
@@ -264,23 +260,25 @@
     .font-slider { width: 100%; accent-color: var(--bntu-green); cursor: pointer; }
     .slider-labels { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--hint-color); margin-top: 4px; }
 
-    /* Кнопка выхода из аккаунта */
+    /* Таблица статистики успеваемости */
+    .stat-summary-box {
+      background: var(--bntu-green-light); border: 1px solid rgba(0, 133, 89, 0.2);
+      border-radius: 10px; padding: 12px; margin-bottom: 12px;
+    }
+    .stat-row { display: flex; justify-content: space-between; font-size: 0.9rem; margin-bottom: 6px; }
+    .stat-row:last-child { margin-bottom: 0; }
+    
+    .subject-stat-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; margin-top: 8px; }
+    .subject-stat-table th, .subject-stat-table td { padding: 6px 4px; text-align: left; border-bottom: 1px solid var(--border-color); }
+    .subject-stat-table th { color: var(--hint-color); font-weight: 600; }
+
+    /* Кнопка выхода */
     .logout-btn {
-      width: 100%;
-      background: rgba(220, 53, 69, 0.1);
-      color: #dc3545;
-      border: 1px solid rgba(220, 53, 69, 0.2);
-      padding: 10px;
-      border-radius: 8px;
-      font-size: 0.9rem;
-      font-weight: 600;
-      cursor: pointer;
-      text-align: center;
-      transition: background 0.2s;
+      width: 100%; background: rgba(220, 53, 69, 0.1); color: #dc3545;
+      border: 1px solid rgba(220, 53, 69, 0.2); padding: 10px; border-radius: 8px;
+      font-size: 0.9rem; font-weight: 600; cursor: pointer; text-align: center;
     }
-    .logout-btn:active {
-      background: rgba(220, 53, 69, 0.2);
-    }
+    .logout-btn:active { background: rgba(220, 53, 69, 0.2); }
   </style>
 </head>
 <body>
@@ -313,7 +311,7 @@
     <button class="week-arrow-btn" onclick="changeWeek(1)">❯</button>
   </div>
 
-  <!-- Кнопка текущей недели под стрелочками -->
+  <!-- Кнопка текущей недели -->
   <div class="current-week-btn-container">
     <button class="week-dropdown-btn" onclick="goToRealCurrentWeek()">
       📅 На сегодняшнюю неделю (<span id="headerRealWeekName">Неделя 1</span>)
@@ -349,19 +347,38 @@
         </div>
       </div>
 
-      <!-- Новости (Новая плашка) -->
+      <!-- Успеваемость и пропускаемость (НОВАЯ ПЛАШКА) -->
+      <div class="menu-item-card" id="card-performance">
+        <div class="menu-item-header" onclick="toggleMenu('performance')">
+          <span>📊 Успеваемость и пропуски</span> <span>▼</span>
+        </div>
+        <div class="menu-item-content">
+          <div class="stat-summary-box">
+            <div class="stat-row">
+              <span>Общий средний балл:</span>
+              <strong id="totalAvgMark" style="color: var(--bntu-green);">-</strong>
+            </div>
+            <div class="stat-row">
+              <span>Всего пропусков (Н):</span>
+              <strong id="totalAbsences" style="color: #dc3545;">0 уроков</strong>
+            </div>
+          </div>
+          <div style="font-weight: 600; font-size: 0.9rem; margin-bottom: 6px;">Предметы:</div>
+          <div id="subjectStatsContainer">
+            <div style="color: var(--hint-color); font-size: 0.85rem;">Оценки пока не выставлены.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Новости -->
       <div class="menu-item-card" id="card-news">
         <div class="menu-item-header" onclick="toggleMenu('news')">
           <span>📰 Новости лицея</span> <span>▼</span>
         </div>
         <div class="menu-item-content">
           <p style="font-size: 0.85rem; color: var(--hint-color); margin: 0 0 8px 0; line-height: 1.4;">
-            <strong>📌 Обновление расписания</strong><br>
-            Внимание! Уточнены кабинеты для занятий по физике и иностранным языкам. Проверяйте актуальное расписание в группах.
-          </p>
-          <p style="font-size: 0.85rem; color: var(--hint-color); margin: 0; line-height: 1.4;">
-            <strong>🚀 О приложении</strong><br>
-            Теперь можно быстро переключаться на текущую неделю с помощью кнопки на главном экране.
+            <strong>📌 Учёт успеваемости</strong><br>
+            В дневник добавлена возможность ставит отметки от 1 до 10 или «Н» напротив уроков! Средний балл автоматически рассчитывается в меню.
           </p>
         </div>
       </div>
@@ -399,7 +416,7 @@
         <div class="menu-item-content">
           <p style="font-size: 0.85rem; color: var(--hint-color); margin: 0; line-height: 1.4;">
             Официальный электронный дневник и расписание Лицея БНТУ.<br><br>
-            Приложение создано для удобного просмотра актуального расписания уроков с учетом деления на группы и замены кабинетов, а также для ведения персональных заметок по домашним заданиям на каждую неделю четверти.
+            Приложение создано для удобного просмотра актуального расписания уроков, фиксации успеваемости и ведения заметок по ДЗ.
           </p>
         </div>
       </div>
@@ -510,10 +527,9 @@
 
     function calculateCurrentWeek() {
       const now = new Date();
-      const startDate = new Date(2026, 8, 1); // 1 сентября 2026
+      const startDate = new Date(2026, 8, 1);
       const diffTime = now - startDate;
       const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-      
       if (diffDays < 0) return 1;
       let calculatedWeek = Math.floor(diffDays / 7) + 1;
       if (calculatedWeek < 1) calculatedWeek = 1;
@@ -578,7 +594,10 @@
       const card = document.getElementById(`card-${menuId}`);
       const isExpanded = card.classList.contains('expanded');
       document.querySelectorAll('.menu-item-card').forEach(c => c.classList.remove('expanded'));
-      if (!isExpanded) card.classList.add('expanded');
+      if (!isExpanded) {
+        card.classList.add('expanded');
+        if (menuId === 'performance') calculatePerformanceStats();
+      }
     }
 
     function goToRealCurrentWeek() {
@@ -661,7 +680,6 @@
       document.getElementById('profId').textContent = userId;
     }
 
-    // Функция выхода из аккаунта
     function logoutAccount() {
       localStorage.removeItem('lyceum_user_id');
       localStorage.removeItem('lyceum_user_class');
@@ -680,6 +698,7 @@
       renderSchedule();
     }
 
+    /* Сохранение домашнего задания */
     function saveHomework(lessonId, text) {
       const key = `hw_w${currentWeek}_${currentDay}_${lessonId}`;
       if (text.trim() === '') {
@@ -690,12 +709,118 @@
       
       const inputEl = document.getElementById(`input_${lessonId}`);
       if (inputEl) {
-        if (text.trim() !== '') {
-          inputEl.classList.add('has-value');
-        } else {
-          inputEl.classList.remove('has-value');
+        if (text.trim() !== '') inputEl.classList.add('has-value');
+        else inputEl.classList.remove('has-value');
+      }
+    }
+
+    /* Сохранение оценки или "Н" */
+    function saveMark(lessonId, subjectName, val) {
+      const key = `mark_w${currentWeek}_${currentDay}_${lessonId}`;
+      const subjectKey = `mark_subj_w${currentWeek}_${currentDay}_${lessonId}`;
+      const cleanVal = val.trim().toUpperCase();
+
+      if (cleanVal === '') {
+        localStorage.removeItem(key);
+        localStorage.removeItem(subjectKey);
+      } else {
+        localStorage.setItem(key, cleanVal);
+        localStorage.setItem(subjectKey, subjectName);
+      }
+
+      const markInputEl = document.getElementById(`mark_${lessonId}`);
+      if (markInputEl) {
+        markInputEl.value = cleanVal;
+        markInputEl.classList.remove('has-value', 'is-absent');
+
+        if (cleanVal === 'Н' || cleanVal === 'N') {
+          markInputEl.classList.add('is-absent');
+        } else if (cleanVal !== '') {
+          markInputEl.classList.add('has-value');
         }
       }
+    }
+
+    /* Расчет статистики по успеваемости */
+    function calculatePerformanceStats() {
+      let subjectMarks = {};
+      let totalAbsencesCount = 0;
+      let allNumericMarksSum = 0;
+      let allNumericMarksCount = 0;
+
+      // Пробегаем по локальному хранилищу
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key.startsWith('mark_w')) {
+          const val = localStorage.getItem(key);
+          const subjKey = key.replace('mark_w', 'mark_subj_w');
+          const subjectName = localStorage.getItem(subjKey) || 'Прочие предметы';
+
+          if (!subjectMarks[subjectName]) {
+            subjectMarks[subjectName] = { marks: [], absences: 0 };
+          }
+
+          if (val === 'Н' || val === 'N') {
+            subjectMarks[subjectName].absences += 1;
+            totalAbsencesCount += 1;
+          } else {
+            const num = parseFloat(val);
+            if (!isNaN(num) && num >= 1 && num <= 10) {
+              subjectMarks[subjectName].marks.push(num);
+              allNumericMarksSum += num;
+              allNumericMarksCount += 1;
+            }
+          }
+        }
+      }
+
+      // Выводим суммарные данные
+      const totalAvgEl = document.getElementById('totalAvgMark');
+      const totalAbsencesEl = document.getElementById('totalAbsences');
+      const container = document.getElementById('subjectStatsContainer');
+
+      totalAbsencesEl.textContent = `${totalAbsencesCount} уроков`;
+
+      if (allNumericMarksCount > 0) {
+        totalAvgEl.textContent = (allNumericMarksSum / allNumericMarksCount).toFixed(2);
+      } else {
+        totalAvgEl.textContent = '-';
+      }
+
+      const subjects = Object.keys(subjectMarks);
+      if (subjects.length === 0) {
+        container.innerHTML = `<div style="color: var(--hint-color); font-size: 0.85rem;">Оценки пока не выставлены.</div>`;
+        return;
+      }
+
+      let html = `<table class="subject-stat-table">
+        <thead>
+          <tr>
+            <th>Предмет</th>
+            <th>Оценки</th>
+            <th style="text-align: center;">Ср. балл</th>
+            <th style="text-align: center;">Пропуски</th>
+          </tr>
+        </thead>
+        <tbody>`;
+
+      subjects.forEach(subj => {
+        const data = subjectMarks[subj];
+        const marksStr = data.marks.length > 0 ? data.marks.join(', ') : '-';
+        const avg = data.marks.length > 0 ? (data.marks.reduce((a, b) => a + b, 0) / data.marks.length).toFixed(2) : '-';
+
+        html += `
+          <tr>
+            <td><strong>${subj}</strong></td>
+            <td style="color: var(--bntu-green); font-weight: 500;">${marksStr}</td>
+            <td style="text-align: center; font-weight: 600;">${avg}</td>
+            <td style="text-align: center; color: #dc3545; font-weight: 600;">${data.absences > 0 ? data.absences : '-'}</td>
+          </tr>
+        `;
+      });
+
+      html += `</tbody></table>`;
+      container.innerHTML = html;
     }
 
     function renderSchedule() {
@@ -718,7 +843,12 @@
 
       lessons.forEach(l => {
         const savedHw = localStorage.getItem(`hw_w${currentWeek}_${currentDay}_${l.id}`) || '';
-        const hasValueClass = savedHw ? 'has-value' : '';
+        const savedMark = localStorage.getItem(`mark_w${currentWeek}_${currentDay}_${l.id}`) || '';
+        
+        const hasHwClass = savedHw ? 'has-value' : '';
+        let markClass = '';
+        if (savedMark === 'Н' || savedMark === 'N') markClass = 'is-absent';
+        else if (savedMark !== '') markClass = 'has-value';
 
         container.innerHTML += `
           <div class="lesson-card">
@@ -729,15 +859,27 @@
               </div>
               <div class="lesson-room">каб. ${l.room}</div>
             </div>
-            <div class="hw-container">
+            
+            <div class="lesson-inputs-row">
               <input 
                 type="text" 
-                id="input_${l.id}"
-                class="hw-input ${hasValueClass}" 
-                placeholder="✍️ ДЗ на ${dateStr}..." 
-                value="${savedHw}"
-                oninput="saveHomework('${l.id}', this.value)"
+                id="mark_${l.id}"
+                class="mark-input ${markClass}"
+                placeholder="Балл/Н"
+                maxLength="2"
+                value="${savedMark}"
+                oninput="saveMark('${l.id}', '${l.subject}', this.value)"
               />
+              <div class="hw-container">
+                <input 
+                  type="text" 
+                  id="input_${l.id}"
+                  class="hw-input ${hasHwClass}" 
+                  placeholder="✍️ ДЗ на ${dateStr}..." 
+                  value="${savedHw}"
+                  oninput="saveHomework('${l.id}', this.value)"
+                />
+              </div>
             </div>
           </div>
         `;
