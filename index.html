@@ -18,6 +18,18 @@
       --font-family-custom: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     }
 
+    /* Ручная темная тема */
+    [data-theme="dark"] {
+      --bg-color: #121212;
+      --text-color: #f8f9fa;
+      --card-bg: #1e1e1e;
+      --hint-color: #adb5bd;
+      --bntu-green: #00a86b;
+      --bntu-green-light: rgba(0, 168, 107, 0.15);
+      --border-color: rgba(255, 255, 255, 0.1);
+      --input-bg: rgba(255, 255, 255, 0.05);
+    }
+
     html { font-size: 16px; }
 
     body {
@@ -31,6 +43,7 @@
       overflow-x: hidden;
       box-sizing: border-box;
       width: 100vw;
+      transition: background-color 0.3s, color 0.3s;
     }
 
     *, *:before, *:after {
@@ -92,7 +105,7 @@
 
     .error-msg { color: #dc3545; font-size: 0.80rem; margin-top: 8px; display: none; }
 
-    /* Шапка с иконкой слева, текстом по центру и кнопкой меню справа */
+    /* Шапка с кнопкой смены темы слева, текстом по центру и кнопкой меню справа */
     .header {
       display: flex;
       align-items: center;
@@ -109,7 +122,7 @@
     .header h1 { font-size: 1.3rem; margin: 0 0 2px 0; font-weight: 700; color: var(--bntu-green); }
     .header p { font-size: 0.8rem; color: var(--hint-color); margin: 0; }
 
-    .menu-icon-btn, .header-icon-box {
+    .menu-icon-btn, .theme-toggle-btn {
       background: var(--card-bg);
       border: 1px solid var(--border-color);
       border-radius: 10px;
@@ -118,17 +131,12 @@
       font-size: 1.2rem; box-shadow: 0 2px 6px rgba(0,0,0,0.05);
       user-select: none;
       flex-shrink: 0;
+      cursor: pointer;
+      color: var(--text-color);
     }
 
     .menu-icon-btn {
-      font-size: 1.3rem; font-weight: bold; color: var(--text-color);
-      cursor: pointer;
-    }
-
-    .header-icon-box img {
-      width: 22px;
-      height: 22px;
-      object-fit: contain;
+      font-size: 1.3rem; font-weight: bold;
     }
 
     /* Переключатель недель со стрелочками */
@@ -371,12 +379,9 @@
     </div>
   </div>
 
-  <!-- Шапка с иконкой слева, текстом по центру и кнопкой меню справа -->
+  <!-- Шапка с кнопкой смены темы слева, текстом по центру и кнопкой меню справа -->
   <div class="header">
-    <div class="header-icon-box">
-      <!-- Замените src на ссылку вашей иконки/логотипа или оставьте эмодзи/SVG -->
-      <span>🐝</span>
-    </div>
+    <button class="theme-toggle-btn" id="themeToggleBtn" onclick="toggleTheme()" title="Сменить тему">☀️</button>
     <div class="header-center">
       <h1>Лицей БНТУ</h1>
       <p>Электронный дневник</p>
@@ -466,8 +471,8 @@
         </div>
         <div class="menu-item-content">
           <p style="font-size: 0.85rem; color: var(--hint-color); margin: 0 0 8px 0; line-height: 1.4;">
-            <strong>📌 Иконка лицея в шапке</strong><br>
-            В левом углу шапки добавлена аккуратная иконка в едином стиле с кнопкой меню.
+            <strong>📌 Переключатель темы</strong><br>
+            В левом углу шапки добавлена кнопка быстрой смены светлой и темной тем.
           </p>
         </div>
       </div>
@@ -642,6 +647,13 @@
     }
 
     window.onload = function() {
+      // Инициализация темы
+      const savedTheme = localStorage.getItem('lyceum_theme') || 'light';
+      if (savedTheme === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        document.getElementById('themeToggleBtn').textContent = '🌙';
+      }
+
       const savedFontSize = localStorage.getItem('pref_font_size_px') || '16';
       updateFontSize(savedFontSize, false);
 
@@ -666,6 +678,20 @@
         renderSchedule();
       }
     };
+
+    function toggleTheme() {
+      const currentTheme = document.documentElement.getAttribute('data-theme');
+      const btn = document.getElementById('themeToggleBtn');
+      if (currentTheme === 'dark') {
+        document.documentElement.removeAttribute('data-theme');
+        localStorage.setItem('lyceum_theme', 'light');
+        btn.textContent = '☀️';
+      } else {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        localStorage.setItem('lyceum_theme', 'dark');
+        btn.textContent = '🌙';
+      }
+    }
 
     function updateFontSize(valPx, save = true) {
       document.documentElement.style.fontSize = valPx + 'px';
