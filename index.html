@@ -141,7 +141,7 @@
 
     .menu-icon-btn { font-size: 1.35rem; font-weight: bold; }
 
-    /* Переключатель недель */
+    /* Переключатель недель и четвертей */
     .week-switcher {
       display: flex;
       align-items: center;
@@ -149,7 +149,7 @@
       background: var(--card-bg);
       border: 1px solid var(--border-color);
       border-radius: 16px;
-      padding: 12px 16px;
+      padding: 10px 14px;
       margin-bottom: 12px;
       box-shadow: 0 3px 10px rgba(0,0,0,0.02);
     }
@@ -173,8 +173,28 @@
     .week-arrow-btn:active { background: rgba(0, 133, 89, 0.2); }
 
     .week-title-block { text-align: center; }
-    .week-title-text { font-weight: 600; font-size: 1rem; color: var(--text-color); }
-    .week-range-text { font-size: 0.8rem; color: var(--hint-color); margin-top: 3px; }
+
+    /* Селектор выбора четверти внутри блока недель */
+    .quarter-select-btn {
+      background: var(--bntu-green-light);
+      color: var(--bntu-green);
+      border: 1px solid rgba(0, 133, 89, 0.2);
+      border-radius: 12px;
+      padding: 4px 10px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      outline: none;
+      cursor: pointer;
+      margin-bottom: 2px;
+    }
+
+    .quarter-select-btn option {
+      background-color: var(--option-bg-color);
+      color: var(--select-text-color);
+    }
+
+    .week-title-text { font-weight: 600; font-size: 0.95rem; color: var(--text-color); }
+    .week-range-text { font-size: 0.78rem; color: var(--hint-color); margin-top: 2px; }
 
     /* Кнопка текущей недели */
     .current-week-btn-container { text-align: center; margin-bottom: 20px; }
@@ -198,7 +218,7 @@
 
     .week-dropdown-btn:active { background: rgba(0, 133, 89, 0.15); }
 
-    /* Все 7 дней недели умещаются на экран */
+    /* Все 7 дней недели */
     .days-container {
       display: flex;
       gap: 4px;
@@ -293,7 +313,6 @@
       transition: background-color 0.2s, color 0.2s;
     }
 
-    /* Поля выпадающего списка оценок и ДЗ */
     .lesson-inputs-row { display: flex; gap: 10px; margin-top: 12px; border-top: 1px dashed var(--border-color); padding-top: 12px; }
     
     .mark-select {
@@ -304,7 +323,6 @@
       transition: background-color 0.2s, color 0.2s, border-color 0.2s;
     }
 
-    /* Настройка цвета текста и фона пунктов выпадающего списка */
     .mark-select option {
       background-color: var(--option-bg-color);
       color: var(--select-text-color);
@@ -377,7 +395,6 @@
     .subject-stat-table th, .subject-stat-table td { padding: 8px 6px; text-align: left; border-bottom: 1px solid var(--border-color); }
     .subject-stat-table th { color: var(--hint-color); font-weight: 600; }
 
-    /* Кнопка выхода */
     .logout-btn {
       width: 100%; background: rgba(220, 53, 69, 0.1); color: #dc3545;
       border: 1px solid rgba(220, 53, 69, 0.2); padding: 12px; border-radius: 10px;
@@ -409,10 +426,18 @@
     <button class="menu-icon-btn" onclick="openSettings()">☰</button>
   </div>
 
-  <!-- Переключатель недель со стрелочками -->
+  <!-- Переключатель недель и четвертей -->
   <div class="week-switcher">
     <button class="week-arrow-btn" onclick="changeWeek(-1)">❮</button>
     <div class="week-title-block">
+      <div>
+        <select id="quarterSelect" class="quarter-select-btn" onchange="onQuarterSelectChange(this.value)">
+          <option value="1">1 четверть</option>
+          <option value="2">2 четверть</option>
+          <option value="3">3 четверть</option>
+          <option value="4">4 четверть</option>
+        </select>
+      </div>
       <div class="week-title-text" id="weekTitle">Неделя 1</div>
       <div class="week-range-text" id="weekRange">01.09 – 07.09</div>
     </div>
@@ -426,7 +451,7 @@
     </button>
   </div>
 
-  <!-- Дни недели (Все 7 дней помещаются на экран) -->
+  <!-- Дни недели -->
   <div class="days-container" id="daysTabs"></div>
 
   <!-- Дата выбранного дня над расписанием -->
@@ -469,7 +494,7 @@
         <div class="menu-item-content">
           <div class="stat-summary-box">
             <div class="stat-row">
-              <span>Общий средний балл:</span>
+              <span>Средний балл (тек. четверть):</span>
               <strong id="totalAvgMark" style="color: var(--bntu-green);">-</strong>
             </div>
             <div class="stat-row">
@@ -491,8 +516,8 @@
         </div>
         <div class="menu-item-content">
           <p style="font-size: 0.88rem; color: var(--hint-color); margin: 0 0 8px 0; line-height: 1.4;">
-            <strong>📌 Улучшена темная тема и адаптивность</strong><br>
-            Текст отметок в темной теме стал четким и белым, а все дни недели аккуратно помещаются на одном экране.
+            <strong>📌 Интеграция 4 четвертей</strong><br>
+            В переключатель времени добавлен компактный выбор четвертей с автоматической привязкой всех оценок и ДЗ.
           </p>
         </div>
       </div>
@@ -562,16 +587,72 @@
       "1101": { classId: "11A", group: 1, name: "11 «А» класс (Группа 1)", fullName: "Максим Сидоров" }
     };
 
-    const quarterWeeks = [
-      { week: 1, range: "01.09 – 07.09", dates: { monday: "1 сен", tuesday: "2 сен", wednesday: "3 сен", thursday: "4 сен", friday: "5 сен", saturday: "6 сен", sunday: "7 сен" } },
-      { week: 2, range: "08.09 – 14.09", dates: { monday: "8 сен", tuesday: "9 сен", wednesday: "10 сен", thursday: "11 сен", friday: "12 сен", saturday: "13 сен", sunday: "14 сен" } },
-      { week: 3, range: "15.09 – 21.09", dates: { monday: "15 сен", tuesday: "16 сен", wednesday: "17 сен", thursday: "18 сен", friday: "19 сен", saturday: "20 сен", sunday: "21 сен" } },
-      { week: 4, range: "22.09 – 28.09", dates: { monday: "22 сен", tuesday: "23 сен", wednesday: "24 сен", thursday: "25 сен", friday: "26 сен", saturday: "27 сен", sunday: "28 сен" } },
-      { week: 5, range: "29.09 – 05.10", dates: { monday: "29 сен", tuesday: "30 сен", wednesday: "1 окт", thursday: "2 окт", friday: "3 окт", saturday: "4 окт", sunday: "5 окт" } },
-      { week: 6, range: "06.10 – 12.10", dates: { monday: "6 окт", tuesday: "7 окт", wednesday: "8 окт", thursday: "9 окт", friday: "10 окт", saturday: "11 окт", sunday: "12 окт" } },
-      { week: 7, range: "13.10 – 19.10", dates: { monday: "13 окт", tuesday: "14 окт", wednesday: "15 окт", thursday: "16 окт", friday: "17 окт", saturday: "18 окт", sunday: "19 окт" } },
-      { week: 8, range: "20.10 – 26.10", dates: { monday: "20 окт", tuesday: "21 окт", wednesday: "22 окт", thursday: "23 окт", friday: "24 окт", saturday: "25 окт", sunday: "26 окт" } }
-    ];
+    // Данные по четвертям учебного года
+    const schoolQuarters = {
+      1: {
+        title: "1 четверть",
+        startDate: new Date(2026, 8, 1),
+        endDate: new Date(2026, 9, 31),
+        weeks: [
+          { week: 1, range: "01.09 – 07.09", dates: { monday: "1 сен", tuesday: "2 сен", wednesday: "3 сен", thursday: "4 сен", friday: "5 сен", saturday: "6 сен", sunday: "7 сен" } },
+          { week: 2, range: "08.09 – 14.09", dates: { monday: "8 сен", tuesday: "9 сен", wednesday: "10 сен", thursday: "11 сен", friday: "12 сен", saturday: "13 сен", sunday: "14 сен" } },
+          { week: 3, range: "15.09 – 21.09", dates: { monday: "15 сен", tuesday: "16 сен", wednesday: "17 сен", thursday: "18 сен", friday: "19 сен", saturday: "20 сен", sunday: "21 сен" } },
+          { week: 4, range: "22.09 – 28.09", dates: { monday: "22 сен", tuesday: "23 сен", wednesday: "24 сен", thursday: "25 сен", friday: "26 сен", saturday: "27 сен", sunday: "28 сен" } },
+          { week: 5, range: "29.09 – 05.10", dates: { monday: "29 сен", tuesday: "30 сен", wednesday: "1 окт", thursday: "2 окт", friday: "3 окт", saturday: "4 окт", sunday: "5 окт" } },
+          { week: 6, range: "06.10 – 12.10", dates: { monday: "6 окт", tuesday: "7 окт", wednesday: "8 окт", thursday: "9 окт", friday: "10 окт", saturday: "11 окт", sunday: "12 окт" } },
+          { week: 7, range: "13.10 – 19.10", dates: { monday: "13 окт", tuesday: "14 окт", wednesday: "15 окт", thursday: "16 окт", friday: "17 окт", saturday: "18 окт", sunday: "19 окт" } },
+          { week: 8, range: "20.10 – 26.10", dates: { monday: "20 окт", tuesday: "21 окт", wednesday: "22 окт", thursday: "23 окт", friday: "24 окт", saturday: "25 окт", sunday: "26 окт" } },
+          { week: 9, range: "27.10 – 31.10", dates: { monday: "27 окт", tuesday: "28 окт", wednesday: "29 окт", thursday: "30 окт", friday: "31 окт", saturday: "1 ноя", sunday: "2 ноя" } }
+        ]
+      },
+      2: {
+        title: "2 четверть",
+        startDate: new Date(2026, 10, 9),
+        endDate: new Date(2026, 11, 24),
+        weeks: [
+          { week: 1, range: "09.11 – 15.11", dates: { monday: "9 ноя", tuesday: "10 ноя", wednesday: "11 ноя", thursday: "12 ноя", friday: "13 ноя", saturday: "14 ноя", sunday: "15 ноя" } },
+          { week: 2, range: "16.11 – 22.11", dates: { monday: "16 ноя", tuesday: "17 ноя", wednesday: "18 ноя", thursday: "19 ноя", friday: "20 ноя", saturday: "21 ноя", sunday: "22 ноя" } },
+          { week: 3, range: "23.11 – 29.11", dates: { monday: "23 ноя", tuesday: "24 ноя", wednesday: "25 ноя", thursday: "26 ноя", friday: "27 ноя", saturday: "28 ноя", sunday: "29 ноя" } },
+          { week: 4, range: "30.11 – 06.12", dates: { monday: "30 ноя", tuesday: "1 дек", wednesday: "2 дек", thursday: "3 дек", friday: "4 дек", saturday: "5 дек", sunday: "6 дек" } },
+          { week: 5, range: "07.12 – 13.12", dates: { monday: "7 дек", tuesday: "8 дек", wednesday: "9 дек", thursday: "10 дек", friday: "11 дек", saturday: "12 дек", sunday: "13 дек" } },
+          { week: 6, range: "14.12 – 20.12", dates: { monday: "14 дек", tuesday: "15 дек", wednesday: "16 дек", thursday: "17 дек", friday: "18 дек", saturday: "19 дек", sunday: "20 дек" } },
+          { week: 7, range: "21.12 – 24.12", dates: { monday: "21 дек", tuesday: "22 дек", wednesday: "23 дек", thursday: "24 дек", friday: "25 дек", saturday: "26 дек", sunday: "27 дек" } }
+        ]
+      },
+      3: {
+        title: "3 четверть",
+        startDate: new Date(2027, 0, 11),
+        endDate: new Date(2027, 2, 27),
+        weeks: [
+          { week: 1, range: "11.01 – 17.01", dates: { monday: "11 янв", tuesday: "12 янв", wednesday: "13 янв", thursday: "14 янв", friday: "15 янв", saturday: "16 янв", sunday: "17 янв" } },
+          { week: 2, range: "18.01 – 24.01", dates: { monday: "18 янв", tuesday: "19 янв", wednesday: "20 янв", thursday: "21 янв", friday: "22 янв", saturday: "23 янв", sunday: "24 янв" } },
+          { week: 3, range: "25.01 – 31.01", dates: { monday: "25 янв", tuesday: "26 янв", wednesday: "27 янв", thursday: "28 янв", friday: "29 янв", saturday: "30 янв", sunday: "31 янв" } },
+          { week: 4, range: "01.02 – 07.02", dates: { monday: "1 фев", tuesday: "2 фев", wednesday: "3 фев", thursday: "4 фев", friday: "5 фев", saturday: "6 фев", sunday: "7 фев" } },
+          { week: 5, range: "08.02 – 14.02", dates: { monday: "8 фев", tuesday: "9 фев", wednesday: "10 фев", thursday: "11 фев", friday: "12 фев", saturday: "13 фев", sunday: "14 фев" } },
+          { week: 6, range: "15.02 – 21.02", dates: { monday: "15 фев", tuesday: "16 фев", wednesday: "17 фев", thursday: "18 фев", friday: "19 фев", saturday: "20 фев", sunday: "21 фев" } },
+          { week: 7, range: "22.02 – 28.02", dates: { monday: "22 фев", tuesday: "23 фев", wednesday: "24 фев", thursday: "25 фев", friday: "26 фев", saturday: "27 фев", sunday: "28 фев" } },
+          { week: 8, range: "01.03 – 07.03", dates: { monday: "1 мар", tuesday: "2 мар", wednesday: "3 мар", thursday: "4 мар", friday: "5 мар", saturday: "6 мар", sunday: "7 мар" } },
+          { week: 9, range: "08.03 – 14.03", dates: { monday: "8 мар", tuesday: "9 мар", wednesday: "10 мар", thursday: "11 мар", friday: "12 мар", saturday: "13 мар", sunday: "14 мар" } },
+          { week: 10, range: "15.03 – 21.03", dates: { monday: "15 мар", tuesday: "16 мар", wednesday: "17 мар", thursday: "18 мар", friday: "19 мар", saturday: "20 мар", sunday: "21 мар" } },
+          { week: 11, range: "22.03 – 27.03", dates: { monday: "22 мар", tuesday: "23 мар", wednesday: "24 мар", thursday: "25 мар", friday: "26 мар", saturday: "27 мар", sunday: "28 мар" } }
+        ]
+      },
+      4: {
+        title: "4 четверть",
+        startDate: new Date(2027, 3, 5),
+        endDate: new Date(2027, 4, 31),
+        weeks: [
+          { week: 1, range: "05.04 – 11.04", dates: { monday: "5 апр", tuesday: "6 апр", wednesday: "7 апр", thursday: "8 апр", friday: "9 апр", saturday: "10 апр", sunday: "11 апр" } },
+          { week: 2, range: "12.04 – 18.04", dates: { monday: "12 апр", tuesday: "13 апр", wednesday: "14 апр", thursday: "15 апр", friday: "16 апр", saturday: "17 апр", sunday: "18 апр" } },
+          { week: 3, range: "19.04 – 25.04", dates: { monday: "19 апр", tuesday: "20 апр", wednesday: "21 апр", thursday: "22 апр", friday: "23 апр", saturday: "24 апр", sunday: "25 апр" } },
+          { week: 4, range: "26.04 – 02.05", dates: { monday: "26 апр", tuesday: "27 апр", wednesday: "28 апр", thursday: "29 апр", friday: "30 апр", saturday: "1 мая", sunday: "2 мая" } },
+          { week: 5, range: "03.05 – 09.05", dates: { monday: "3 мая", tuesday: "4 мая", wednesday: "5 мая", thursday: "6 мая", friday: "7 мая", saturday: "8 мая", sunday: "9 мая" } },
+          { week: 6, range: "10.05 – 16.05", dates: { monday: "10 мая", tuesday: "11 мая", wednesday: "12 мая", thursday: "13 мая", friday: "14 мая", saturday: "15 мая", sunday: "16 мая" } },
+          { week: 7, range: "17.05 – 23.05", dates: { monday: "17 мая", tuesday: "18 мая", wednesday: "19 мая", thursday: "20 мая", friday: "21 мая", saturday: "22 мая", sunday: "23 мая" } },
+          { week: 8, range: "24.05 – 31.05", dates: { monday: "24 мая", tuesday: "25 мая", wednesday: "26 мая", thursday: "27 мая", friday: "28 мая", saturday: "29 мая", sunday: "30 мая" } }
+        ]
+      }
+    };
 
     const scheduleData = {
       "10A": {
@@ -647,19 +728,24 @@
 
     let userClassId = null;
     let userGroup = 1;
+    let currentQuarter = 1;
     let currentWeek = 1;
     let currentDay = 'monday';
 
-    function calculateCurrentWeek() {
+    function calculateCurrentQuarterAndWeek() {
       const now = new Date();
-      const startDate = new Date(2026, 8, 1);
-      const diffTime = now - startDate;
-      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-      if (diffDays < 0) return 1;
-      let calculatedWeek = Math.floor(diffDays / 7) + 1;
-      if (calculatedWeek < 1) calculatedWeek = 1;
-      if (calculatedWeek > 8) calculatedWeek = 8;
-      return calculatedWeek;
+      for (let q in schoolQuarters) {
+        const quarter = schoolQuarters[q];
+        if (now >= quarter.startDate && now <= quarter.endDate) {
+          const diffTime = now - quarter.startDate;
+          const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+          let week = Math.floor(diffDays / 7) + 1;
+          if (week < 1) week = 1;
+          if (week > quarter.weeks.length) week = quarter.weeks.length;
+          return { quarter: parseInt(q), week: week };
+        }
+      }
+      return { quarter: 1, week: 1 };
     }
 
     function calculateCurrentDay() {
@@ -681,8 +767,12 @@
       const savedFontFamily = localStorage.getItem('pref_font_family');
       if (savedFontFamily) changeFontFamily(savedFontFamily, false);
 
-      currentWeek = calculateCurrentWeek();
+      const currentPeriod = calculateCurrentQuarterAndWeek();
+      currentQuarter = currentPeriod.quarter;
+      currentWeek = currentPeriod.week;
       currentDay = calculateCurrentDay();
+
+      document.getElementById('quarterSelect').value = currentQuarter;
 
       const savedClassId = localStorage.getItem('lyceum_user_class');
       const savedClassName = localStorage.getItem('lyceum_user_class_name');
@@ -742,26 +832,55 @@
       }
     }
 
+    function onQuarterSelectChange(val) {
+      currentQuarter = parseInt(val);
+      currentWeek = 1;
+      updateWeekUI();
+      renderDaysTabs();
+      renderSchedule();
+    }
+
     function goToRealCurrentWeek() {
-      currentWeek = calculateCurrentWeek();
+      const currentPeriod = calculateCurrentQuarterAndWeek();
+      currentQuarter = currentPeriod.quarter;
+      currentWeek = currentPeriod.week;
       currentDay = calculateCurrentDay();
+      document.getElementById('quarterSelect').value = currentQuarter;
+
       updateWeekUI();
       renderDaysTabs();
       renderSchedule();
     }
 
     function changeWeek(direction) {
+      const totalWeeks = schoolQuarters[currentQuarter].weeks.length;
       currentWeek += direction;
-      if (currentWeek < 1) currentWeek = 8;
-      if (currentWeek > 8) currentWeek = 1;
 
+      if (currentWeek < 1) {
+        if (currentQuarter > 1) {
+          currentQuarter -= 1;
+          currentWeek = schoolQuarters[currentQuarter].weeks.length;
+        } else {
+          currentWeek = 1;
+        }
+      } else if (currentWeek > totalWeeks) {
+        if (currentQuarter < 4) {
+          currentQuarter += 1;
+          currentWeek = 1;
+        } else {
+          currentWeek = totalWeeks;
+        }
+      }
+
+      document.getElementById('quarterSelect').value = currentQuarter;
       updateWeekUI();
       renderDaysTabs();
       renderSchedule();
     }
 
     function updateWeekUI() {
-      const weekInfo = quarterWeeks.find(w => w.week === currentWeek) || quarterWeeks[0];
+      const quarterInfo = schoolQuarters[currentQuarter];
+      const weekInfo = quarterInfo.weeks.find(w => w.week === currentWeek) || quarterInfo.weeks[0];
       document.getElementById('weekTitle').textContent = `Неделя ${weekInfo.week}`;
       document.getElementById('weekRange').textContent = weekInfo.range;
     }
@@ -841,7 +960,7 @@
     }
 
     function saveHomework(lessonId, text) {
-      const key = `hw_w${currentWeek}_${currentDay}_${lessonId}`;
+      const key = `hw_q${currentQuarter}_w${currentWeek}_${currentDay}_${lessonId}`;
       if (text.trim() === '') {
         localStorage.removeItem(key);
       } else {
@@ -870,8 +989,8 @@
     }
 
     function saveMark(lessonId, subjectName, val) {
-      const key = `mark_w${currentWeek}_${currentDay}_${lessonId}`;
-      const subjectKey = `mark_subj_w${currentWeek}_${currentDay}_${lessonId}`;
+      const key = `mark_q${currentQuarter}_w${currentWeek}_${currentDay}_${lessonId}`;
+      const subjectKey = `mark_subj_q${currentQuarter}_w${currentWeek}_${currentDay}_${lessonId}`;
       const cleanVal = val.trim().toUpperCase();
 
       if (cleanVal === '' || cleanVal === '-') {
@@ -896,11 +1015,13 @@
       let allNumericMarksSum = 0;
       let allNumericMarksCount = 0;
 
+      const prefix = `mark_q${currentQuarter}_`;
+
       for (let i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i);
-        if (key.startsWith('mark_w')) {
+        if (key.startsWith(prefix)) {
           const val = localStorage.getItem(key);
-          const subjKey = key.replace('mark_w', 'mark_subj_w');
+          const subjKey = key.replace('mark_q', 'mark_subj_q');
           const subjectName = localStorage.getItem(subjKey) || 'Прочие предметы';
 
           if (!subjectMarks[subjectName]) {
@@ -935,7 +1056,7 @@
 
       const subjects = Object.keys(subjectMarks);
       if (subjects.length === 0) {
-        container.innerHTML = `<div style="color: var(--hint-color); font-size: 0.88rem;">Оценки пока не выставлены.</div>`;
+        container.innerHTML = `<div style="color: var(--hint-color); font-size: 0.88rem;">Оценки в ${currentQuarter}-й четверти пока не выставлены.</div>`;
         return;
       }
 
@@ -972,7 +1093,8 @@
     function renderSchedule() {
       if (!userClassId) return;
 
-      const weekInfo = quarterWeeks.find(w => w.week === currentWeek) || quarterWeeks[0];
+      const quarterInfo = schoolQuarters[currentQuarter];
+      const weekInfo = quarterInfo.weeks.find(w => w.week === currentWeek) || quarterInfo.weeks[0];
       const dateStr = weekInfo.dates[currentDay] || '';
 
       document.getElementById('selectedDayFull').textContent = fullDayNames[currentDay] || 'Понедельник';
@@ -992,8 +1114,8 @@
       }
 
       lessons.forEach(l => {
-        const savedHw = localStorage.getItem(`hw_w${currentWeek}_${currentDay}_${l.id}`) || '';
-        const savedMark = localStorage.getItem(`mark_w${currentWeek}_${currentDay}_${l.id}`) || '';
+        const savedHw = localStorage.getItem(`hw_q${currentQuarter}_w${currentWeek}_${currentDay}_${l.id}`) || '';
+        const savedMark = localStorage.getItem(`mark_q${currentQuarter}_w${currentWeek}_${currentDay}_${l.id}`) || '';
         
         const hasHwClass = savedHw ? 'has-value' : '';
         const cardColorClass = getGradeColorClass(savedMark);
