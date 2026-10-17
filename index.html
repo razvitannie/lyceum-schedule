@@ -423,43 +423,43 @@
     .font-slider { width: 100%; accent-color: var(--bntu-green); cursor: pointer; }
     .slider-labels { display: flex; justify-content: space-between; font-size: 0.78rem; color: var(--hint-color); margin-top: 6px; }
 
-    /* Ссылочные стили для карусели команды (с фиксированной высотой) */
+    /* Увеличенная и стабильная карусель с плавной цикличной анимацией */
     .team-carousel {
       position: relative;
       background: var(--input-bg);
       border: 1px solid var(--border-color);
       border-radius: 14px;
-      padding: 16px 40px;
+      padding: 20px 44px;
       text-align: center;
       margin-top: 12px;
+      height: 210px; /* Увеличено по высоте для простора */
       overflow: hidden;
-      height: 165px; /* Фиксированная высота блока */
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
+    }
+
+    #teamSlidesContainer {
+      position: relative;
+      width: 100%;
+      height: 100%;
     }
 
     .team-slide {
-      display: none;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
       flex-direction: column;
       align-items: center;
-      width: 100%;
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      padding: 0 40px;
-      animation: fadeIn 0.4s ease-in-out;
+      justify-content: center;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out;
     }
 
     .team-slide.active {
-      display: flex;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translate(-50%, -50%) scale(0.95); }
-      to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+      opacity: 1;
+      visibility: visible;
     }
 
     .team-avatar {
@@ -484,17 +484,17 @@
     }
 
     .team-role {
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       color: var(--bntu-green);
       font-weight: 600;
       margin-bottom: 4px;
     }
 
     .team-desc {
-      font-size: 0.78rem;
+      font-size: 0.76rem;
       color: var(--hint-color);
-      line-height: 1.3;
-      max-width: 230px;
+      line-height: 1.35;
+      max-width: 220px;
     }
 
     .team-arrow {
@@ -504,8 +504,8 @@
       background: var(--card-bg);
       border: 1px solid var(--border-color);
       color: var(--bntu-green);
-      width: 30px;
-      height: 30px;
+      width: 32px;
+      height: 32px;
       border-radius: 50%;
       display: flex;
       align-items: center;
@@ -514,7 +514,7 @@
       cursor: pointer;
       font-size: 0.9rem;
       box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-      z-index: 2;
+      z-index: 5;
       transition: background 0.2s;
     }
 
@@ -530,6 +530,7 @@
       display: flex;
       justify-content: center;
       gap: 6px;
+      z-index: 5;
     }
 
     .team-dot {
@@ -537,12 +538,13 @@
       height: 6px;
       border-radius: 50%;
       background: var(--border-color);
-      transition: background 0.2s;
+      cursor: pointer;
+      transition: all 0.3s ease;
     }
 
     .team-dot.active {
       background: var(--bntu-green);
-      width: 16px;
+      width: 18px;
       border-radius: 4px;
     }
 
@@ -677,8 +679,8 @@
         </div>
         <div class="menu-item-content">
           <p style="font-size: 0.88rem; color: var(--hint-color); margin: 0 0 8px 0; line-height: 1.4;">
-            <strong>📌 Фиксированный размер слайдера</strong><br>
-            Блок участников проекта в разделе «О нас» теперь имеет фиксированную высоту и плавно переключается без смещений.
+            <strong>📌 Обновление карусели</strong><br>
+            Блок участников проекта в разделе «О нас» теперь имеет увеличенную стабильную высоту и цикличную анимацию.
           </p>
         </div>
       </div>
@@ -725,7 +727,7 @@
           <div class="team-carousel" id="teamCarousel" onmouseenter="pauseTeamAutoSlide()" onmouseleave="resumeTeamAutoSlide()">
             <button class="team-arrow prev" onclick="changeTeamSlide(-1)">❮</button>
             
-            <div id="teamSlidesContainer" style="width: 100%; height: 100%; position: relative;">
+            <div id="teamSlidesContainer">
               <!-- Слайды генерируются скриптом -->
             </div>
 
@@ -903,7 +905,7 @@
       sunday: "Воскресенье"
     };
 
-    // Массив участников проекта
+    // Участники проекта
     const teamMembers = [
       {
         name: "Русецкий Арсений",
