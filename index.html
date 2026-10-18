@@ -136,15 +136,25 @@
       border-radius: 12px;
       padding: 12px;
       margin-top: 14px;
-      font-size: 0.8rem;
+      font-size: 0.82rem;
       color: var(--text-color);
       text-align: left;
-      line-height: 1.4;
+      line-height: 1.45;
     }
 
     .auth-help-box ul {
       margin: 6px 0 0 0;
       padding-left: 18px;
+    }
+
+    .auth-help-box li {
+      margin-bottom: 4px;
+    }
+
+    .auth-help-box a {
+      color: var(--bntu-green);
+      font-weight: 600;
+      text-decoration: underline;
     }
 
     .error-msg { color: #dc3545; font-size: 0.85rem; margin-top: 10px; display: none; }
@@ -619,10 +629,9 @@
       <div id="authHelpBox" class="auth-help-box">
         <strong>💡 Как узнать ваш ID:</strong>
         <ul>
-          <li>Порядковый номер в списке класса (1001 – 10А №1, 1002 – 10А №2 и т.д.).</li>
-          <li>В информационном списке на стенде класса.</li>
-          <li>У вашего классного руководителя.</li>
-          <li>В вашей классной Telegram-группе Лицея БНТУ.</li>
+          <li>Спросить у вашего <strong>классного руководителя</strong>.</li>
+          <li>Уточнить у <strong>администрации Лицея БНТУ</strong>.</li>
+          <li>Написать напрямую в Telegram-поддержку: <a href="https://t.me/your_username" target="_blank">@your_username</a>.</li>
         </ul>
       </div>
     </div>
@@ -728,7 +737,7 @@
         <div class="menu-item-content">
           <p style="font-size: 0.88rem; color: var(--hint-color); margin: 0 0 8px 0; line-height: 1.4;">
             <strong>📌 Добавлена справка по ID</strong><br>
-            В окне входа появилась подсказа, где учащемуся найти свой персональный код ID.
+            В окне входа появилась кнопка помощи с контактами классных руководителей, администрации и Telegram-поддержки.
           </p>
         </div>
       </div>
@@ -798,7 +807,7 @@
             Если у вас возникли вопросы по работе дневника, ошибки в расписании или проблемы с входом по ID, напишите нам в службу поддержки:
           </p>
           <div style="text-align: center;">
-            <a href="https://t.me/telegram" target="_blank" style="color: var(--bntu-green); font-weight: 600; text-decoration: none;">💬 Написать в поддержку</a>
+            <a href="https://t.me/your_username" target="_blank" style="color: var(--bntu-green); font-weight: 600; text-decoration: none;">💬 Написать в поддержку</a>
           </div>
         </div>
       </div>
