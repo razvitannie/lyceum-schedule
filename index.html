@@ -63,6 +63,7 @@
       transition: background-color 0.3s, color 0.3s;
     }
 
+    /* Авторизация */
     #authModal {
       position: fixed;
       top: 0; left: 0; width: 100%; height: 100%;
@@ -99,7 +100,7 @@
       font-size: 1rem;
       text-align: center;
       outline: none;
-      margin-bottom: 16px;
+      margin-bottom: 12px;
     }
 
     .auth-input:focus { border-color: var(--bntu-green); }
@@ -114,6 +115,36 @@
       font-size: 1rem;
       font-weight: 600;
       cursor: pointer;
+    }
+
+    .auth-help-btn {
+      background: transparent;
+      border: none;
+      color: var(--bntu-green);
+      font-size: 0.82rem;
+      font-weight: 600;
+      margin-top: 14px;
+      cursor: pointer;
+      text-decoration: underline;
+      display: inline-block;
+    }
+
+    .auth-help-box {
+      display: none;
+      background: var(--bntu-green-light);
+      border: 1px solid rgba(0, 133, 89, 0.2);
+      border-radius: 12px;
+      padding: 12px;
+      margin-top: 14px;
+      font-size: 0.8rem;
+      color: var(--text-color);
+      text-align: left;
+      line-height: 1.4;
+    }
+
+    .auth-help-box ul {
+      margin: 6px 0 0 0;
+      padding-left: 18px;
     }
 
     .error-msg { color: #dc3545; font-size: 0.85rem; margin-top: 10px; display: none; }
@@ -572,14 +603,28 @@
 </head>
 <body>
 
-  <!-- Авторизация -->
+  <!-- Окно авторизации -->
   <div id="authModal">
     <div class="auth-card">
       <h2>Лицей БНТУ</h2>
-      <p>Введите ваш персональный ID (например: 1001, 1002, 2001...):</p>
+      <p>Введите ваш персональный ID ученика для доступа к расписанию:</p>
       <input type="text" id="idInput" class="auth-input" placeholder="Например: 1001" />
       <button class="auth-btn" onclick="verifyId()">Войти</button>
-      <div id="errorMsg" class="error-msg">Неверный код доступа!</div>
+      <div id="errorMsg" class="error-msg">Неверный ID доступа!</div>
+      
+      <!-- Кнопка подсказки -->
+      <button class="auth-help-btn" onclick="toggleAuthHelp()">❓ Где найти свой ID?</button>
+      
+      <!-- Блок с подсказкой -->
+      <div id="authHelpBox" class="auth-help-box">
+        <strong>💡 Как узнать ваш ID:</strong>
+        <ul>
+          <li>Порядковый номер в списке класса (1001 – 10А №1, 1002 – 10А №2 и т.д.).</li>
+          <li>В информационном списке на стенде класса.</li>
+          <li>У вашего классного руководителя.</li>
+          <li>В вашей классной Telegram-группе Лицея БНТУ.</li>
+        </ul>
+      </div>
     </div>
   </div>
 
@@ -682,8 +727,8 @@
         </div>
         <div class="menu-item-content">
           <p style="font-size: 0.88rem; color: var(--hint-color); margin: 0 0 8px 0; line-height: 1.4;">
-            <strong>📌 Обновлено расписание 10 «А» класса</strong><br>
-            Внесено актуальное расписание для 10 «А» (каб. 205) на 1-ю и 2-ю четверти с подгруппами по предметно-кабинетной системе.
+            <strong>📌 Добавлена справка по ID</strong><br>
+            В окне входа появилась подсказа, где учащемуся найти свой персональный код ID.
           </p>
         </div>
       </div>
@@ -764,7 +809,7 @@
     const tg = window.Telegram.WebApp;
     tg.expand();
 
-    // Генерация полной базы учащихся
+    // Генерация базы учащихся
     const rawData = [
       {
         classId: "10A", name: "10 «А» класс", teacher: "Лещенок Вероника Николаевна", startId: 1001,
@@ -982,7 +1027,7 @@
       }
     };
 
-    // Точное расписание для 10A на 1-ю и 2-ю четверть
+    // Точное расписание для 10A на 1-ю и 2-ю четверти
     const scheduleData10A = {
       monday: [
         { id: "mon_1", num: 1, time: "08:30 – 09:15", subject: "Математика", room: "205" },
@@ -1161,6 +1206,15 @@
         renderSchedule();
       }
     };
+
+    function toggleAuthHelp() {
+      const helpBox = document.getElementById('authHelpBox');
+      if (helpBox.style.display === 'block') {
+        helpBox.style.display = 'none';
+      } else {
+        helpBox.style.display = 'block';
+      }
+    }
 
     function initTeamCarousel() {
       const container = document.getElementById('teamSlidesContainer');
@@ -1549,7 +1603,6 @@
 
       const container = document.getElementById('schedule-container');
 
-      // Отображаем расписание для 1-й и 2-й четверти (3-я и 4-я еще не заполнены)
       if (currentQuarter > 2) {
         container.innerHTML = `<div class="empty-state">📅 Расписание на ${currentQuarter}-ю четверть еще не сформировано.</div>`;
         return;
