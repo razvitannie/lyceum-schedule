@@ -437,8 +437,9 @@
     }
     .menu-item-card.expanded .menu-item-content { display: block; }
 
-    .setting-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-size: 0.92rem; }
-    .setting-row label { color: var(--hint-color); }
+    .setting-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-size: 0.92rem; gap: 12px; }
+    .setting-row label { color: var(--hint-color); flex-shrink: 0; }
+    .setting-row strong { text-align: right; }
     
     select.settings-select {
       -webkit-appearance: none;
@@ -698,7 +699,7 @@
         <div class="menu-item-content">
           <div class="setting-row"><label>ФИО Ученика:</label><strong id="profName">-</strong></div>
           <div class="setting-row"><label>Класс:</label><strong id="profClass">-</strong></div>
-          <div class="setting-row"><label>Классный руководитель:</label><strong id="profTeacher" style="font-size: 0.85rem; text-align: right;">-</strong></div>
+          <div class="setting-row"><label>Классный руководитель:</label><strong id="profTeacher" style="font-size: 0.85rem;">-</strong></div>
           <div class="setting-row"><label>Ваш ID:</label><strong id="profId">-</strong></div>
           <div style="margin-top: 14px;">
             <button class="logout-btn" onclick="logoutAccount()">🚪 Выйти из аккаунта</button>
