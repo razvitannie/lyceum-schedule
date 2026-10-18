@@ -697,7 +697,7 @@
         </div>
         <div class="menu-item-content">
           <div class="setting-row"><label>ФИО Ученика:</label><strong id="profName">-</strong></div>
-          <div class="setting-row"><label>Класс и Группа:</label><strong id="profClass">-</strong></div>
+          <div class="setting-row"><label>Класс:</label><strong id="profClass">-</strong></div>
           <div class="setting-row"><label>Классный руководитель:</label><strong id="profTeacher" style="font-size: 0.85rem; text-align: right;">-</strong></div>
           <div class="setting-row"><label>Ваш ID:</label><strong id="profId">-</strong></div>
           <div style="margin-top: 14px;">
@@ -736,8 +736,8 @@
         </div>
         <div class="menu-item-content">
           <p style="font-size: 0.88rem; color: var(--hint-color); margin: 0 0 8px 0; line-height: 1.4;">
-            <strong>📌 Добавлена справка по ID</strong><br>
-            В окне входа появилась кнопка помощи с контактами классных руководителей, администрации и Telegram-поддержки.
+            <strong>📌 Обновление профиля</strong><br>
+            Оптимизировано отображение данных пользователя в разделе профиля.
           </p>
         </div>
       </div>
@@ -963,7 +963,7 @@
         usersDatabase[studentId] = {
           classId: item.classId,
           group: groupNum,
-          name: `${item.name} (Группа ${groupNum})`,
+          classNameOnly: item.name,
           fullName: studentName,
           teacher: item.teacher
         };
@@ -1424,7 +1424,7 @@
         localStorage.setItem('lyceum_user_id', enteredId);
         localStorage.setItem('lyceum_user_class', userData.classId);
         localStorage.setItem('lyceum_user_group', userData.group);
-        localStorage.setItem('lyceum_user_class_name', userData.name);
+        localStorage.setItem('lyceum_user_class_name', userData.classNameOnly);
         localStorage.setItem('lyceum_user_fullname', userData.fullName);
         localStorage.setItem('lyceum_user_teacher', userData.teacher);
 
